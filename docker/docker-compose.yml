@@ -1,0 +1,18 @@
+services:
+  bizhelp-front-app:
+    env_file:
+      - .env
+    image: ${IMAGE}:${TAG}
+    container_name: ${IMAGE}
+    restart: always
+    networks:
+      - ${NETWORKS}
+    environment:
+      BACK_URL: ${BACK_URL}
+      NEXT_PUBLIC_BACK_URL: ${NEXT_PUBLIC_BACK_URL}
+    ports:
+      - ${PORT}:${PORT}
+
+networks:
+  bizhelp-network:
+    external: true
