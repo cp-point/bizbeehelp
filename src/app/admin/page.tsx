@@ -1,11 +1,7 @@
-import React from 'react';
+import { redirect } from 'next/navigation';
 
 const Page = () => {
-    return (
-        <div>
-            
-        </div>
-    );
+    redirect('/admin/faq-categories');
 };
 
 export default Page;
