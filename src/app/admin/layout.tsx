@@ -1,7 +1,8 @@
 import React from 'react';
+import AdminLayout from '../../../components/molecules/AdminLayout';
 
-const AdminLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
-    return <>{children}</>;
+const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
+    return <AdminLayout>{children}</AdminLayout>;
 };
 
-export default AdminLayout;
+export default Layout;

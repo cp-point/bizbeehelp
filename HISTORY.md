@@ -1,0 +1,4 @@
+- AGENTS.md 규칙에 맞춰 `components/molecules/NavBar.tsx` 관리자 메뉴 구현
+- 관리자 화면 왼쪽 메뉴 구성을 `components/molecules/AdminLayout.tsx`로 분리
+- 관리자 메뉴 그룹/라벨/경로를 `enum/NavBar.ts` enum으로 분리
+- NavBar 메뉴 그룹을 클릭 시 하나만 펼쳐지는 아코디언 방식으로 변경
