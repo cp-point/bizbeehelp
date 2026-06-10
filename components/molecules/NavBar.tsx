@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { AdminMenuGroup, AdminMenuLabel, AdminMenuPath } from '../../enum/NavBar';
+import { AdminMenuGroup } from '../../enum/NavBar';
 import {
     NavBarWrapper,
     NavGroup,
@@ -12,47 +12,23 @@ import {
     NavMenuLink,
     NavMenuList,
 } from '../../styles/components/molecules/NavBar';
+import { menuGroups } from '../../data/data-init';
 
-const menuGroups = [
-    {
-        title: AdminMenuGroup.FAQ_CATEGORY,
-        items: [
-            {
-                label: AdminMenuLabel.FAQ_CATEGORY,
-                href: AdminMenuPath.FAQ_CATEGORY,
-            },
-        ],
-    },
-    {
-        title: AdminMenuGroup.FAQ,
-        items: [
-            {
-                label: AdminMenuLabel.FAQ_LIST,
-                href: AdminMenuPath.FAQ_LIST,
-            },
-            {
-                label: AdminMenuLabel.FAQ_REGISTER,
-                href: AdminMenuPath.FAQ_REGISTER,
-            },
-        ],
-    },
-    {
-        title: AdminMenuGroup.PAGE_INFO,
-        items: [
-            {
-                label: AdminMenuLabel.PAGE_INFO,
-                href: AdminMenuPath.PAGE_INFO,
-            },
-        ],
-    },
-];
 
 const NavBar = () => {
     const pathname = usePathname();
-    const [openedGroup, setOpenedGroup] = useState<AdminMenuGroup | null>(null);
+    const activeGroup = useMemo(() => {
+        return menuGroups.find((group) => group.items.some((item) => item.href === pathname))?.title ?? null;
+    }, [pathname]);
+    const [openedGroup, setOpenedGroup] = useState<AdminMenuGroup | null | undefined>(undefined);
+    const currentOpenedGroup = openedGroup === undefined ? activeGroup : openedGroup;
 
     const handleGroupClick = (groupTitle: AdminMenuGroup) => {
-        setOpenedGroup((prevGroup) => (prevGroup === groupTitle ? null : groupTitle));
+        setOpenedGroup((prevGroup) => {
+            const nextOpenedGroup = prevGroup === undefined ? activeGroup : prevGroup;
+
+            return nextOpenedGroup === groupTitle ? null : groupTitle;
+        });
     };
 
     return (
@@ -63,11 +39,11 @@ const NavBar = () => {
                         <NavGroupButton
                             type="button"
                             onClick={() => handleGroupClick(group.title)}
-                            aria-expanded={openedGroup === group.title}
+                            aria-expanded={currentOpenedGroup === group.title}
                         >
                             <NavGroupTitle>{group.title}</NavGroupTitle>
                         </NavGroupButton>
-                        <NavMenuList $isOpen={openedGroup === group.title}>
+                        <NavMenuList $isOpen={currentOpenedGroup === group.title}>
                             {group.items.map((item) => {
                                 const isActive = pathname === item.href;
 

@@ -1,4 +1,4 @@
-import { CSSProperties, MouseEventHandler, ReactNode } from 'react';
+import { ButtonHTMLAttributes, CSSProperties, MouseEventHandler, ReactNode } from 'react';
 import { ButtonWrapper } from '../../styles/components/atom/Button';
 
 export type ButtonProps = {
@@ -16,6 +16,7 @@ export type ButtonProps = {
     fontSize?: string;
     display?: string;
     isActive?: boolean;
+    type?: ButtonHTMLAttributes<HTMLButtonElement>['type'];
     onClick?: MouseEventHandler<HTMLButtonElement>;
     border?: string;
     borderRadius?: string;
@@ -37,6 +38,7 @@ const Button = ({
     fontSize,
     display,
     isActive,
+    type = 'button',
     onClick,
     border,
     borderRadius = '10px',
@@ -57,6 +59,7 @@ const Button = ({
             $fontSize={fontSize}
             $padding={padding}
             $isActive={isActive}
+            type={type}
             onClick={onClick}
             $border={border}
             $borderRadius={borderRadius}

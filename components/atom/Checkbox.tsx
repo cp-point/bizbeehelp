@@ -8,6 +8,7 @@ export type CheckboxProps = {
     name?: string;
     value?: string | number;
     disabled?: boolean;
+    readOnly?: boolean;
     label?: ReactNode;
     margin?: string;
     size?: string;
@@ -24,6 +25,7 @@ const Checkbox = ({
     name,
     value,
     disabled = false,
+    readOnly = false,
     label,
     margin,
     size = '16px',
@@ -43,6 +45,7 @@ const Checkbox = ({
                     name={name}
                     value={value}
                     disabled={disabled}
+                    readOnly={readOnly}
                     onChange={onChange}
                     $size={size}
                     $color={color}

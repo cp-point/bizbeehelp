@@ -31,13 +31,37 @@ export const CheckboxLabel = styled.label<CheckboxLabelProps>`
 `;
 
 export const CheckboxInput = styled.input<CheckboxInputProps>`
+    position: relative;
+    appearance: none;
     width: ${(props) => props.$size};
     height: ${(props) => props.$size};
     margin: 0;
     border: ${(props) => props.$border};
     border-radius: ${(props) => props.$borderRadius};
-    accent-color: ${(props) => props.$color};
+    background-color: #ffffff;
     cursor: inherit;
+
+    &:checked {
+        border-color: ${(props) => props.$color};
+        background-color: ${(props) => props.$color};
+    }
+
+    &:checked::after {
+        content: '';
+        position: absolute;
+        top: 45%;
+        left: 50%;
+        width: 4px;
+        height: 8px;
+        border: solid #ffffff;
+        border-width: 0 2px 2px 0;
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    &:focus-visible {
+        outline: 2px solid rgba(22, 119, 255, 0.25);
+        outline-offset: 2px;
+    }
 `;
 
 export const CheckboxText = styled.span`

@@ -4,6 +4,7 @@ import { InputField, InputWrapper } from '../../styles/components/atom/Input';
 
 export type InputProps = {
     type?: HTMLInputTypeAttribute;
+    id?: string;
     name?: string;
     value?: string | number;
     defaultValue?: string | number;
@@ -29,6 +30,7 @@ export type InputProps = {
 
 const Input = ({
     type = 'text',
+    id,
     name,
     value,
     defaultValue,
@@ -55,6 +57,7 @@ const Input = ({
         <InputWrapper $width={width} $margin={margin} style={style}>
             <InputField
                 type={type}
+                id={id}
                 name={name}
                 value={value}
                 defaultValue={defaultValue}
