@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '../../../../components/atom/Button';
 import Input from '../../../../components/atom/Input';
 import {
@@ -19,31 +19,52 @@ const Page = () => {
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
 
-    const handleSubmit = (event: React.SubmitEvent) => {
-            event.preventDefault();
+    useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
 
-            if (!loginId || !password) {
-                setMessage('아이디와 비밀번호를 입력해주세요.');
-                return;
-            }
-            const payload = {
-                userId: loginId,
-                password: password,
-            };
-            Post(
-                '/admin/login',
-                payload,
-                (response) => {
-                    if (response.result) {
-                        console.log(response.result);
-                    }
-                },
-                false,
-            );
-
-            setMessage('로그인 API 연동 후 처리될 예정입니다.');
+        if (searchParams.get('loginRequired') === 'true') {
+            alert('로그인이 필요합니다.');
+            window.history.replaceState(null, '', '/admin/login');
         }
-    ;
+    }, []);
+
+    const handleSubmit = (event: React.SubmitEvent) => {
+        event.preventDefault();
+
+        if (!loginId || !password) {
+            setMessage('아이디와 비밀번호를 입력해주세요.');
+            return;
+        }
+
+        const payload = {
+            userId: loginId,
+            password,
+        };
+
+        Post(
+            '/admin/login',
+            payload,
+            (response) => {
+                if (response.type === 'SUCCESS') {
+                    setMessage(response.message || '로그인되었습니다.');
+                    window.location.href = '/admin/faq-categories';
+                    return;
+                }
+
+                setMessage(response.message || '로그인에 실패했습니다.');
+            },
+            false,
+        );
+    };
+
+    const handleEnterKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key !== 'Enter') {
+            return;
+        }
+
+        event.preventDefault();
+        event.currentTarget.form?.requestSubmit();
+    };
 
     return (
         <LoginWrapper>
@@ -59,6 +80,7 @@ const Page = () => {
                             placeholder="아이디를 입력하세요"
                             height="42px"
                             onChange={(event) => setLoginId(event.target.value)}
+                            onKeyDown={handleEnterKeyDown}
                         />
                     </LoginField>
                     <LoginField>
@@ -71,6 +93,7 @@ const Page = () => {
                             placeholder="비밀번호를 입력하세요"
                             height="42px"
                             onChange={(event) => setPassword(event.target.value)}
+                            onKeyDown={handleEnterKeyDown}
                         />
                     </LoginField>
                     {message ? <LoginMessage>{message}</LoginMessage> : null}

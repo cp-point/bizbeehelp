@@ -1,4 +1,4 @@
-import type { ChangeEventHandler, CSSProperties, FocusEventHandler, HTMLInputTypeAttribute } from 'react';
+import type { ChangeEventHandler, CSSProperties, FocusEventHandler, HTMLInputTypeAttribute, KeyboardEventHandler } from 'react';
 
 import { InputField, InputWrapper } from '../../styles/components/atom/Input';
 
@@ -24,6 +24,7 @@ export type InputProps = {
     borderRadius?: string;
     fontSize?: string;
     onChange?: ChangeEventHandler<HTMLInputElement>;
+    onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
     onFocus?: FocusEventHandler<HTMLInputElement>;
     onBlur?: FocusEventHandler<HTMLInputElement>;
 };
@@ -50,6 +51,7 @@ const Input = ({
     borderRadius = '6px',
     fontSize = '14px',
     onChange,
+    onKeyDown,
     onFocus,
     onBlur,
 }: InputProps) => {
@@ -67,6 +69,7 @@ const Input = ({
                 autoFocus={autoFocus}
                 maxLength={maxLength}
                 onChange={onChange}
+                onKeyDown={onKeyDown}
                 onFocus={onFocus}
                 onBlur={onBlur}
                 $height={height}

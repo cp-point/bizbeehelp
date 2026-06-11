@@ -10,6 +10,8 @@ type NavMenuListProps = {
 };
 
 export const NavBarWrapper = styled.aside`
+    display: flex;
+    flex-direction: column;
     flex: 0 0 220px;
     min-height: 100vh;
     border-right: 1px solid #d9dde3;
@@ -25,11 +27,42 @@ export const NavBarWrapper = styled.aside`
     }
 `;
 
+export const NavMenuArea = styled.nav`
+    flex: 1;
+`;
+
 export const NavGroup = styled.section`
     margin-bottom: 28px;
 
     @media (max-width: 768px) {
         margin-bottom: 16px;
+    }
+`;
+
+export const LogoutButtonArea = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+`;
+
+export const LogoutButton = styled.button`
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: #ffffff;
+    padding: 8px 10px;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover {
+        border-color: #9ca3af;
+        background-color: #f3f4f6;
+        color: #111827;
     }
 `;
 

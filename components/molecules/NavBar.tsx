@@ -4,16 +4,21 @@ import { useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { AdminMenuGroup } from '../../enum/NavBar';
 import {
+    LogoutButton,
+    LogoutButtonArea,
     NavBarWrapper,
     NavGroup,
     NavGroupButton,
     NavGroupTitle,
+    NavMenuArea,
     NavMenuItem,
     NavMenuLink,
     NavMenuList,
 } from '../../styles/components/molecules/NavBar';
 import { menuGroups } from '../../data/data-init';
-
+import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Post } from '../../service/crud';
 
 const NavBar = () => {
     const pathname = usePathname();
@@ -31,9 +36,25 @@ const NavBar = () => {
         });
     };
 
+    const handleClickLogout = () => {
+        Post(
+            '/admin/logout',
+            {},
+            (response) => {
+                if (response.type === 'SUCCESS') {
+                    window.location.href = '/admin/login';
+                    return;
+                }
+
+                alert(response.message || '로그아웃에 실패했습니다.');
+            },
+            false,
+        );
+    };
+
     return (
         <NavBarWrapper>
-            <nav aria-label="관리자 메뉴">
+            <NavMenuArea aria-label="관리자 메뉴">
                 {menuGroups.map((group) => (
                     <NavGroup key={group.title}>
                         <NavGroupButton
@@ -62,7 +83,12 @@ const NavBar = () => {
                         </NavMenuList>
                     </NavGroup>
                 ))}
-            </nav>
+            </NavMenuArea>
+            <LogoutButtonArea>
+                <LogoutButton type="button" onClick={handleClickLogout}>
+                    <FontAwesomeIcon icon={faArrowRightFromBracket} />
+                </LogoutButton>
+            </LogoutButtonArea>
         </NavBarWrapper>
     );
 };

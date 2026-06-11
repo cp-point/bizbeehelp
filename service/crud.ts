@@ -15,6 +15,7 @@ export const Post = (url: string, payload: object, callback?: (response: Respons
             param: payload,
         })
         .then((res) => {
+            response.type = res.data.type;
             response.result = res.data.result;
             response.message = res.data.message;
             response.errorCode = res.data.errorCode;
