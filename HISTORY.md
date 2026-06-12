@@ -1,5 +1,11 @@
 # 변경 이력
 
+## 2026-06-11 11:02
+
+- `/api/backend/route.tsx`의 `JSESSIONID` Path 목록 하드코딩 제거
+- `JSESSIONID` 만료 쿠키 문자열 직접 조립을 `response.cookies.delete()` 방식으로 변경
+- 백엔드 세션 쿠키 전달 로직을 `normalizeSessionCookie`, `appendBackendCookies`, `deleteSessionCookie` 함수로 정리
+
 ## 2026-06-11 09:25
 
 - 공통 `Input` 컴포넌트에 `onKeyDown` 이벤트 전달 속성 추가

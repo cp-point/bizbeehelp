@@ -7,6 +7,7 @@ const SESSION_COOKIE_NAME = 'JSESSIONID';
 export function proxy(req: NextRequest) {
     const hasSession = Boolean(req.cookies.get(SESSION_COOKIE_NAME)?.value);
 
+    const { pathname } = req.nextUrl;
     if (pathname === LOGIN_PATH) {
         return NextResponse.next();
     }
