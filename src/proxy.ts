@@ -5,7 +5,6 @@ const DEFAULT_ADMIN_PATH = '/admin/faq-categories';
 const SESSION_COOKIE_NAME = 'JSESSIONID';
 
 export function proxy(req: NextRequest) {
-    const { pathname } = req.nextUrl;
     const hasSession = Boolean(req.cookies.get(SESSION_COOKIE_NAME)?.value);
 
     if (pathname === LOGIN_PATH) {
