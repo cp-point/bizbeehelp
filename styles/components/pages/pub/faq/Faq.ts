@@ -485,7 +485,7 @@ export const Body = styled.section`
   padding: 40px 0 120px;
 
   @media (max-width: 767px) {
-    padding: 40px 0 64px;
+    padding: 40px 0 0;
   }
 `;
 
