@@ -10,7 +10,6 @@ const API_PATH = {
 } as const;
 
 const SESSION_COOKIE_NAME = 'JSESSIONID';
-const SESSION_COOKIE_PATHS = ['/', '/admin', '/admin/login', '/admin/faq-categories', '/api', '/api/backend'];
 
 type BackendResult = {
     data: Response;
@@ -78,7 +77,7 @@ const isSuccess = (data: Response) => {
     return data.type === ResponseType.SUCCESS && data.errorCode === '0000';
 };
 
-const normalizeBackendCookie = (cookie: string) => {
+const normalizeSessionCookie = (cookie: string) => {
     if (!cookie.toLowerCase().startsWith(`${SESSION_COOKIE_NAME.toLowerCase()}=`)) {
         return cookie;
     }
@@ -92,9 +91,13 @@ const normalizeBackendCookie = (cookie: string) => {
     return `${cookieWithoutDomain}; Path=/`;
 };
 
-const createExpiredSessionCookies = () => {
-    return SESSION_COOKIE_PATHS.map((path) => {
-        return `${SESSION_COOKIE_NAME}=; Path=${path}; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+const deleteSessionCookie = (response: NextResponse) => {
+    response.cookies.delete(SESSION_COOKIE_NAME);
+};
+
+const appendBackendCookies = (response: NextResponse, cookies: string[]) => {
+    cookies.map(normalizeSessionCookie).forEach((cookie) => {
+        response.headers.append('Set-Cookie', cookie);
     });
 };
 
@@ -129,12 +132,14 @@ const parseBackendResponse = async (res: globalThis.Response): Promise<BackendRe
 const createProxyResponse = ({ data, cookies }: BackendResult, context: ResponseContext = {}) => {
     const response = NextResponse.json(data);
     const shouldForwardCookies = !context.isLogout && (!context.isLogin || isSuccess(data));
-    const responseCookies = shouldForwardCookies ? cookies.map(normalizeBackendCookie) : [];
-    const expiredCookies = context.isLogout || (context.isLogin && !isSuccess(data)) ? createExpiredSessionCookies() : [];
 
-    [...responseCookies, ...expiredCookies].forEach((cookie) => {
-        response.headers.append('Set-Cookie', cookie);
-    });
+    if (shouldForwardCookies) {
+        appendBackendCookies(response, cookies);
+    }
+
+    if (context.isLogout || (context.isLogin && !isSuccess(data))) {
+        deleteSessionCookie(response);
+    }
 
     return response;
 };
