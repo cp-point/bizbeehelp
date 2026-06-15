@@ -1,5 +1,10 @@
 # 변경 이력
 
+## 2026-06-12 17:04
+
+- `/pub/faq` 공개 페이지가 로그인 proxy 검사에 걸리지 않도록 `src/proxy.ts` matcher를 관리자 경로로 제한
+- FAQ 히어로 배경 이미지를 `faq-intro-bg.png`에서 경량 `faq-intro-bg.webp`로 변경
+
 ## 2026-06-11 11:02
 
 - `/api/backend/route.tsx`의 `JSESSIONID` Path 목록 하드코딩 제거
