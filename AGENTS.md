@@ -3,6 +3,11 @@
 이 프로젝트는 Next.js 16.2.6, React 19.2.4, TypeScript 기반의 웹 애플리케이션입니다.
 `src/app` 디렉터리를 사용하는 Next.js App Router 구조입니다.
 
+## 프론트 경로
+- C:\project\BizHelp
+## 백엔드 경로
+- C:\project\BizHelpAPI
+- 
 ## 개발 규칙
 
 - 컴포넌트는 `./components` 아래 경로에서 만들 것
