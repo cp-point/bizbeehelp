@@ -175,12 +175,12 @@ const faqTableColumns: AdminTableColumn[] = [
   { width: 160 },
   { width: 160 },
   {},
-  { width: 64 },
-  { width: 64 },
   { width: 120 },
+  { width: 64 },
+  { width: 64 },
   { width: '12%' },
-  { width: 180 },
-  { width: 180 },
+  { width: 160 },
+  { width: 160 },
 ];
 
 const getPaginationPages = (currentPage: number, totalPages: number, pageRange: number) => {
@@ -331,7 +331,7 @@ const FaqList = () => {
         </S.SectionHeader>
 
         <S.SearchGrid>
-          <S.SearchCell $wide="medium">
+          <S.SearchCell>
             <S.SearchLabel>등록일자</S.SearchLabel>
             <S.SearchControlGroup>
               <S.DateInput type="date" defaultValue="2025-06-15" aria-label="등록 시작일" />
@@ -339,7 +339,7 @@ const FaqList = () => {
               <S.DateInput type="date" defaultValue="2026-06-15" aria-label="등록 종료일" />
             </S.SearchControlGroup>
           </S.SearchCell>
-          <S.SearchCell $wide="medium">
+          <S.SearchCell>
             <S.SearchLabel>메타 태그</S.SearchLabel>
             <S.Input placeholder="메타 태그 입력" />
           </S.SearchCell>
@@ -372,7 +372,7 @@ const FaqList = () => {
         </S.SectionHeader>
 
         <S.TableScroll>
-          <S.DataTable $minWidth={1760}>
+          <S.DataTable $minWidth={1644}>
             <AdminTableColGroup columns={faqTableColumns} />
             <thead>
               <tr>

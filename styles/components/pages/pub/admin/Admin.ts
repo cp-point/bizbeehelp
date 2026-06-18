@@ -11,11 +11,7 @@ type HeaderButtonProps = {
 };
 
 type SearchCellProps = {
-  $wide?: 'medium' | 'large';
-};
-
-type SearchGridProps = {
-  $compact?: boolean;
+  $wide?: 'large';
 };
 
 type FormCellProps = {
@@ -126,10 +122,13 @@ export const Header = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
   height: 64px;
   padding: 0 32px;
-  border: 1px solid ${colors.coolGray200};
+  border-bottom: 1px solid ${colors.coolGray200};
   background: ${colors.primaryWhite};
+  z-index: 99;
 `;
 
 export const HeaderLogo = styled(Link)`
@@ -175,16 +174,19 @@ export const HeaderButtonLink = styled(Link)<HeaderButtonProps>`
 
 export const Body = styled.div`
   display: flex;
-  overflow-x: auto;
   min-height: calc(100vh - 64px);
   background: ${colors.primaryWhite};
 `;
 
 export const SideMenu = styled.aside`
+  position: sticky;
+  top: 64px;
   flex: 0 0 220px;
   min-width: 220px;
+  height: calc(100vh - 64px);
   padding: 40px 10px 24px;
   background: #1e293b;
+  z-index: 10;
 `;
 
 export const SideMenuList = styled.ul`
@@ -213,7 +215,8 @@ export const SideMenuList = styled.ul`
 
 export const Main = styled.section`
   flex: 1;
-  min-width: 1254px;
+  overflow-x: auto;
+  min-width: 0;
   background: ${colors.primaryWhite};
 `;
 
@@ -221,7 +224,8 @@ export const Headline = styled.header`
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  width: calc(100% - 8px);
+  min-width: 1254px;
+  width: 100%;
   padding: 0 24px;
   background: ${colors.primaryWhite};
 `;
@@ -249,7 +253,8 @@ export const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: calc(100% - 8px);
+  min-width: 1254px;
+  width: 100%;
   padding: 16px 24px 32px;
 `;
 
@@ -390,9 +395,9 @@ export const ButtonGroup = styled.div`
   gap: 8px;
 `;
 
-export const SearchGrid = styled.div<SearchGridProps>`
+export const SearchGrid = styled.div`
   display: grid;
-  grid-template-columns: ${(props) => (props.$compact ? 'repeat(3, minmax(0, 1fr))' : 'minmax(407px, 1fr) minmax(407px, 1fr) 440px')};
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border-top: 1px solid ${colors.coolGray200};
   border-left: 1px solid ${colors.coolGray200};
   background: ${colors.primaryWhite};
@@ -898,7 +903,7 @@ export const Dimmed = styled.div`
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 50;
+  z-index: 100;
 `;
 
 export const AlertModal = styled.div`
@@ -918,7 +923,7 @@ export const AlertModal = styled.div`
   background: ${colors.primaryWhite};
   box-shadow: 0 4px 12px rgba(16, 24, 40, 0.08);
   transform: translate(-50%, -50%);
-  z-index: 50;
+  z-index: 101;
 `;
 
 export const AlertTitle = styled.p`
