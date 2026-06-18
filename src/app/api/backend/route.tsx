@@ -35,6 +35,27 @@ const getBackendUrl = (url: string) => {
     return `${DOMAIN}${url}`;
 };
 
+const getBackendUrlWithQuery = (url: string, param?: object) => {
+    const backendUrl = getBackendUrl(url);
+
+    if (!param) {
+        return backendUrl;
+    }
+
+    const searchParams = new URLSearchParams();
+    Object.entries(param as Record<string, unknown>).forEach(([key, value]) => {
+        if (value === undefined || value === null || value === '') {
+            return;
+        }
+
+        searchParams.append(key, String(value));
+    });
+
+    const queryString = searchParams.toString();
+
+    return queryString ? `${backendUrl}?${queryString}` : backendUrl;
+};
+
 const getErrorMessage = (error: unknown) => {
     return error instanceof Error ? error.message : '요청 처리 중 오류가 발생했습니다.';
 };
@@ -147,7 +168,7 @@ const createProxyResponse = ({ data, cookies }: BackendResult, context: Response
 const requestBackendJson = async (param: Request, headers: Headers) => {
     headers.set('Content-Type', 'application/json');
 
-    const res = await fetch(getBackendUrl(param.url), {
+    const res = await fetch(param.method === 'GET' ? getBackendUrlWithQuery(param.url, param.param) : getBackendUrl(param.url), {
         method: param.method,
         headers,
         body: param.method === 'GET' ? undefined : JSON.stringify(param.param || {}),

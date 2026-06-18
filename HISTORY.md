@@ -2,6 +2,14 @@
 
 ## 2026-06-18
 
+- 15:18 - FAQ 목록 타입을 `types/Faq.ts`로 이동하고 `/admin/faqs` 조회를 백엔드 `Page` 응답 기준으로 수정
+- 15:18 - `/faq/list` 조회 시 `page`, `size` 파라미터를 함께 전달하고 Pagination을 서버 페이징 기준으로 동작하도록 수정
+- 15:13 - `/admin/faqs` 목록에 Pagination을 추가하고 한 페이지당 10개씩 표시하도록 수정
+- 15:09 - `/admin/faqs` 조회조건을 각 필드별 `useState`로 관리하고 조회 버튼/Enter 입력 시 `/faq/list` 조회 조건으로 반영
+- 15:09 - `/api/backend` 프록시가 GET 요청의 `param`을 query string으로 변환해 백엔드에 전달하도록 수정
+- 15:01 - `/admin/faqs` 조회조건의 등록일자를 시작일/종료일 범위 입력으로 수정
+- 14:45 - `/admin/faqs` 페이지에서 SWR로 FAQ 데이터를 조회하고 별도 client 컴포넌트에 전달하도록 수정
+- 14:45 - FAQ 목록 화면에 조회조건 영역과 조회 버튼, 빈 목록 테이블 렌더링 컴포넌트 및 스타일 추가
 - 14:19 - 401 응답 발생 시 `userStore` 사용자 정보를 초기화하고 `/admin/login`으로 이동하도록 axios 공통 응답 인터셉터 수정
 - 14:19 - CRUD 요청에서 401은 공통 인터셉터가 처리하도록 분리하고 일반 실패 alert가 중복 표시되지 않도록 수정
 - `/pub/faq` 헤더가 로그인 상태에 따라 로그인/관리자 버튼을 표시하도록 수정하고, store 구독을 `useSyncExternalStore`로 처리해 hydration mismatch를 방지
