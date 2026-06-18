@@ -2,6 +2,8 @@
 
 ## 2026-06-18
 
+- 14:19 - 401 응답 발생 시 `userStore` 사용자 정보를 초기화하고 `/admin/login`으로 이동하도록 axios 공통 응답 인터셉터 수정
+- 14:19 - CRUD 요청에서 401은 공통 인터셉터가 처리하도록 분리하고 일반 실패 alert가 중복 표시되지 않도록 수정
 - `/pub/faq` 헤더가 로그인 상태에 따라 로그인/관리자 버튼을 표시하도록 수정하고, store 구독을 `useSyncExternalStore`로 처리해 hydration mismatch를 방지
 - `/admin/login`에서 `useSyncExternalStore`의 서버 스냅샷을 `null`로 고정해 로그인 상태 화면의 hydration mismatch를 방지
 - 로그인 성공 시 `userStore` 전체 상태 구독 대신 `setUserData` action만 selector로 구독하도록 수정

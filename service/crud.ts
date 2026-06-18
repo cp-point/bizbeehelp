@@ -2,6 +2,16 @@ import axiosInstance from '../libs/axios';
 import { ResponseType } from '../enum/Common';
 import { Response } from '../types/Common';
 
+const isUnauthorizedError = (error: unknown) => {
+    if (!error || typeof error !== 'object') {
+        return false;
+    }
+
+    const axiosError = error as { response?: { status?: number } };
+
+    return axiosError.response?.status === 401;
+};
+
 export const Post = (url: string, payload: object, callback?: (response: Response) => void, isAlert: boolean = true) => {
     const response: Response = {
         type: ResponseType.SUCCESS,
@@ -25,10 +35,12 @@ export const Post = (url: string, payload: object, callback?: (response: Respons
         .catch((error) => {
             console.error(error);
             response.type = ResponseType.FAIL;
-            response.message = '요청에 실패하였습니다.';
+            if (!isUnauthorizedError(error)) {
+                response.message = '요청에 실패하였습니다.';
+            }
         })
         .finally(() => {
-            if (isAlert) alert(response.message);
+            if (isAlert && response.message) alert(response.message);
         });
 };
 
@@ -74,8 +86,10 @@ export const Upload = (url: string, formData: FormData, callback?: (response: Re
         .catch((error) => {
             console.error('Upload Error:', error);
             response.type = ResponseType.FAIL;
-            response.message = '파일 업로드에 실패하였습니다.';
-            alert(response.message);
+            if (!isUnauthorizedError(error)) {
+                response.message = '파일 업로드에 실패하였습니다.';
+                alert(response.message);
+            }
         });
 };
 
@@ -101,7 +115,9 @@ export const Patch = (url: string, payload: object, callback?: (response: Respon
         .catch((error) => {
             console.error(error);
             response.type = ResponseType.FAIL;
-            response.message = '수정 요청에 실패하였습니다.';
+            if (!isUnauthorizedError(error)) {
+                response.message = '수정 요청에 실패하였습니다.';
+            }
         })
         .finally(() => {
             if (isAlert && response.message) alert(response.message);
@@ -130,7 +146,9 @@ export const Delete = (url: string, payload: object = {}, callback?: (response: 
         .catch((error) => {
             console.error(error);
             response.type = ResponseType.FAIL;
-            response.message = '삭제 요청에 실패하였습니다.';
+            if (!isUnauthorizedError(error)) {
+                response.message = '삭제 요청에 실패하였습니다.';
+            }
         })
         .finally(() => {
             if (isAlert && response.message) alert(response.message);

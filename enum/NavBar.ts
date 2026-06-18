@@ -4,8 +4,8 @@ export enum AdminMenuGroup {
 }
 
 export enum AdminMenuLabel {
-    FAQ_CATEGORY = 'FAQ분류관리',
     FAQ_LIST = 'FAQ목록',
+    FAQ_CATEGORY = 'FAQ분류관리',
     FAQ_REGISTER = 'FAQ등록',
     PAGE_INFO = '페이지정보관리',
 }
