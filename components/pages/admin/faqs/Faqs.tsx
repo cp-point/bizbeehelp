@@ -38,6 +38,14 @@ const columns: TableColumn<FaqRow>[] = [
     { key: 'remark', title: '비고', dataIndex: 'remark', width: '10%' },
 ];
 
+const formatDate = (value: string) => {
+    if (!value) {
+        return '';
+    }
+
+    return value.slice(0, 10);
+};
+
 const Faqs = ({ faqData = [], total, currentPage, pageSize, onSearch, onPageChange }: FaqsProps) => {
     const [createdAtFrom, setCreatedAtFrom] = useState('');
     const [createdAtTo, setCreatedAtTo] = useState('');
@@ -47,7 +55,7 @@ const Faqs = ({ faqData = [], total, currentPage, pageSize, onSearch, onPageChan
     const [title, setTitle] = useState('');
     const dataSource: FaqRow[] = faqData.map((faq) => ({
         faqId: faq.faqId,
-        createdAt: faq.createdAt,
+        createdAt: formatDate(faq.createdAt),
         majorName: faq.majorName,
         minorName: faq.minorName,
         title: faq.title,
