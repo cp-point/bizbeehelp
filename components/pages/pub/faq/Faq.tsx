@@ -3,10 +3,13 @@
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { faqMenuGroups, faqSections, searchKeywords } from './Faq.data';
 import type { FaqMenuGroup, FaqSection } from './Faq.data';
+import { faqMenuGroups, faqSections, searchKeywords } from './Faq.data';
 import type { FaqData, MajorCategoryData } from '../../../../types/Faq';
 import * as S from '../../../../styles/components/pages/pub/faq/Faq';
+import { userStore } from '../../../../store/userStore';
+import { Post } from '../../../../service/crud';
+import { useRouter } from 'next/navigation';
 
 type SearchIconProps = {
     size?: number;
@@ -195,6 +198,9 @@ const MenuContent = ({ menuGroups, selectedMenuId, onMenuClick }: MenuContentPro
 );
 
 const Faq = ({ faqData }: FaqProps) => {
+
+    const router = useRouter();
+
     const [selectedMenuId, setSelectedMenuId] = useState('all');
     const [openedItemId, setOpenedItemId] = useState('');
     const [isMenuScrolling, setIsMenuScrolling] = useState(false);
@@ -312,6 +318,23 @@ const Faq = ({ faqData }: FaqProps) => {
         setOpenedItemId((currentId) => (currentId === itemId ? '' : itemId));
     };
 
+    const handleClickLogout = () => {
+        Post(
+            '/admin/logout',
+            {},
+            (response) => {
+                if (response.type === 'SUCCESS') {
+                    userStore.getState().reset();
+                    window.location.href = '/admin/login';
+                    return;
+                }
+
+                alert(response.message || '로그아웃에 실패했습니다.');
+            },
+            false,
+        );
+    };
+
     return (
         <S.Page>
             <S.Header>
@@ -319,6 +342,24 @@ const Faq = ({ faqData }: FaqProps) => {
                     <Image src="/assets/images/header-logo.svg" alt="bizbee Help" width={146} height={32} priority />
                 </S.HeaderLogo>
                 <S.HeaderActions>
+                    {userStore.getState().userData ? (
+                        <>
+                            <S.HeaderButton type="button" $variant="line" onClick={handleClickLogout}>
+                                로그아웃
+                            </S.HeaderButton>
+                            <S.HeaderButton type="button" $variant="solid" onClick={() => {
+                                router.push('/admin/faq-categories');
+                            }}>
+                                관리자
+                            </S.HeaderButton>
+                        </>
+                    ) : (
+                        <S.HeaderButton type="button" $variant="line" onClick={() => {
+                            router.push('/admin/login');
+                        }}>
+                            로그인
+                        </S.HeaderButton>
+                    )}
                     <S.HeaderButton type="button" $variant="line">
                         비즈비 홈페이지
                     </S.HeaderButton>
@@ -338,7 +379,8 @@ const Faq = ({ faqData }: FaqProps) => {
 
             <S.MobileMenu $isOpen={isMobileMenuOpen} aria-hidden={!isMobileMenuOpen}>
                 <S.MobileMenuPanel ref={mobileMenuRef}>
-                    <MenuContent menuGroups={menuGroups} selectedMenuId={selectedMenuId} onMenuClick={handleMenuClick} />
+                    <MenuContent menuGroups={menuGroups} selectedMenuId={selectedMenuId}
+                                 onMenuClick={handleMenuClick} />
                 </S.MobileMenuPanel>
                 <S.MobileMenuActionBar>
                     <S.MobileMenuAction type="button" onClick={() => setIsMobileMenuOpen(false)}>
@@ -346,6 +388,7 @@ const Faq = ({ faqData }: FaqProps) => {
                     </S.MobileMenuAction>
                 </S.MobileMenuActionBar>
             </S.MobileMenu>
+
 
             <S.Hero>
                 <S.HeroContent>
@@ -391,6 +434,7 @@ const Faq = ({ faqData }: FaqProps) => {
                 </S.HeroContent>
             </S.Hero>
 
+
             <S.Body>
                 <S.FloatingButtonLayer>
                     <S.FloatingButton type="button" aria-label="카카오톡 문의하기">
@@ -407,7 +451,8 @@ const Faq = ({ faqData }: FaqProps) => {
                 </S.FloatingButtonLayer>
                 <S.BodyInner>
                     <S.SideMenu aria-label="FAQ 분류">
-                        <MenuContent menuGroups={menuGroups} selectedMenuId={selectedMenuId} onMenuClick={handleMenuClick} />
+                        <MenuContent menuGroups={menuGroups} selectedMenuId={selectedMenuId}
+                                     onMenuClick={handleMenuClick} />
                     </S.SideMenu>
 
                     <S.Contents>
@@ -484,6 +529,7 @@ const Faq = ({ faqData }: FaqProps) => {
                 </S.BodyInner>
             </S.Body>
 
+
             <S.Footer>
                 <S.FooterShortcut>
                     <S.FooterLogo href="/pub/faq" aria-label="bizbee">
@@ -512,6 +558,7 @@ const Faq = ({ faqData }: FaqProps) => {
                     <S.Copyright>Copyright © bizbee Co., Ltd. All Rights Reserved.</S.Copyright>
                 </S.FooterInfo>
             </S.Footer>
+
         </S.Page>
     );
 };
