@@ -2,13 +2,12 @@
 
 import Image from 'next/image';
 import type { ReactNode } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import type { FaqMenuGroup, FaqSection } from './Faq.data';
 import { faqMenuGroups, faqSections, searchKeywords } from './Faq.data';
 import type { FaqData, MajorCategoryData } from '../../../../types/Faq';
 import * as S from '../../../../styles/components/pages/pub/faq/Faq';
 import { userStore } from '../../../../store/userStore';
-import { Post } from '../../../../service/crud';
 import { useRouter } from 'next/navigation';
 
 type SearchIconProps = {
@@ -209,6 +208,11 @@ const Faq = ({ faqData }: FaqProps) => {
     const [submittedSearchQuery, setSubmittedSearchQuery] = useState('');
     const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
     const mobileMenuRef = useRef<HTMLDivElement | null>(null);
+    const userData = useSyncExternalStore(
+        userStore.subscribe,
+        () => userStore.getState().userData,
+        () => null,
+    );
     const hasFaqData = Boolean(faqData && faqData.length > 0);
     const sections = useMemo(() => createFaqSections(faqData), [faqData]);
     const menuGroups = useMemo(() => createFaqMenuGroups(faqData, hasFaqData), [faqData, hasFaqData]);
@@ -318,23 +322,6 @@ const Faq = ({ faqData }: FaqProps) => {
         setOpenedItemId((currentId) => (currentId === itemId ? '' : itemId));
     };
 
-    const handleClickLogout = () => {
-        Post(
-            '/admin/logout',
-            {},
-            (response) => {
-                if (response.type === 'SUCCESS') {
-                    userStore.getState().reset();
-                    window.location.href = '/admin/login';
-                    return;
-                }
-
-                alert(response.message || '로그아웃에 실패했습니다.');
-            },
-            false,
-        );
-    };
-
     return (
         <S.Page>
             <S.Header>
@@ -342,17 +329,12 @@ const Faq = ({ faqData }: FaqProps) => {
                     <Image src="/assets/images/header-logo.svg" alt="bizbee Help" width={146} height={32} priority />
                 </S.HeaderLogo>
                 <S.HeaderActions>
-                    {userStore.getState().userData ? (
-                        <>
-                            <S.HeaderButton type="button" $variant="line" onClick={handleClickLogout}>
-                                로그아웃
-                            </S.HeaderButton>
-                            <S.HeaderButton type="button" $variant="solid" onClick={() => {
-                                router.push('/admin/faq-categories');
-                            }}>
-                                관리자
-                            </S.HeaderButton>
-                        </>
+                    {userData ? (
+                        <S.HeaderButton type="button" $variant="solid" onClick={() => {
+                            router.push('/admin/faqs');
+                        }}>
+                            관리자
+                        </S.HeaderButton>
                     ) : (
                         <S.HeaderButton type="button" $variant="line" onClick={() => {
                             router.push('/admin/login');

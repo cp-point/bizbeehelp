@@ -2,6 +2,7 @@
 
 ## 2026-06-18
 
+- `/pub/faq` 헤더가 로그인 상태에 따라 로그인/관리자 버튼을 표시하도록 수정하고, store 구독을 `useSyncExternalStore`로 처리해 hydration mismatch를 방지
 - `/admin/login`에서 `useSyncExternalStore`의 서버 스냅샷을 `null`로 고정해 로그인 상태 화면의 hydration mismatch를 방지
 - 로그인 성공 시 `userStore` 전체 상태 구독 대신 `setUserData` action만 selector로 구독하도록 수정
 - 로그인 응답 `result`가 사용자 정보 형태인지 확인한 뒤 store에 저장하도록 타입 가드 추가
