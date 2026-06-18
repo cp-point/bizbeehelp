@@ -1,11 +1,9 @@
 import { create } from 'zustand';
-import {createJSONStorage, persist} from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 export type User = {
-    memberId: string;
     userId: string;
-    username: string;
-    role: string;
+    authenticated: boolean;
 };
 
 interface UserState {

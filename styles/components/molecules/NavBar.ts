@@ -45,27 +45,6 @@ export const LogoutButtonArea = styled.div`
     margin-top: auto;
 `;
 
-export const LogoutButton = styled.button`
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    background-color: #ffffff;
-    padding: 8px 10px;
-    color: #374151;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1;
-    cursor: pointer;
-
-    &:hover {
-        border-color: #9ca3af;
-        background-color: #f3f4f6;
-        color: #111827;
-    }
-`;
-
 export const NavGroupButton = styled.button`
     display: flex;
     width: 100%;

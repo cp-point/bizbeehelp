@@ -1,5 +1,24 @@
 # 변경 이력
 
+## 2026-06-18
+
+- `/admin/login`에서 `useSyncExternalStore`의 서버 스냅샷을 `null`로 고정해 로그인 상태 화면의 hydration mismatch를 방지
+- 로그인 성공 시 `userStore` 전체 상태 구독 대신 `setUserData` action만 selector로 구독하도록 수정
+- 로그인 응답 `result`가 사용자 정보 형태인지 확인한 뒤 store에 저장하도록 타입 가드 추가
+- 로그인 페이지에서 store 저장을 위해 Zustand hook을 구독하지 않고 `userStore.getState().setUserData()`를 직접 호출하도록 수정
+- 로그인 상태에서 `/admin/login` 접근 시 이미 로그인된 사용자 안내와 FontAwesome 로그아웃 버튼을 표시하도록 수정
+- 로그인 페이지에서 전용 패널 대신 공통 `Card`, 전용 로그아웃 버튼 대신 공통 `Button`을 사용하도록 수정
+- 관리자 NavBar 로그아웃 버튼도 공통 `Button`을 사용하도록 수정
+
+## 2026-06-17 16:00
+
+- `/pub/faq/page.tsx`에서 조회한 FAQ 데이터를 `Faq` 컴포넌트 props로 전달하도록 수정
+- `components/pages/pub/faq/Faq.tsx`가 `FaqData` 배열을 받아 accordion 섹션으로 변환해 렌더링하도록 수정
+- FAQ 데이터가 없을 때는 기존 정적 FAQ 데이터가 표시되도록 fallback 유지
+- FAQ API 응답 구조에 맞춰 `types/Faq.ts`를 대분류/소분류/FAQ 계층 타입으로 수정
+- `/pub/faq` 화면에서 대분류는 메뉴 그룹, 소분류는 FAQ 섹션, FAQ 목록은 accordion 항목으로 렌더링되도록 수정
+- `/pub/faq` 왼쪽 메뉴는 전체 소분류를 표시하고, 본문 FAQ 섹션은 FAQ 항목이 있는 소분류만 표시되도록 조정
+
 ## 2026-06-12 17:04
 
 - `/pub/faq` 공개 페이지가 로그인 proxy 검사에 걸리지 않도록 `src/proxy.ts` matcher를 관리자 경로로 제한

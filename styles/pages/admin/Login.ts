@@ -9,16 +9,6 @@ export const LoginWrapper = styled.main`
     padding: 24px;
 `;
 
-export const LoginPanel = styled.section`
-    width: 100%;
-    max-width: 380px;
-    border: 1px solid #d9dde3;
-    border-radius: 8px;
-    background-color: #ffffff;
-    padding: 32px;
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
-`;
-
 export const LoginTitle = styled.h1`
     margin-bottom: 24px;
     color: #111827;
@@ -50,5 +40,24 @@ export const LoginLabel = styled.label`
 export const LoginMessage = styled.p`
     color: #dc2626;
     font-size: 13px;
+    line-height: 1.4;
+`;
+
+export const LoginStatusArea = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid #d9dde3;
+    border-radius: 6px;
+    background-color: #f8fafc;
+    padding: 14px 16px;
+`;
+
+export const LoginStatusText = styled.p`
+    margin: 0;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 700;
     line-height: 1.4;
 `;

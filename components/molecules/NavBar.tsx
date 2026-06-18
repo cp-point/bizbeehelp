@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { AdminMenuGroup } from '../../enum/NavBar';
 import {
-    LogoutButton,
     LogoutButtonArea,
     NavBarWrapper,
     NavGroup,
@@ -19,6 +18,8 @@ import { menuGroups } from '../../data/data-init';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Post } from '../../service/crud';
+import { userStore } from '../../store/userStore';
+import Button from '../atom/Button';
 
 const NavBar = () => {
     const pathname = usePathname();
@@ -27,7 +28,6 @@ const NavBar = () => {
     }, [pathname]);
     const [openedGroup, setOpenedGroup] = useState<AdminMenuGroup | null | undefined>(undefined);
     const currentOpenedGroup = openedGroup === undefined ? activeGroup : openedGroup;
-
     const handleGroupClick = (groupTitle: AdminMenuGroup) => {
         setOpenedGroup((prevGroup) => {
             const nextOpenedGroup = prevGroup === undefined ? activeGroup : prevGroup;
@@ -42,6 +42,7 @@ const NavBar = () => {
             {},
             (response) => {
                 if (response.type === 'SUCCESS') {
+                    userStore.getState().reset();
                     window.location.href = '/admin/login';
                     return;
                 }
@@ -85,9 +86,21 @@ const NavBar = () => {
                 ))}
             </NavMenuArea>
             <LogoutButtonArea>
-                <LogoutButton type="button" onClick={handleClickLogout}>
+                <Button
+                    type="button"
+                    width="38px"
+                    height="38px"
+                    color="#374151"
+                    backgroundColor="#ffffff"
+                    border="1px solid #d1d5db"
+                    borderRadius="6px"
+                    shadow="none"
+                    padding="0"
+                    ariaLabel="로그아웃"
+                    onClick={handleClickLogout}
+                >
                     <FontAwesomeIcon icon={faArrowRightFromBracket} />
-                </LogoutButton>
+                </Button>
             </LogoutButtonArea>
         </NavBarWrapper>
     );

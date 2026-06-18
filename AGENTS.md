@@ -7,6 +7,8 @@
 - C:\project\BizHelp
 ## 백엔드 경로
 - C:\project\BizHelpAPI
+## 테스트용 인프라 경로
+- C:\project\BizHelpInfra
 - 
 ## 개발 규칙
 

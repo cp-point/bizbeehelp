@@ -4,6 +4,7 @@ import { ButtonWrapper } from '../../styles/components/atom/Button';
 export type ButtonProps = {
     children: ReactNode;
     style?: CSSProperties;
+    ariaLabel?: string;
     width?: string;
     height?: string;
     color?: string;
@@ -26,6 +27,7 @@ export type ButtonProps = {
 const Button = ({
     children,
     style,
+    ariaLabel,
     width,
     height,
     color = 'black',
@@ -61,6 +63,7 @@ const Button = ({
             $isActive={isActive}
             type={type}
             onClick={onClick}
+            aria-label={ariaLabel}
             $border={border}
             $borderRadius={borderRadius}
             $shadow={shadow}
