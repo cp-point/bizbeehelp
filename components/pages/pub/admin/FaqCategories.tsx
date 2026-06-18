@@ -288,7 +288,7 @@ const FaqCategories = () => {
           </S.Button>
         </S.SectionHeader>
 
-        <S.SearchGrid $compact>
+        <S.SearchGrid>
           <S.SearchCell>
             <S.SearchLabel>{config.tabLabel}</S.SearchLabel>
             <AdminSelectBox options={config.searchOptions} defaultValue="전체" ariaLabel={config.tabLabel} />
