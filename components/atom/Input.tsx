@@ -12,6 +12,7 @@ export type InputProps = {
     disabled?: boolean;
     readOnly?: boolean;
     autoFocus?: boolean;
+    autoComplete?: string;
     maxLength?: number;
     style?: CSSProperties;
     width?: string;
@@ -39,6 +40,7 @@ const Input = ({
     disabled = false,
     readOnly = false,
     autoFocus = false,
+    autoComplete,
     maxLength,
     style,
     width = '100%',
@@ -67,6 +69,7 @@ const Input = ({
                 disabled={disabled}
                 readOnly={readOnly}
                 autoFocus={autoFocus}
+                autoComplete={autoComplete}
                 maxLength={maxLength}
                 onChange={onChange}
                 onKeyDown={onKeyDown}

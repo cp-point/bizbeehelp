@@ -1,5 +1,10 @@
 # 변경 이력
 
+## 2026-06-19
+
+- 10:29 - `/admin/login` 기능은 유지하고 `/pub/admin/login`과 동일한 로그인 카드 디자인을 적용
+- 10:31 - `/admin/login` 입력창과 버튼을 기존 atom `Input`, `Button` 컴포넌트를 활용하도록 정리
+
 ## 2026-06-18
 
 - 15:18 - FAQ 목록 타입을 `types/Faq.ts`로 이동하고 `/admin/faqs` 조회를 백엔드 `Page` 응답 기준으로 수정

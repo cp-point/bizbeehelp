@@ -1,17 +1,18 @@
 'use client';
 
+import Image from 'next/image';
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import Button from '../../../../components/atom/Button';
-import Card from '../../../../components/atom/Card';
 import Input from '../../../../components/atom/Input';
 import {
+    LoginCard,
+    LoginCopyright,
     LoginField,
     LoginForm,
-    LoginLabel,
+    LoginLogoArea,
     LoginMessage,
     LoginStatusArea,
     LoginStatusText,
-    LoginTitle,
     LoginWrapper,
 } from '../../../../styles/pages/admin/Login';
 import { Post } from '../../../../service/crud';
@@ -39,8 +40,6 @@ const Page = () => {
         () => userStore.getState().userData,
         () => null,
     );
-
-
 
     useEffect(() => {
         const searchParams = new URLSearchParams(window.location.search);
@@ -112,28 +111,23 @@ const Page = () => {
 
     return (
         <LoginWrapper>
-            <Card
-                width="100%"
-                padding="32px"
-                border="1px solid #d9dde3"
-                borderRadius="8px"
-                shadow="0 12px 28px rgba(15, 23, 42, 0.08)"
-                style={{ maxWidth: '380px' }}
-            >
-                <LoginTitle>BizHelp 로그인</LoginTitle>
+            <LoginCard>
+                <LoginLogoArea>
+                    <Image src="/assets/images/header-logo.svg" alt="bizbee Help" width={219} height={48} priority />
+                </LoginLogoArea>
                 {userData ? (
                     <LoginStatusArea>
                         <LoginStatusText>{userData.userId}님은 이미 로그인되어 있습니다.</LoginStatusText>
                         <Button
                             type="button"
-                            width="38px"
-                            height="38px"
-                            color="#374151"
-                            backgroundColor="#ffffff"
-                            border="1px solid #d9dde3"
-                            borderRadius="6px"
-                            shadow="none"
+                            width="40px"
+                            height="40px"
                             padding="0"
+                            color="#0f1b2a"
+                            backgroundColor="#ffffff"
+                            border="1px solid #e4e8ee"
+                            borderRadius="4px"
+                            shadow="none"
                             ariaLabel="로그아웃"
                             onClick={handleClickLogout}
                         >
@@ -141,49 +135,66 @@ const Page = () => {
                         </Button>
                     </LoginStatusArea>
                 ) : (
-                    <LoginForm onSubmit={handleSubmit}>
+                    <LoginForm noValidate onSubmit={handleSubmit}>
                         <LoginField>
-                            <LoginLabel htmlFor="loginId">아이디</LoginLabel>
                             <Input
                                 id="loginId"
                                 name="loginId"
                                 value={loginId}
-                                placeholder="아이디를 입력하세요"
-                                height="42px"
+                                placeholder="아이디"
+                                autoComplete="username"
+                                height="52px"
+                                padding="0 20px"
+                                color="#0f1b2a"
+                                border={`1px solid ${message ? '#f04438' : '#e4e8ee'}`}
+                                borderRadius="4px"
                                 onChange={(event) => setLoginId(event.target.value)}
                                 onKeyDown={handleEnterKeyDown}
                             />
                         </LoginField>
                         <LoginField>
-                            <LoginLabel htmlFor="password">비밀번호</LoginLabel>
                             <Input
                                 id="password"
                                 type="password"
                                 name="password"
                                 value={password}
-                                placeholder="비밀번호를 입력하세요"
-                                height="42px"
+                                placeholder="비밀번호"
+                                autoComplete="current-password"
+                                height="52px"
+                                padding="0 20px"
+                                color="#0f1b2a"
+                                border={`1px solid ${message ? '#f04438' : '#e4e8ee'}`}
+                                borderRadius="4px"
                                 onChange={(event) => setPassword(event.target.value)}
                                 onKeyDown={handleEnterKeyDown}
                             />
                         </LoginField>
-                        {message ? <LoginMessage>{message}</LoginMessage> : null}
+                        {message ? (
+                            <LoginMessage role="alert">
+                                <Image src="/assets/images/icon-login-error.svg" alt="" width={16} height={16} />
+                                <span>{message}</span>
+                            </LoginMessage>
+                        ) : null}
                         <Button
                             type="submit"
                             width="100%"
-                            height="42px"
+                            height="56px"
+                            margin={message ? '10px 0 0' : '56px 0 0'}
+                            padding="0"
                             color="#ffffff"
-                            backgroundColor="#1677ff"
+                            backgroundColor="#16b364"
                             border="0"
-                            borderRadius="6px"
+                            borderRadius="4px"
                             shadow="none"
-                            fontSize="15px"
+                            fontSize="16px"
                         >
                             로그인
                         </Button>
                     </LoginForm>
                 )}
-            </Card>
+
+                <LoginCopyright>Copyright © bizbee. All Rights Reserved.</LoginCopyright>
+            </LoginCard>
         </LoginWrapper>
     );
 };
