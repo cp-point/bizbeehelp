@@ -477,9 +477,9 @@ export const Body = styled.section`
     position: relative;
     padding: 40px 0 120px;
 
-    @media (max-width: 767px) {
-        padding: 40px 0 64px;
-    }
+  @media (max-width: 767px) {
+    padding: 40px 0 0;
+  }
 `;
 
 export const FloatingButtonLayer = styled.div`
