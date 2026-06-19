@@ -2,6 +2,7 @@
 
 ## 2026-06-19
 
+- 17:20 - `/pub/faq`에 반영된 푸터/관련 사이트/상단 이동 버튼/플로팅 버튼 위치 보정 변경사항을 `/faq` 화면에도 적용
 - 14:57 - `/admin/faqs` 삭제 요청 전 확인 confirm을 추가
 - 14:54 - `/admin/faqs`에서 선택한 FAQ의 `faqId`를 payload로 `/faq/delete` POST 요청하는 삭제 버튼 동작 추가
 - 14:32 - `/admin/faqs` 조회조건 등록일자 파라미터명을 `createdAtFrom/createdAtTo`에서 `startDate/endDate`로 통일
