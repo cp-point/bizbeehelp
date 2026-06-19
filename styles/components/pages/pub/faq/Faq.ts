@@ -18,6 +18,10 @@ type MobileMenuProps = {
     $isOpen?: boolean;
 };
 
+type DisclosureProps = {
+  $isOpen?: boolean;
+};
+
 const colors = {
     primaryBlack: '#000000',
     primaryWhite: '#ffffff',
@@ -270,11 +274,15 @@ export const HeroContent = styled.div`
 `;
 
 export const HeroHeading = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+
+  @media (max-width: 767px) {
+    padding: 0 16px;
+  }
 `;
 
 export const Title = styled.h1`
@@ -286,10 +294,11 @@ export const Title = styled.h1`
     color: ${colors.primaryWhite};
     white-space: nowrap;
 
-    @media (max-width: 767px) {
-        font-size: 28px;
-        white-space: normal;
-    }
+  @media (max-width: 767px) {
+    font-size: 28px;
+    word-break: keep-all;
+    white-space: normal;
+  }
 `;
 
 export const Description = styled.p`
@@ -302,9 +311,11 @@ export const Description = styled.p`
     text-align: center;
     color: ${colors.primaryWhite};
 
-    @media (max-width: 767px) {
-        font-size: 15px;
-    }
+  @media (max-width: 767px) {
+    font-size: 15px;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
 `;
 
 export const SearchGroup = styled.div`
@@ -320,17 +331,18 @@ export const SearchGroup = styled.div`
 `;
 
 export const SearchForm = styled.form`
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    position: relative;
-    width: min(592px, 100%);
-    padding: 13px 24px 13px 16px;
-    border: 1px solid ${colors.coolGray200};
-    border-radius: 100px;
-    background: ${colors.primaryWhite};
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
-    transition: border-color 0.3s ease,
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  width: min(600px, 100%);
+  padding: 13px 24px 13px 16px;
+  border: 1px solid ${colors.coolGray200};
+  border-radius: 100px;
+  background: ${colors.primaryWhite};
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+  transition:
+    border-color 0.3s ease,
     box-shadow 0.3s ease;
 
     @media (max-width: 767px) {
@@ -375,10 +387,14 @@ export const SearchForm = styled.form`
             }
         }
 
-        &::-webkit-search-cancel-button {
-            cursor: pointer;
-        }
+    &::-webkit-search-cancel-button {
+      width: 14px;
+      height: 14px;
+      appearance: none;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M12.2929 0.292893C12.6834 -0.0976307 13.3156 -0.0976307 13.7062 0.292893C14.0967 0.683416 14.0967 1.31565 13.7062 1.70617L8.41282 6.99953L13.7062 12.2929C14.0967 12.6834 14.0967 13.3156 13.7062 13.7062C13.3156 14.0967 12.6834 14.0967 12.2929 13.7062L6.99953 8.41282L1.70617 13.7062C1.31565 14.0967 0.683416 14.0967 0.292893 13.7062C-0.0976307 13.3156 -0.0976307 12.6834 0.292893 12.2929L5.58625 6.99953L0.292893 1.70617C-0.0976308 1.31565 -0.0976308 0.683416 0.292893 0.292893C0.683416 -0.0976308 1.31565 -0.0976308 1.70617 0.292893L6.99953 5.58625L12.2929 0.292893Z' fill='%238D99A8'/%3E%3C/svg%3E") center / 14px 14px no-repeat;
+      cursor: pointer;
     }
+  }
 `;
 
 export const SearchSubmit = styled.button`
@@ -424,14 +440,15 @@ export const KeywordList = styled.div`
     gap: 8px;
     margin-top: -4px;
 
-    @media (max-width: 767px) {
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-        width: 100%;
-        padding: 0 24px;
-        margin-top: 0;
-        overflow-x: auto;
-        scrollbar-width: none;
+  @media (max-width: 767px) {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    justify-content: safe center;
+    width: 100%;
+    padding: 0 16px;
+    margin-top: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
 
         &::-webkit-scrollbar {
             display: none;
@@ -483,59 +500,53 @@ export const Body = styled.section`
 `;
 
 export const FloatingButtonLayer = styled.div`
-    position: sticky;
-    top: 80vh;
-    z-index: 1;
+  position: fixed;
+  right: 55px;
+  bottom: 24px;
+  transform: translateY(0);
+  z-index: 8;
 
-    @media (max-width: 767px) {
-        position: fixed;
-        top: auto;
-        right: 16px;
-        bottom: 40px;
-        z-index: 8;
-    }
+  @media (max-width: 1232px) {
+    right: 24px;
+    bottom: 80px;
+  }
+
+  @media (max-width: 767px) {
+    right: 16px;
+    bottom: 40px;
+  }
 `;
 
 export const FloatingButton = styled.button`
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    position: absolute;
-    top: 0;
-    right: 64px;
-    padding: 8px 8px 20px;
-    font-size: 14px;
-    font-weight: 500;
-    border: 0;
-    border-radius: 48px;
-    line-height: 1.3;
-    text-align: center;
-    color: ${colors.coolGray800};
-    background: ${colors.primaryWhite};
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08),
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 8px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 0;
+  border-radius: 48px;
+  line-height: 1.3;
+  text-align: center;
+  color: ${colors.coolGray800};
+  background: ${colors.primaryWhite};
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.08),
     0 4px 10px rgba(0, 0, 0, 0.16);
-    transform: translateY(-100%);
-    transition: background-color 0.2s ease;
-    cursor: pointer;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
 
     &:hover {
         background: ${colors.coolGrayBackground};
     }
 
-    @media (max-width: 1232px) {
-        right: 24px;
-    }
-
-    @media (max-width: 767px) {
-        position: static;
-        gap: 6px;
-        right: auto;
-        padding: 8px 8px 16px;
-        font-size: 12px;
-        transform: none;
-    }
+  @media (max-width: 767px) {
+    gap: 6px;
+    padding: 8px 8px 16px;
+    font-size: 12px;
+  }
 `;
 
 export const FloatingButtonSymbol = styled.i`
@@ -603,15 +614,19 @@ export const BodyInner = styled.div`
     padding: 0 16px;
     margin: 0 auto;
 
-    @media (max-width: 1232px) {
-        gap: 24px;
-    }
+  @media (max-width: 1232px) {
+    gap: 24px;
+    padding: 0 32px;
+  }
 
-    @media (max-width: 767px) {
-        flex-direction: column;
-        gap: 0;
-        padding: 0 16px;
-    }
+  @media (max-width: 767px) {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  @media (max-width: 479px) {
+    padding: 0 16px;
+  }
 `;
 
 export const SideMenu = styled.aside`
@@ -1061,33 +1076,38 @@ export const InfoCaption = styled.p`
 `;
 
 export const Footer = styled.footer`
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    padding: 40px 32px 56px;
-    border-top: 1px solid ${colors.coolGray200};
-    color: ${colors.coolGray600};
-    background: ${colors.primaryWhite};
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+  position: relative;
+  padding: 60px 60px 80px;
+  border-top: 1px solid ${colors.coolGray150};
+  color: ${colors.primaryBlack};
+  background: ${colors.primaryWhite};
 
-    @media (max-width: 767px) {
-        padding: 40px 16px 56px;
-    }
+  @media (max-width: 1232px) {
+    align-items: flex-start;
+    padding: 30px 20px 40px;
+  }
 `;
 
-export const FooterShortcut = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+export const FooterTop = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  width: 100%;
+  padding-bottom: 20px;
+  border-bottom: 1px solid ${colors.coolGray150};
+
+  @media (max-width: 1232px) {
+    flex-direction: column;
+    align-items: flex-start;
     gap: 24px;
     width: 100%;
-    padding-bottom: 20px;
-    border-bottom: 1px solid ${colors.coolGray150};
-
-    @media (max-width: 767px) {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 24px;
-    }
+    padding-bottom: 12px;
+  }
 `;
 
 export const FooterLogo = styled(Link)`
@@ -1103,87 +1123,208 @@ export const FooterLogo = styled(Link)`
 `;
 
 export const FooterLinks = styled.nav`
-    display: flex;
-    align-items: center;
-    gap: 32px;
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 1.4;
-    white-space: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 32px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: ${colors.primaryBlack};
 
-    @media (max-width: 767px) {
-        font-size: 13px;
+  a {
+    color: inherit;
+    text-decoration: none;
+
+    &[aria-current='page'] {
+      font-weight: 700;
     }
+  }
+
+  @media (max-width: 1232px) {
+    gap: 12px 24px;
+    font-size: 14px;
+    line-height: normal;
+  }
 `;
 
-export const FooterInfo = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    align-items: flex-start;
+export const FooterContents = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: flex-start;
+  width: 100%;
+
+  @media (max-width: 1232px) {
+    gap: 0;
     width: 100%;
+  }
 `;
 
-export const CompanyInfoList = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 0;
+export const FooterInfoRow = styled.div`
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  width: 100%;
 
-    @media (max-width: 767px) {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
+  @media (max-width: 1232px) {
+    display: contents;
+    gap: 24px;
+  }
 `;
 
-export const CompanyInfoItem = styled.div`
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    position: relative;
-    padding-right: 16px;
-    margin-right: 16px;
-    font-size: 16px;
+export const CompanyInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  min-width: 0;
+
+  @media (max-width: 1232px) {
+    order: 1;
+    width: 100%;
+  }
+`;
+
+export const CompanyAddress = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: ${colors.primaryBlack};
+
+  strong {
+    flex: 0 0 auto;
+    font-weight: 700;
+  }
+
+  span {
     font-weight: 400;
-    line-height: 1.5;
+  }
+
+  @media (max-width: 1232px) {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    font-size: 14px;
+    line-height: normal;
+
+    span {
+      max-width: 320px;
+      line-height: 1.25;
+      word-break: keep-all;
+    }
+  }
+`;
+
+export const CompanyMetaList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 0;
+
+  @media (max-width: 1232px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+`;
+
+export const CompanyMetaItem = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  padding-right: 17px;
+  margin-right: 16px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: ${colors.primaryBlack};
 
     strong {
         font-weight: 700;
     }
 
-    &:not(:last-child)::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        right: 0;
-        width: 1px;
-        height: 12px;
-        background: ${colors.coolGray200};
-        transform: translateY(-50%);
-    }
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 1px;
+    height: 12px;
+    background: ${colors.coolGray400};
+    transform: translateY(-50%);
+  }
 
-    @media (max-width: 767px) {
-        align-items: flex-start;
-        padding-right: 0;
-        margin-right: 0;
-        font-size: 13px;
-        line-height: 1.4;
-        word-break: keep-all;
+  @media (max-width: 1232px) {
+    align-items: flex-start;
+    padding-right: 0;
+    margin-right: 0;
+    font-size: 14px;
+    line-height: normal;
+    word-break: keep-all;
 
         &:not(:last-child)::after {
             display: none;
         }
 
-        &:first-child {
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        span {
-            white-space: normal;
-        }
+    span {
+      white-space: normal;
     }
+  }
+`;
+
+export const FooterPhone = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+  color: ${colors.primaryBlack};
+
+  img {
+    display: block;
+    width: 36px;
+    height: 36px;
+  }
+
+  strong {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: normal;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 1232px) {
+    order: 3;
+    margin-top: 24px;
+
+    img {
+      width: 24px;
+      height: 24px;
+    }
+
+    strong {
+      font-size: 26px;
+    }
+  }
+`;
+
+export const FooterBottom = styled.div`
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  width: 100%;
+
+  @media (max-width: 1232px) {
+    display: contents;
+    gap: 24px;
+  }
 `;
 
 export const Copyright = styled.p`
@@ -1192,7 +1333,172 @@ export const Copyright = styled.p`
     line-height: 1.5;
     color: ${colors.coolGray400};
 
-    @media (max-width: 767px) {
-        font-size: 13px;
+  @media (max-width: 1232px) {
+    order: 2;
+    min-width: 100%;
+    margin-top: 8px;
+    font-size: 15px;
+    line-height: normal;
+  }
+`;
+
+export const RelatedSites = styled.div`
+  position: relative;
+  flex: 0 0 auto;
+  max-width: 100%;
+
+  @media (max-width: 1232px) {
+    order: 4;
+    margin-top: 24px;
+  }
+`;
+
+export const RelatedSitesButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-width: 180px;
+  min-height: 40px;
+  max-width: 100%;
+  padding: 10px 16px 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 0;
+  border-radius: 20px;
+  line-height: 1.2;
+  color: ${colors.coolGray600};
+  background: ${colors.coolGray100};
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+
+  img {
+    display: block;
+    width: 16px;
+    height: 16px;
+    transition:
+      filter 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: ${colors.primaryWhite};
+    background: ${colors.greenPrimary};
+  }
+
+  &:hover img,
+  &:focus-visible img {
+    filter: brightness(0) invert(1);
+  }
+
+  &[aria-expanded='true'] {
+    color: ${colors.primaryWhite};
+    background: ${colors.greenPrimary};
+  }
+
+  &[aria-expanded='true'] img {
+    filter: brightness(0) invert(1);
+    transform: rotate(45deg);
+  }
+
+  @media (hover: none) {
+    &:hover {
+      color: ${colors.coolGray600};
+      background: ${colors.coolGray100};
     }
+
+    &:hover img {
+      filter: none;
+    }
+
+    &[aria-expanded='true'],
+    &[aria-expanded='true']:hover {
+      color: ${colors.primaryWhite};
+      background: ${colors.greenPrimary};
+    }
+
+    &[aria-expanded='true'] img,
+    &[aria-expanded='true']:hover img {
+      filter: brightness(0) invert(1);
+    }
+  }
+`;
+
+export const RelatedSitesMenu = styled.ul<DisclosureProps>`
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  width: max-content;
+  min-width: 100%;
+  max-width: min(320px, calc(100vw - 40px));
+  max-height: 320px;
+  padding: 8px 0;
+  margin: 0;
+  border: 1px solid ${colors.coolGray150};
+  border-radius: 12px;
+  list-style: none;
+  opacity: ${(props) => (props.$isOpen ? 1 : 0)};
+  visibility: ${(props) => (props.$isOpen ? 'visible' : 'hidden')};
+  background: ${colors.primaryWhite};
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+  overflow-y: auto;
+  pointer-events: ${(props) => (props.$isOpen ? 'auto' : 'none')};
+  transform: translateY(${(props) => (props.$isOpen ? '0' : '6px')});
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease,
+    visibility 0s linear ${(props) => (props.$isOpen ? '0s' : '0.16s')};
+  z-index: 2;
+
+  a {
+    display: block;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: ${colors.primaryBlack};
+    text-decoration: none;
+
+    &:hover {
+      background: ${colors.coolGrayBackground};
+    }
+  }
+
+  @media (max-width: 1232px) {
+    right: auto;
+    left: 0;
+    bottom: calc(100% + 8px);
+  }
+`;
+
+export const FooterTopButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 60px;
+  bottom: 60px;
+  width: 70px;
+  height: 70px;
+  padding: 10px;
+  border: 1px solid ${colors.coolGray150};
+  border-radius: 8px;
+  background: ${colors.primaryWhite};
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+
+  img {
+    display: block;
+    width: 36px;
+    height: 36px;
+  }
+
+  @media (max-width: 1232px) {
+    display: none;
+  }
 `;
