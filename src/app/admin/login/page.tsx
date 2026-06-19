@@ -117,7 +117,7 @@ const Page = () => {
                 </LoginLogoArea>
                 {userData ? (
                     <LoginStatusArea>
-                        <LoginStatusText>{userData.userId}님은 이미 로그인되어 있습니다.</LoginStatusText>
+                        <LoginStatusText>{userData.userId}님은 로그인이 완료되었습니다.</LoginStatusText>
                         <Button
                             type="button"
                             width="40px"

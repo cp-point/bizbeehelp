@@ -2,8 +2,9 @@
 
 import { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
+import AdminHeader from './AdminHeader';
 import NavBar from './NavBar';
-import { AdminContent, AdminLayoutWrapper } from '../../styles/components/molecules/AdminLayout';
+import { AdminBody, AdminContent, AdminLayoutWrapper } from '../../styles/components/molecules/AdminLayout';
 
 type AdminLayoutProps = {
     children: ReactNode;
@@ -18,8 +19,11 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 
     return (
         <AdminLayoutWrapper>
-            <NavBar />
-            <AdminContent>{children}</AdminContent>
+            <AdminHeader />
+            <AdminBody>
+                <NavBar />
+                <AdminContent>{children}</AdminContent>
+            </AdminBody>
         </AdminLayoutWrapper>
     );
 };

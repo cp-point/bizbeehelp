@@ -9,21 +9,12 @@ export const menuGroups = [
                 href: AdminMenuPath.FAQ_LIST,
             },
             {
-                label: AdminMenuLabel.FAQ_CATEGORY,
-                href: AdminMenuPath.FAQ_CATEGORY,
-            },
-            {
                 label: AdminMenuLabel.FAQ_REGISTER,
                 href: AdminMenuPath.FAQ_REGISTER,
             },
-        ],
-    },
-    {
-        title: AdminMenuGroup.PAGE_INFO,
-        items: [
             {
-                label: AdminMenuLabel.PAGE_INFO,
-                href: AdminMenuPath.PAGE_INFO,
+                label: AdminMenuLabel.FAQ_CATEGORY,
+                href: AdminMenuPath.FAQ_CATEGORY,
             },
         ],
     },

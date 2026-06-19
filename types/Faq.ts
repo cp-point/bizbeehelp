@@ -11,8 +11,8 @@ export type FaqData = {
 }
 
 export type FaqSearchCondition = {
-    createdAtFrom: string;
-    createdAtTo: string;
+    startDate: string;
+    endDate: string;
     metaTag: string;
     majorName: string;
     minorName: string;
@@ -25,8 +25,9 @@ export type FaqListSearchParam = FaqSearchCondition & {
 }
 
 export type FaqListData = {
-    faqId: number;
+    faqId: string;
     createdAt: string;
+    updatedAt: string | null;
     majorName: string;
     minorName: string;
     title: string;
@@ -36,7 +37,7 @@ export type FaqListData = {
 }
 
 export type FaqRow = {
-    faqId: number;
+    faqId: string;
     createdAt: string;
     metaTag: string;
     majorName: string;
@@ -73,3 +74,19 @@ export type MinorCategoryData = {
     remark: string | null;
     faqs: FaqData[];
 }
+
+export type MajorListItem = {
+    majorCode: string;
+    majorName: string;
+    useYn: string;
+}
+
+export type MinorListItem = {
+    minorCode: string;
+    minorName: string;
+    useYn: string;
+}
+
+export type MajorList = MajorListItem[];
+
+export type MinorList = MinorListItem[];

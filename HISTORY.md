@@ -2,8 +2,19 @@
 
 ## 2026-06-19
 
+- 14:57 - `/admin/faqs` 삭제 요청 전 확인 confirm을 추가
+- 14:54 - `/admin/faqs`에서 선택한 FAQ의 `faqId`를 payload로 `/faq/delete` POST 요청하는 삭제 버튼 동작 추가
+- 14:32 - `/admin/faqs` 조회조건 등록일자 파라미터명을 `createdAtFrom/createdAtTo`에서 `startDate/endDate`로 통일
+- 14:25 - `/admin/faqs` 조회조건의 등록일자 시작일/종료일 기본값을 오늘 날짜로 설정
+- 13:59 - FAQ 목록 백엔드 응답에 `updatedAt` 필드를 추가해 수정일시 표시가 가능하도록 수정
+- 11:17 - `/admin/faqs`에서 대분류 미선택 시 `/minor` 요청을 막고, 선택된 `majorCode` 기준으로 소분류 목록을 조회하도록 수정
+- 11:11 - `/admin/faqs` 조회조건의 대분류/소분류를 `/major`, `/minor` 조회 데이터 기반 셀렉트박스로 변경
+- 11:11 - `/admin/faqs` 등록일자 입력을 퍼블리싱과 동일한 캘린더 아이콘 스타일로 수정
+- 10:58 - `/admin/layout`에 공통 관리자 헤더를 추가하고 로그아웃 버튼을 헤더로 이동
+- 10:58 - 관리자 `NavBar` 스타일을 `/pub/admin` 퍼블리싱과 동일한 어두운 사이드 메뉴 톤으로 수정
 - 10:29 - `/admin/login` 기능은 유지하고 `/pub/admin/login`과 동일한 로그인 카드 디자인을 적용
 - 10:31 - `/admin/login` 입력창과 버튼을 기존 atom `Input`, `Button` 컴포넌트를 활용하도록 정리
+- 10:41 - `/admin/faqs` 목록 화면을 `/pub/admin/faqs` 퍼블리싱 디자인에 맞춰 검색조건/결과 테이블 레이아웃으로 수정
 
 ## 2026-06-18
 

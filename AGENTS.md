@@ -13,7 +13,7 @@
 ## 개발 규칙
 
 - 컴포넌트는 `./components` 아래 경로에서 만들 것
-- 페이지를 만들 때는 `./components`에 만들어놓은 컴포넌트를 최대한 활용할 것
+- 페이지를 만들 때는 `./components/atom`에 만들어놓은 컴포넌트를 최대한 활용할 것
 - GET 요청은 `useSWR`을 사용할 것
 - CSS는 `./styles` 경로 아래에 styled-component를 활용할 것
 - `./components` 아래 컴포넌트와 `./sytle` 아래 스타일 컴포넌트 경로는 동일하게 할 것 
