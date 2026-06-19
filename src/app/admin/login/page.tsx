@@ -40,11 +40,14 @@ const Page = () => {
         () => null,
     );
 
+
+
     useEffect(() => {
         const searchParams = new URLSearchParams(window.location.search);
 
         if (searchParams.get('loginRequired') === 'true') {
             alert('로그인이 필요합니다.');
+            userStore.getState().reset();
             window.history.replaceState(null, '', '/admin/login');
         }
     }, []);
@@ -71,7 +74,7 @@ const Page = () => {
                     if (isLoginResult(response.result)) {
                         userStore.getState().setUserData(response.result);
                     }
-                    window.location.href = '/admin/faq-categories';
+                    window.location.href = '/admin/faqs';
                     return;
                 }
 

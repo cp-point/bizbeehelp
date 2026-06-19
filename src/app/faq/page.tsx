@@ -1,10 +1,10 @@
 'use client';
 
-import Faq from '../../../../components/pages/pub/faq/Faq';
+import Faq from '../../../components/pages/faq/Faq';
 import useSWR from 'swr';
-import axiosInstance from '../../../../libs/axios';
-import type { Request as ApiRequest } from '../../../../types/Common';
-import type { MajorCategoryData } from '../../../../types/Faq';
+import axiosInstance from '../../../libs/axios';
+import type { Request as ApiRequest } from '../../../types/Common';
+import type { MajorCategoryData } from '../../../types/Faq';
 
 const fetcher = (payload: ApiRequest) => axiosInstance.post('/api/backend', payload).then((res) => res.data.result);
 const Page = () => {

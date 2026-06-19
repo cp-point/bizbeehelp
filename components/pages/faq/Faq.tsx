@@ -5,9 +5,9 @@ import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import type { FaqMenuGroup, FaqSection } from './Faq.data';
 import { faqMenuGroups, faqSections, searchKeywords } from './Faq.data';
-import type { FaqData, MajorCategoryData } from '../../../../types/Faq';
-import * as S from '../../../../styles/components/pages/pub/faq/Faq';
-import { userStore } from '../../../../store/userStore';
+import type { FaqData, MajorCategoryData } from '../../../types/Faq';
+import * as S from '../../../styles/components/pages/pub/faq/Faq';
+import { userStore } from '../../../store/userStore';
 import { useRouter } from 'next/navigation';
 
 type SearchIconProps = {
