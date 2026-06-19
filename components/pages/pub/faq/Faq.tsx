@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { faqMenuGroups, faqSections, searchKeywords } from './Faq.data';
+import { companyAddress, companyMeta, faqMenuGroups, faqSections, footerLinks, footerPhoneNumber, relatedSites, searchKeywords } from './Faq.data';
 import * as S from '../../../../styles/components/pages/pub/faq/Faq';
 
 type SearchIconProps = {
@@ -113,8 +113,12 @@ const Faq = () => {
   const [openedItemId, setOpenedItemId] = useState('');
   const [isMenuScrolling, setIsMenuScrolling] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isRelatedSitesOpen, setIsRelatedSitesOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [submittedSearchQuery, setSubmittedSearchQuery] = useState('');
+  const bodyRef = useRef<HTMLElement | null>(null);
+  const floatingButtonRef = useRef<HTMLDivElement | null>(null);
+  const floatingOffsetRef = useRef(0);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -148,6 +152,63 @@ const Faq = () => {
       window.scrollTo(0, scrollY);
     };
   }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    let animationFrame = 0;
+
+    const updateFloatingOffset = (nextOffset: number) => {
+      if (floatingOffsetRef.current === nextOffset) {
+        return;
+      }
+
+      floatingOffsetRef.current = nextOffset;
+
+      if (floatingButtonRef.current) {
+        floatingButtonRef.current.style.transform = nextOffset > 0 ? `translateY(-${nextOffset}px)` : '';
+      }
+    };
+
+    const updateFloatingPosition = () => {
+      animationFrame = 0;
+      const body = bodyRef.current;
+
+      if (!body) {
+        updateFloatingOffset(0);
+        return;
+      }
+
+      const windowWidth = window.innerWidth;
+      const bodyBottom = window.scrollY + body.getBoundingClientRect().bottom;
+      const fixedBottomOffset = windowWidth <= 767 ? 40 : windowWidth <= 1232 ? 80 : 24;
+      const stoppedBottomOffset = windowWidth <= 767 ? 40 : windowWidth <= 1232 ? 80 : 210;
+      const fixedButtonBottom = window.scrollY + window.innerHeight - fixedBottomOffset;
+      const stoppedButtonBottom = bodyBottom - stoppedBottomOffset;
+      const nextOffset = Math.max(0, Math.ceil(fixedButtonBottom - stoppedButtonBottom));
+
+      updateFloatingOffset(nextOffset);
+    };
+
+    const requestFloatingUpdate = () => {
+      if (animationFrame) {
+        return;
+      }
+
+      animationFrame = window.requestAnimationFrame(updateFloatingPosition);
+    };
+
+    requestFloatingUpdate();
+    window.addEventListener('scroll', requestFloatingUpdate, { passive: true });
+    window.addEventListener('resize', requestFloatingUpdate);
+
+    return () => {
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame);
+      }
+
+      window.removeEventListener('scroll', requestFloatingUpdate);
+      window.removeEventListener('resize', requestFloatingUpdate);
+    };
+  }, []);
 
   const displayedSections = useMemo(() => {
     const normalizedQuery = submittedSearchQuery.trim().toLowerCase();
@@ -302,8 +363,8 @@ const Faq = () => {
         </S.HeroContent>
       </S.Hero>
 
-      <S.Body>
-        <S.FloatingButtonLayer>
+      <S.Body ref={bodyRef}>
+        <S.FloatingButtonLayer ref={floatingButtonRef}>
           <S.FloatingButton type="button" aria-label="카카오톡 문의하기">
             <S.FloatingButtonSymbol>
               <KakaoIcon className="kakao-mark" />
@@ -389,35 +450,72 @@ const Faq = () => {
             </S.InfoBox>
           </S.Contents>
         </S.BodyInner>
+        <S.FooterTopButton type="button" aria-label="상단으로 이동" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <Image src="/assets/images/footer-arrow-up.svg" alt="" width={36} height={36} aria-hidden="true" />
+        </S.FooterTopButton>
       </S.Body>
 
       <S.Footer>
-        <S.FooterShortcut>
+        <S.FooterTop>
           <S.FooterLogo href="/pub/faq" aria-label="bizbee">
             <Image src="/assets/images/footer-logo.svg" alt="bizbee" width={127} height={38} />
           </S.FooterLogo>
           <S.FooterLinks aria-label="정책 링크">
-            <a href="#privacy">개인정보처리방침</a>
-            <a href="#email">이메일 무단수집거부</a>
+            {footerLinks.map((link) => (
+              <a key={link.label} href={link.href} target={link.isExternal ? '_blank' : undefined} rel={link.isExternal ? 'noreferrer' : undefined} aria-current={link.isCurrent ? 'page' : undefined}>
+                {link.label}
+              </a>
+            ))}
           </S.FooterLinks>
-        </S.FooterShortcut>
-        <S.FooterInfo>
-          <S.CompanyInfoList>
-            <S.CompanyInfoItem>
-              <strong>주식회사 비즈비</strong>
-              <span>06671 서울특별시 서초구 반포대로 45 (서초동, 명정빌딩) 2층</span>
-            </S.CompanyInfoItem>
-            <S.CompanyInfoItem>
-              <strong>대표이사</strong>
-              <span>김태형</span>
-            </S.CompanyInfoItem>
-            <S.CompanyInfoItem>
-              <strong>이메일</strong>
-              <span>contact@smart-biz.kr</span>
-            </S.CompanyInfoItem>
-          </S.CompanyInfoList>
-          <S.Copyright>Copyright © bizbee Co., Ltd. All Rights Reserved.</S.Copyright>
-        </S.FooterInfo>
+        </S.FooterTop>
+
+        <S.FooterContents>
+          <S.FooterInfoRow>
+            <S.CompanyInfo>
+              <S.CompanyAddress>
+                <strong>{companyAddress.name}</strong>
+                <span>{companyAddress.address}</span>
+              </S.CompanyAddress>
+              <S.CompanyMetaList>
+                {companyMeta.map((item) => (
+                  <S.CompanyMetaItem key={item.label}>
+                    <strong>{item.label}</strong>
+                    <span>{item.value}</span>
+                  </S.CompanyMetaItem>
+                ))}
+              </S.CompanyMetaList>
+            </S.CompanyInfo>
+            <S.FooterPhone>
+              <Image src="/assets/images/footer-phone.svg" alt="" width={36} height={36} aria-hidden="true" />
+              <strong>{footerPhoneNumber}</strong>
+            </S.FooterPhone>
+          </S.FooterInfoRow>
+
+          <S.FooterBottom>
+            <S.Copyright>Copyright © bizbee. All Rights Reserved.</S.Copyright>
+            <S.RelatedSites
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget)) {
+                  setIsRelatedSitesOpen(false);
+                }
+              }}
+            >
+              <S.RelatedSitesButton type="button" aria-expanded={isRelatedSitesOpen} onClick={() => setIsRelatedSitesOpen((isOpen) => !isOpen)}>
+                관련 사이트
+                <Image src="/assets/images/footer-related-plus.svg" alt="" width={16} height={16} aria-hidden="true" />
+              </S.RelatedSitesButton>
+              <S.RelatedSitesMenu $isOpen={isRelatedSitesOpen}>
+                {relatedSites.map((site) => (
+                  <li key={site.href}>
+                    <a href={site.href} target="_blank" rel="noreferrer">
+                      {site.label}
+                    </a>
+                  </li>
+                ))}
+              </S.RelatedSitesMenu>
+            </S.RelatedSites>
+          </S.FooterBottom>
+        </S.FooterContents>
       </S.Footer>
     </S.Page>
   );
