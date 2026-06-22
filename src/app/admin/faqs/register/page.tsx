@@ -1,11 +1,11 @@
-import React from 'react';
+import { Suspense } from 'react';
+import FaqRegister from '../../../../../components/pages/admin/faqs/register/FaqRegister';
 
-// FAQ 관리 - FAQ 등록
 const FaqRegisterPage = () => {
     return (
-        <main>
-            <h1>FAQ 등록</h1>
-        </main>
+        <Suspense fallback={null}>
+            <FaqRegister />
+        </Suspense>
     );
 };
 

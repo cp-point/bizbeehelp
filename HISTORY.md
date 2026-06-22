@@ -1,5 +1,25 @@
 # 변경 이력
 
+## 2026-06-22
+
+- 15:31 - `/admin/faqs/categories` 분류관리 저장 시 삭제 row는 `/major/delete`, `/minor/delete`로, 추가/수정 row는 `/major/upsert`, `/minor/upsert`로 분리해 POST 요청하도록 연결
+
+- 13:23 - `/admin/faqs/register` 저장 시 대분류, 소분류, 사용여부, 질문, 순번 필수값 누락 항목을 alert로 안내하도록 수정
+- 13:23 - `/pub/admin/faqs/categories` 퍼블리싱 디자인을 기반으로 `/admin/faqs/categories` 분류관리 화면을 추가
+- 13:23 - 기존 `/admin/faq-categories` 경로는 `/admin/faqs/categories`로 redirect되도록 페이지 추가
+- 11:45 - `/admin/faqs/register`에서 `faqId` 기준 `/faq/detail` POST 상세 조회 결과로 수정 화면 데이터를 표시하도록 변경
+- 11:45 - `/admin/faqs` 질문 클릭 시 목록 데이터를 저장하지 않고 `faqId` query만 전달하도록 정리
+- 11:45 - 공개 FAQ 정렬이 문자열 `faqId`와 `sortOrder`를 모두 처리하도록 수정
+- 10:44 - `/admin/faqs/register` 삭제/저장 버튼을 `/admin/faqs`와 동일한 `/faq/delete`, `/faq/save` POST 요청 흐름으로 연결
+- 10:44 - `/admin/faqs/register` 수정 화면의 메타태그, 질문, 사용여부, 비고, 순번, 본문 영역을 수정 가능하도록 변경
+- 10:34 - `/admin/faqs/register` 화면 스타일을 `/pub/admin/faqs/register` 퍼블리싱 구조와 동일한 폼/버튼/에디터 레이아웃으로 수정
+- 10:34 - `/admin/faqs/register`에서 `/major`, `/minor` 데이터를 조회해 대분류/소분류 셀렉트박스에 표시하고, FAQ목록에서 선택한 값이 기본 선택되도록 수정
+- 10:14 - `/admin/faqs` 질문 클릭 시 선택한 FAQ 데이터를 보관하고 `/admin/faqs/register?faqId=...`로 이동하도록 수정
+- 10:14 - `/admin/faqs/register`에서 선택한 FAQ 목록 데이터를 읽어 수정 화면 형태로 표시하는 컴포넌트와 스타일 추가
+- 10:14 - FAQ 사용여부 저장 요청 payload 타입을 백엔드 요청 형태인 배열 기준으로 정리
+- 09:34 - `/admin/faqs` 사용여부 체크박스 변경분만 모아 `/faq/use-yn` POST 요청으로 저장하는 기능 추가
+- 09:34 - FAQ 사용여부 저장 요청 payload 타입을 `types/Faq.ts`에 추가
+
 ## 2026-06-19
 
 - 17:20 - `/pub/faq`에 반영된 푸터/관련 사이트/상단 이동 버튼/플로팅 버튼 위치 보정 변경사항을 `/faq` 화면에도 적용
@@ -47,6 +67,25 @@
 - `/pub/faq` 화면에서 대분류는 메뉴 그룹, 소분류는 FAQ 섹션, FAQ 목록은 accordion 항목으로 렌더링되도록 수정
 - `/pub/faq` 왼쪽 메뉴는 전체 소분류를 표시하고, 본문 FAQ 섹션은 FAQ 항목이 있는 소분류만 표시되도록 조정
 
+## 2026-06-22 15:07
+
+- `/major`, `/minor` 응답의 `createdAt`, `updatedAt`, `deletedAt` 필드를 FAQ 분류관리 화면에 반영
+- FAQ 분류관리 조회결과 표에 삭제일시 컬럼을 추가하고 날짜 표시 형식을 보정
+
+## 2026-06-22 14:33
+
+- `/admin/faqs/categories`에서 `/major`, `/minor` 데이터를 `useSWR`로 조회해 대분류/소분류 조회조건과 조회결과에 표시하도록 수정
+- FAQ 분류관리 화면의 로컬 수정 상태를 백엔드 조회 데이터와 분리해 관리하도록 정리
+
+## 2026-06-22 14:20
+
+- `/admin/faqs/categories/page.tsx`가 빈 화면을 반환하던 문제를 수정하고 FAQ 분류관리 컴포넌트를 연결
+
+## 2026-06-22 14:09
+
+- `/admin/faqs/categories` FAQ 분류관리 화면을 pub/admin 디자인 기준으로 전면 재작성
+- 버튼, 입력창, 체크박스는 `components/atom` 컴포넌트를 사용하고 탭/검색영역/테이블 레이아웃은 전용 styled-components로 분리
+
 ## 2026-06-12 17:04
 
 - `/pub/faq` 공개 페이지가 로그인 proxy 검사에 걸리지 않도록 `src/proxy.ts` matcher를 관리자 경로로 제한
@@ -81,7 +120,7 @@
 
 ## 2026-06-10 16:35
 
-- 로그아웃 시 `JSESSIONID` 쿠키 만료 대상 경로를 `/admin`, `/admin/login`, `/admin/faq-categories`, `/api/backend`까지 확장
+- 로그아웃 시 `JSESSIONID` 쿠키 만료 대상 경로를 `/admin`, `/admin/login`, `/admin/faqs/categories`, `/api/backend`까지 확장
 - `JSESSIONID` 만료 쿠키에 `expires` 값을 함께 설정하도록 수정
 
 ## 2026-06-10 16:22
@@ -95,7 +134,7 @@
 - 관리자 경로 접근 제어용 `proxy.ts` 추가
 - 로그인하지 않은 사용자가 `/admin/login` 외 관리자 경로에 접근하면 `/admin/login?loginRequired=true`로 리다이렉트되도록 수정
 - 로그인 페이지에서 `loginRequired=true` query를 감지해 로그인 필요 alert를 표시하도록 수정
-- 로그인 성공 시 `/admin/faq-categories`로 이동하도록 수정
+- 로그인 성공 시 `/admin/faqs/categories`로 이동하도록 수정
 
 ## 2026-06-10 14:00
 

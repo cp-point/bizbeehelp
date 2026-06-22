@@ -116,7 +116,13 @@ const sortBySortOrder = <T extends { sortOrder: number }>(items: T[] = []) => {
 };
 
 const sortFaqs = (items: FaqData[] = []) => {
-    return [...items].sort((a, b) => a.faqId - b.faqId);
+    return [...items].sort((a, b) => {
+        if (a.sortOrder !== null && b.sortOrder !== null) {
+            return a.sortOrder - b.sortOrder;
+        }
+
+        return a.faqId.localeCompare(b.faqId, undefined, { numeric: true });
+    });
 };
 
 const getVisibleMinorCategories = (majorCategory: MajorCategoryData) => {

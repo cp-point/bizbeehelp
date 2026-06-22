@@ -1,18 +1,25 @@
 'use client';
 
-import { KeyboardEvent, useState } from 'react';
+import { KeyboardEvent, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Button from '../../../atom/Button';
 import Input from '../../../atom/Input';
 import Pagination from '../../../molecules/Pagination';
 import Table, { TableColumn } from '../../../molecules/Table';
 import { Post } from '../../../../service/crud';
-import type { FaqListData, FaqSearchCondition } from '../../../../types/Faq';
+import type {
+    FaqListData,
+    FaqSearchCondition,
+    FaqUseYnUpdatePayload,
+    MajorList,
+    MinorList,
+} from '../../../../types/Faq';
 import {
     FaqsAddLink,
     FaqsButtonGroup,
-    FaqsDateInput,
     FaqsDateDivider,
+    FaqsDateInput,
     FaqsDateRange,
     FaqsField,
     FaqsForm,
@@ -26,7 +33,6 @@ import {
     FaqsTableLink,
     FaqsTitle,
 } from '../../../../styles/pages/admin/faqs/Faqs';
-import type { MajorList, MinorList } from '../../../../types/Faq';
 
 type FaqsProps = {
     faqData?: FaqListData[];
@@ -61,17 +67,18 @@ const getToday = () => {
 };
 
 const Faqs = ({
-    faqData = [],
-    majorData = [],
-    minorData = [],
-    total,
-    currentPage,
-    pageSize,
-    onSearch,
-    onMajorCodeChange,
-    onPageChange,
-    onRefresh,
-}: FaqsProps) => {
+                  faqData = [],
+                  majorData = [],
+                  minorData = [],
+                  total,
+                  currentPage,
+                  pageSize,
+                  onSearch,
+                  onMajorCodeChange,
+                  onPageChange,
+                  onRefresh,
+              }: FaqsProps) => {
+    const router = useRouter();
     const [startDate, setStartDate] = useState(getToday);
     const [endDate, setEndDate] = useState(getToday);
     const [metaTag, setMetaTag] = useState('');
@@ -80,6 +87,21 @@ const Faqs = ({
     const [title, setTitle] = useState('');
     const [selectedFaqId, setSelectedFaqId] = useState<string | null>(null);
     const [selectedMajorCode, setSelectedMajorCode] = useState('');
+    const [changedUseYnMap, setChangedUseYnMap] = useState<Record<string, 'Y' | 'N'>>({});
+    const displayedFaqData = useMemo(
+        () =>
+            faqData.map((faq) => ({
+                ...faq,
+                useYn: changedUseYnMap[faq.faqId] ?? faq.useYn,
+            })),
+        [changedUseYnMap, faqData],
+    );
+    const changedUseYnCount = Object.keys(changedUseYnMap).length;
+
+    const handleFaqTitleClick = (faq: FaqListData) => {
+        router.push(`/admin/faqs/register?faqId=${encodeURIComponent(faq.faqId)}`);
+    };
+
     const columns: TableColumn<FaqListData>[] = [
         {
             key: 'rowNo',
@@ -95,8 +117,14 @@ const Faqs = ({
             title: '질문',
             dataIndex: 'title',
             align: 'left',
-            render: (value) => (
-                <FaqsTableLink type="button" onClick={(event) => event.stopPropagation()}>
+            render: (value, record) => (
+                <FaqsTableLink
+                    type="button"
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        handleFaqTitleClick(record);
+                    }}
+                >
                     {String(value ?? '')}
                 </FaqsTableLink>
             ),
@@ -106,7 +134,7 @@ const Faqs = ({
             key: 'sortOrder',
             title: '순번',
             width: '64px',
-            render: (_value, _record, index) => index + 1,
+            dataIndex: 'sortOrder',
         },
         { key: 'useYn', title: '사용여부', dataIndex: 'useYn', width: '64px' },
         {
@@ -186,6 +214,51 @@ const Faqs = ({
                 }
 
                 alert(response.message || '삭제에 실패했습니다.');
+            },
+            false,
+        );
+    };
+
+    const handleUseYnChange = (faq: FaqListData, checked: boolean) => {
+        const nextUseYn = checked ? 'Y' : 'N';
+        const originalUseYn = faqData.find((item) => item.faqId === faq.faqId)?.useYn ?? faq.useYn;
+
+        setChangedUseYnMap((prevChangedUseYnMap) => {
+            const nextChangedUseYnMap = { ...prevChangedUseYnMap };
+
+            if (nextUseYn === originalUseYn) {
+                delete nextChangedUseYnMap[faq.faqId];
+                return nextChangedUseYnMap;
+            }
+
+            nextChangedUseYnMap[faq.faqId] = nextUseYn;
+            return nextChangedUseYnMap;
+        });
+    };
+
+    const handleSave = () => {
+        const updates: FaqUseYnUpdatePayload = Object.entries(changedUseYnMap).map(([faqId, useYn]) => ({
+            faqId,
+            useYn,
+        }));
+
+        if (updates.length === 0) {
+            alert('변경된 사용여부가 없습니다.');
+            return;
+        }
+
+        Post(
+            '/faq/save',
+            updates,
+            (response) => {
+                if (response.type === 'SUCCESS') {
+                    alert('저장이 완료되었습니다.');
+                    setChangedUseYnMap({});
+                    onRefresh();
+                    return;
+                }
+
+                alert(response.message || '저장에 실패했습니다.');
             },
             false,
         );
@@ -344,8 +417,9 @@ const Faqs = ({
                             shadow="none"
                             padding="8px 12px"
                             fontSize="13px"
+                            onClick={handleSave}
                         >
-                            저장
+                            저장{changedUseYnCount > 0 ? ` (${changedUseYnCount})` : ''}
                         </Button>
                     </FaqsButtonGroup>
                 </FaqsSectionHeader>
@@ -358,13 +432,20 @@ const Faqs = ({
                     emptyText="검색 결과 없음"
                     emptyCellHeight="320px"
                     columns={columns}
-                    dataSource={faqData}
+                    dataSource={displayedFaqData}
                     checkedList={['useYn']}
                     checkboxColor="#16b364"
                     checkboxBorder="1px solid #cdd3dd"
                     checkboxBorderRadius="3px"
                     selectedRowKey={selectedFaqId}
                     onRowClick={(faq) => setSelectedFaqId(faq.faqId)}
+                    onCheckedChange={(faq, field, checked) => {
+                        if (field !== 'useYn') {
+                            return;
+                        }
+
+                        handleUseYnChange(faq, checked);
+                    }}
                 />
                 <Pagination
                     current={currentPage}

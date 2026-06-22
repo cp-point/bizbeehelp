@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const LOGIN_PATH = '/admin/login';
-const DEFAULT_ADMIN_PATH = '/admin/faq-categories';
+const DEFAULT_ADMIN_PATH = '/admin/faqs';
 const SESSION_COOKIE_NAME = 'JSESSIONID';
 
 export function proxy(req: NextRequest) {

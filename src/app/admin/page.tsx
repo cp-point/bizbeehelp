@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 
 const Page = () => {
-    redirect('/admin/faq-categories');
+    redirect('/admin/faqs');
 };
 
 export default Page;

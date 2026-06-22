@@ -9,7 +9,7 @@ export enum AdminMenuLabel {
 }
 
 export enum AdminMenuPath {
-    FAQ_CATEGORY = '/admin/faq-categories',
+    FAQ_CATEGORY = '/admin/faqs/categories',
     FAQ_LIST = '/admin/faqs',
     FAQ_REGISTER = '/admin/faqs/register',
 }

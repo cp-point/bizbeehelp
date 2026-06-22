@@ -220,6 +220,21 @@ export const Main = styled.section`
   background: ${colors.primaryWhite};
 `;
 
+export const EmbeddedAdminPage = styled.div`
+  margin: -16px -24px -32px;
+  min-height: calc(100vh - 64px);
+  overflow-x: auto;
+  color: ${colors.coolGray800};
+  background: ${colors.primaryWhite};
+
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
+`;
+
 export const Headline = styled.header`
   display: flex;
   flex-direction: column;
