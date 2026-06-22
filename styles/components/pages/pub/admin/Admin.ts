@@ -186,6 +186,7 @@ export const SideMenu = styled.aside`
   height: calc(100vh - 64px);
   padding: 40px 10px 24px;
   background: #1e293b;
+  overflow: hidden;
   z-index: 10;
 `;
 
@@ -193,7 +194,9 @@ export const SideMenuList = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  height: 100%;
   list-style: none;
+  overflow-y: auto;
 
   a {
     display: flex;
