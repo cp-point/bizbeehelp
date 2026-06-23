@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import type { MouseEvent } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 
 import Button from '../../../../atom/Button';
 import Checkbox from '../../../../atom/Checkbox';
 import Input from '../../../../atom/Input';
 import { ResponseType } from '../../../../../enum/Common';
+import { formatDateTime } from '../../../../../libs/date';
+import { getLastSelectedId, getUniqueIds, toggleSelectedId } from '../../../../../libs/selection';
 import { Post } from '../../../../../service/crud';
 import type { MajorList, MinorList } from '../../../../../types/Faq';
 import {
@@ -115,16 +117,6 @@ const createEmptySearchCondition = (): CategorySearchCondition => ({
     remark: '',
 });
 
-const formatDateTime = (value?: string | null) => {
-    if (!value) {
-        return '';
-    }
-
-    const normalizedValue = value.replace('T', ' ');
-
-    return normalizedValue.length >= 19 ? normalizedValue.slice(0, 19) : normalizedValue;
-};
-
 const mapMajorRows = (majorData: MajorList = []): CategoryRow[] => {
     return majorData.map((major, index) => ({
         id: major.majorCode,
@@ -202,6 +194,89 @@ const toMinorPayload = (row: CategoryRow): CategorySavePayload => ({
     remark: row.remark,
 });
 
+const mergeCategoryRows = (
+    tab: CategoryTab,
+    baseRowsByTab: CategoryRowsByTab,
+    addedRowsByTab: CategoryRowsByTab,
+    editedRowsByTab: EditedRowsByTab,
+    deletedIdsByTab: DeletedIdsByTab,
+) => {
+    const deletedIds = new Set(deletedIdsByTab[tab]);
+    const editedRows = editedRowsByTab[tab];
+    const baseRows = baseRowsByTab[tab]
+        .filter((row) => !deletedIds.has(row.id))
+        .map((row) => ({
+            ...row,
+            ...editedRows[row.id],
+        }));
+
+    return [...baseRows, ...addedRowsByTab[tab]];
+};
+
+const filterCategoryRows = (tab: CategoryTab, rows: CategoryRow[], searchCondition: CategorySearchCondition) => {
+    const normalizedRemark = searchCondition.remark.trim().toLowerCase();
+
+    return rows.filter((row) => {
+        if (row.id.startsWith('new-')) {
+            return true;
+        }
+
+        if (tab === 'major' && searchCondition.majorCode && row.code !== searchCondition.majorCode) {
+            return false;
+        }
+
+        if (tab === 'minor' && searchCondition.majorCode && row.majorCode !== searchCondition.majorCode) {
+            return false;
+        }
+
+        if (tab === 'minor' && searchCondition.minorCode && row.code !== searchCondition.minorCode) {
+            return false;
+        }
+
+        if (searchCondition.useYn && toUseYn(row.useYn) !== searchCondition.useYn) {
+            return false;
+        }
+
+        return !(normalizedRemark && !row.remark.toLowerCase().includes(normalizedRemark));
+
+
+    });
+};
+
+const createUpsertRows = (
+    tab: CategoryTab,
+    baseRowsByTab: CategoryRowsByTab,
+    addedRowsByTab: CategoryRowsByTab,
+    editedRowsByTab: EditedRowsByTab,
+    deletedIdsByTab: DeletedIdsByTab,
+) => {
+    const editedRows = editedRowsByTab[tab];
+    const deletedIds = new Set(deletedIdsByTab[tab]);
+    const baseUpsertRows = baseRowsByTab[tab]
+        .filter((row) => editedRows[row.id] && !deletedIds.has(row.id))
+        .map((row) => ({
+            ...row,
+            ...editedRows[row.id],
+        }));
+
+    return [...baseUpsertRows, ...addedRowsByTab[tab]];
+};
+
+const getSelectedRowIds = (rows: CategoryRow[], selectedRowId: string, selectedRowIds: string[]) => {
+    const rowIdSet = new Set(rows.map((row) => row.id));
+    const selectedRowsInPage = selectedRowIds.filter((rowId) => rowIdSet.has(rowId));
+
+    if (selectedRowsInPage.length > 0) {
+        return selectedRowsInPage;
+    }
+
+    if (selectedRowId && rowIdSet.has(selectedRowId)) {
+        return [selectedRowId];
+    }
+
+    return rows[0]?.id ? [rows[0].id] : [];
+};
+
 const postRows = (url: string, rows: CategoryRequestPayload[]) => {
     return new Promise<boolean>((resolve) => {
         if (rows.length === 0) {
@@ -247,65 +322,20 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         [majorData, minorData],
     );
     const allRowsByTab = useMemo<CategoryRowsByTab>(() => {
-        const createRows = (tab: CategoryTab) => {
-            const deletedIds = new Set(deletedIdsByTab[tab]);
-            const editedRows = editedRowsByTab[tab];
-            const baseRows = baseRowsByTab[tab]
-                .filter((row) => !deletedIds.has(row.id))
-                .map((row) => ({
-                    ...row,
-                    ...editedRows[row.id],
-                }));
-
-            return [...baseRows, ...addedRowsByTab[tab]];
-        };
-
         return {
-            major: createRows('major'),
-            minor: createRows('minor'),
+            major: mergeCategoryRows('major', baseRowsByTab, addedRowsByTab, editedRowsByTab, deletedIdsByTab),
+            minor: mergeCategoryRows('minor', baseRowsByTab, addedRowsByTab, editedRowsByTab, deletedIdsByTab),
         };
     }, [addedRowsByTab, baseRowsByTab, deletedIdsByTab, editedRowsByTab]);
-    const rows = useMemo(() => {
-        const normalizedRemark = searchCondition.remark.trim().toLowerCase();
-
-        return allRowsByTab[activeTab].filter((row) => {
-            if (row.id.startsWith('new-')) {
-                return true;
-            }
-
-            if (activeTab === 'major' && searchCondition.majorCode && row.code !== searchCondition.majorCode) {
-                return false;
-            }
-
-            if (activeTab === 'minor' && searchCondition.majorCode && row.majorCode !== searchCondition.majorCode) {
-                return false;
-            }
-
-            if (activeTab === 'minor' && searchCondition.minorCode && row.code !== searchCondition.minorCode) {
-                return false;
-            }
-
-            if (searchCondition.useYn && toUseYn(row.useYn) !== searchCondition.useYn) {
-                return false;
-            }
-
-            if (normalizedRemark && !row.remark.toLowerCase().includes(normalizedRemark)) {
-                return false;
-            }
-
-            return true;
-        });
-    }, [activeTab, allRowsByTab, searchCondition]);
+    const rows = useMemo(() => filterCategoryRows(activeTab, allRowsByTab[activeTab], searchCondition), [activeTab, allRowsByTab, searchCondition]);
     const majorOptions = baseRowsByTab.major;
     const minorOptions = useMemo(() => {
         return baseRowsByTab.minor.filter((row) => !searchForm.majorCode || row.majorCode === searchForm.majorCode);
     }, [baseRowsByTab.minor, searchForm.majorCode]);
     const allRows = allRowsByTab[activeTab];
     const tabLabel = getTabLabel(activeTab);
-    const selectedRowExists = rows.some((row) => row.id === selectedRowId);
-    const effectiveSelectedRowId = selectedRowExists ? selectedRowId : rows[0]?.id || '';
-    const effectiveSelectedRowIds = selectedRowIds.filter((rowId) => rows.some((row) => row.id === rowId));
-    const displayedSelectedRowIds = effectiveSelectedRowIds.length > 0 ? effectiveSelectedRowIds : effectiveSelectedRowId ? [effectiveSelectedRowId] : [];
+    const displayedSelectedRowIds = getSelectedRowIds(rows, selectedRowId, selectedRowIds);
+    const effectiveSelectedRowId = displayedSelectedRowIds[0] ?? '';
 
     useEffect(() => {
         if (!toastMessage) {
@@ -332,6 +362,13 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         ...buttonProps,
         color: colors.red500,
         border: `1px solid ${colors.red500}`,
+    };
+
+    const resetSelection = () => {
+        setSelectedRowId('');
+        setSelectedRowIds([]);
+        setActiveCell(null);
+        setEditingCell(null);
     };
 
     const updateRow = <K extends keyof CategoryRow>(rowId: string, field: K, value: CategoryRow[K]) => {
@@ -395,18 +432,21 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
 
         if (hasChanges) {
             restoreRows(activeTab);
-            setSelectedRowId('');
-            setSelectedRowIds([]);
-            setActiveCell(null);
-            setEditingCell(null);
+            resetSelection();
         }
 
         setSearchCondition(searchForm);
-        setSelectedRowId('');
-        setSelectedRowIds([]);
-        setActiveCell(null);
-        setEditingCell(null);
+        resetSelection();
         setHasChanges(false);
+    };
+
+    const handleSearchKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+        if (event.key !== 'Enter' || event.nativeEvent.isComposing) {
+            return;
+        }
+
+        event.preventDefault();
+        handleSearch();
     };
 
     const handleTabChange = (tab: CategoryTab) => {
@@ -425,10 +465,7 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         setActiveTab(tab);
         setSearchForm(createEmptySearchCondition());
         setSearchCondition(createEmptySearchCondition());
-        setSelectedRowId('');
-        setSelectedRowIds([]);
-        setActiveCell(null);
-        setEditingCell(null);
+        resetSelection();
         setHasChanges(false);
     };
 
@@ -464,10 +501,10 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         }
 
         const targetRowIdSet = new Set(targetRowIds);
-        const addedRowIds = addedRowsByTab[activeTab].filter((row) => targetRowIdSet.has(row.id)).map((row) => row.id);
-        const existingRowIds = targetRowIds.filter((rowId) => !addedRowIds.includes(rowId));
+        const addedRowIdSet = new Set(addedRowsByTab[activeTab].filter((row) => targetRowIdSet.has(row.id)).map((row) => row.id));
+        const existingRowIds = targetRowIds.filter((rowId) => !addedRowIdSet.has(rowId));
 
-        if (addedRowIds.length > 0) {
+        if (addedRowIdSet.size > 0) {
             setAddedRowsByTab((prevRowsByTab) => ({
                 ...prevRowsByTab,
                 [activeTab]: prevRowsByTab[activeTab].filter((row) => !targetRowIdSet.has(row.id)),
@@ -477,28 +514,12 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         if (existingRowIds.length > 0) {
             setDeletedIdsByTab((prevRowsByTab) => ({
                 ...prevRowsByTab,
-                [activeTab]: Array.from(new Set([...prevRowsByTab[activeTab], ...existingRowIds])),
+                [activeTab]: getUniqueIds([...prevRowsByTab[activeTab], ...existingRowIds]),
             }));
         }
 
-        setSelectedRowId('');
-        setSelectedRowIds([]);
-        setActiveCell(null);
-        setEditingCell(null);
+        resetSelection();
         setHasChanges(true);
-    };
-
-    const createUpsertRows = (tab: CategoryTab) => {
-        const editedRows = editedRowsByTab[tab];
-        const deleteIds = new Set(deletedIdsByTab[tab]);
-        const baseUpsertRows = baseRowsByTab[tab]
-            .filter((row) => editedRows[row.id] && !deleteIds.has(row.id))
-            .map((row) => ({
-                ...row,
-                ...editedRows[row.id],
-            }));
-
-        return [...baseUpsertRows, ...addedRowsByTab[tab]];
     };
 
     const validateRows = (tab: CategoryTab, rowsToValidate: CategoryRow[]) => {
@@ -524,8 +545,8 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         const minorDeleteRows = deletedIdsByTab.minor.map((minorCode) => ({
             minorCode,
         }));
-        const majorUpsertRows = createUpsertRows('major');
-        const minorUpsertRows = createUpsertRows('minor');
+        const majorUpsertRows = createUpsertRows('major', baseRowsByTab, addedRowsByTab, editedRowsByTab, deletedIdsByTab);
+        const minorUpsertRows = createUpsertRows('minor', baseRowsByTab, addedRowsByTab, editedRowsByTab, deletedIdsByTab);
 
         if (majorDeleteRows.length === 0 && minorDeleteRows.length === 0 && majorUpsertRows.length === 0 && minorUpsertRows.length === 0) {
             setToastMessage('변경내역이 없습니다.');
@@ -553,10 +574,7 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
 
         restoreRows('major');
         restoreRows('minor');
-        setSelectedRowId('');
-        setSelectedRowIds([]);
-        setActiveCell(null);
-        setEditingCell(null);
+        resetSelection();
         setHasChanges(false);
         setToastMessage('저장되었습니다.');
         await onRefresh?.();
@@ -572,15 +590,10 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         }
 
         setSelectedRowIds((prevSelectedRowIds) => {
-            if (prevSelectedRowIds.includes(rowId)) {
-                const nextSelectedRowIds = prevSelectedRowIds.filter((selectedId) => selectedId !== rowId);
+            const nextSelectedRowIds = toggleSelectedId(prevSelectedRowIds, rowId);
 
-                setSelectedRowId(nextSelectedRowIds.at(-1) ?? '');
-                return nextSelectedRowIds;
-            }
-
-            setSelectedRowId(rowId);
-            return [...prevSelectedRowIds, rowId];
+            setSelectedRowId(getLastSelectedId(nextSelectedRowIds, ''));
+            return nextSelectedRowIds;
         });
     };
 
@@ -667,7 +680,7 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
                         </Button>
                     </FaqCategoriesSectionHeader>
 
-                    <FaqCategoriesSearchGrid>
+                    <FaqCategoriesSearchGrid onKeyDown={handleSearchKeyDown}>
                         <FaqCategoriesField>
                             <FaqCategoriesSearchLabel htmlFor="majorCode">대분류</FaqCategoriesSearchLabel>
                             <FaqCategoriesSearchControl>

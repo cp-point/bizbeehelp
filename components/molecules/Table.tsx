@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { CSSProperties, Key, MouseEvent, ReactNode } from 'react';
 
 import Checkbox from '../atom/Checkbox';
@@ -88,6 +89,8 @@ const isCheckedColumn = <T extends object>(column: TableColumn<T>, checkedList?:
     return checkedList.some((checkedKey) => checkedKey === field || checkedKey === column.key);
 };
 
+const toKeyString = (key: Key) => String(key);
+
 const Table = <T extends Record<string, unknown>>({
     columns,
     dataSource,
@@ -110,6 +113,9 @@ const Table = <T extends Record<string, unknown>>({
     onRowClick,
     onCheckedChange,
 }: TableProps<T>) => {
+    const selectedRowKeySet = useMemo(() => new Set(selectedRowKeys?.map(toKeyString) ?? []), [selectedRowKeys]);
+    const selectedRowKeyValue = selectedRowKey !== undefined && selectedRowKey !== null ? String(selectedRowKey) : null;
+
     return (
         <TableWrapper $width={width} $margin={margin} style={style}>
             <TableContainer $variant={variant} $maxHeight={maxHeight}>
@@ -127,9 +133,8 @@ const Table = <T extends Record<string, unknown>>({
                         {dataSource.length > 0 ? (
                             dataSource.map((record, rowIndex) => {
                                 const recordKey = getRecordKey(record, rowIndex, rowKey);
-                                const isSelected =
-                                    selectedRowKeys?.some((selectedRowKeyItem) => String(selectedRowKeyItem) === String(recordKey)) ||
-                                    (selectedRowKey !== undefined && selectedRowKey !== null && String(selectedRowKey) === String(recordKey));
+                                const recordKeyValue = String(recordKey);
+                                const isSelected = selectedRowKeySet.has(recordKeyValue) || selectedRowKeyValue === recordKeyValue;
 
                                 return (
                                     <TableRow

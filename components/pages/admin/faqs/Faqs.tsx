@@ -9,6 +9,8 @@ import Pagination from '../../../molecules/Pagination';
 import Table, { TableColumn } from '../../../molecules/Table';
 import { Post } from '../../../../service/crud';
 import { ResponseType } from '../../../../enum/Common';
+import { formatDateTime, getFirstDateOfCurrentMonth, getTodayDate } from '../../../../libs/date';
+import { getLastSelectedId, getUniqueIds, toggleSelectedId } from '../../../../libs/selection';
 import type {
     FaqListData,
     FaqSearchCondition,
@@ -48,33 +50,6 @@ type FaqsProps = {
     onRefresh: () => void;
 };
 
-const formatDateTime = (value?: string | null) => {
-    if (!value) {
-        return '';
-    }
-
-    const normalizedValue = value.replace('T', ' ');
-
-    return normalizedValue.length >= 19 ? normalizedValue.slice(0, 19) : normalizedValue;
-};
-
-const getFirstMonth = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-
-    return `${year}-${month}-01`;
-};
-
-const getToday = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const date = String(today.getDate()).padStart(2, '0');
-
-    return `${year}-${month}-${date}`;
-};
-
 const Faqs = ({
                   faqData = [],
                   majorData = [],
@@ -88,8 +63,8 @@ const Faqs = ({
                   onRefresh,
               }: FaqsProps) => {
     const router = useRouter();
-    const [startDate, setStartDate] = useState(getFirstMonth);
-    const [endDate, setEndDate] = useState(getToday);
+    const [startDate, setStartDate] = useState(getFirstDateOfCurrentMonth);
+    const [endDate, setEndDate] = useState(getTodayDate);
     const [metaTag, setMetaTag] = useState('');
     const [majorName, setMajorName] = useState('');
     const [minorName, setMinorName] = useState('');
@@ -99,15 +74,17 @@ const Faqs = ({
     const [selectedMajorCode, setSelectedMajorCode] = useState('');
     const [changedUseYnMap, setChangedUseYnMap] = useState<Record<string, 'Y' | 'N'>>({});
     const [deletedFaqIds, setDeletedFaqIds] = useState<string[]>([]);
+    const originalUseYnMap = useMemo(() => new Map(faqData.map((faq) => [faq.faqId, faq.useYn])), [faqData]);
+    const deletedFaqIdSet = useMemo(() => new Set(deletedFaqIds), [deletedFaqIds]);
     const displayedFaqData = useMemo(
         () =>
             faqData
-                .filter((faq) => !deletedFaqIds.includes(faq.faqId))
+                .filter((faq) => !deletedFaqIdSet.has(faq.faqId))
                 .map((faq) => ({
                     ...faq,
                     useYn: changedUseYnMap[faq.faqId] ?? faq.useYn,
                 })),
-        [changedUseYnMap, deletedFaqIds, faqData],
+        [changedUseYnMap, deletedFaqIdSet, faqData],
     );
     const changedUseYnCount = Object.keys(changedUseYnMap).length;
     const deletedFaqCount = deletedFaqIds.length;
@@ -126,15 +103,10 @@ const Faqs = ({
         }
 
         setSelectedFaqIds((prevSelectedFaqIds) => {
-            if (prevSelectedFaqIds.includes(faq.faqId)) {
-                const nextSelectedFaqIds = prevSelectedFaqIds.filter((selectedId) => selectedId !== faq.faqId);
+            const nextSelectedFaqIds = toggleSelectedId(prevSelectedFaqIds, faq.faqId);
 
-                setSelectedFaqId(nextSelectedFaqIds.at(-1) ?? null);
-                return nextSelectedFaqIds;
-            }
-
-            setSelectedFaqId(faq.faqId);
-            return [...prevSelectedFaqIds, faq.faqId];
+            setSelectedFaqId(getLastSelectedId(nextSelectedFaqIds, null));
+            return nextSelectedFaqIds;
         });
     };
 
@@ -238,7 +210,7 @@ const Faqs = ({
             return;
         }
 
-        setDeletedFaqIds((prevDeletedFaqIds) => Array.from(new Set([...prevDeletedFaqIds, ...targetFaqIds])));
+        setDeletedFaqIds((prevDeletedFaqIds) => getUniqueIds([...prevDeletedFaqIds, ...targetFaqIds]));
         setChangedUseYnMap((prevChangedUseYnMap) => {
             const nextChangedUseYnMap = { ...prevChangedUseYnMap };
 
@@ -254,7 +226,7 @@ const Faqs = ({
 
     const handleUseYnChange = (faq: FaqListData, checked: boolean) => {
         const nextUseYn = checked ? 'Y' : 'N';
-        const originalUseYn = faqData.find((item) => item.faqId === faq.faqId)?.useYn ?? faq.useYn;
+        const originalUseYn = originalUseYnMap.get(faq.faqId) ?? faq.useYn;
 
         setChangedUseYnMap((prevChangedUseYnMap) => {
             const nextChangedUseYnMap = { ...prevChangedUseYnMap };

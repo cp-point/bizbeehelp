@@ -37,7 +37,7 @@ const AdminHeader = () => {
 
     return (
         <AdminHeaderWrapper>
-            <AdminHeaderLogo href="/admin/faqs" aria-label="bizbee Help 관리자">
+            <AdminHeaderLogo href="/" aria-label="bizbee Help 관리자">
                 <Image src="/assets/images/header-logo.svg" alt="bizbee Help" width={146} height={32} priority />
             </AdminHeaderLogo>
             <AdminHeaderActions>
