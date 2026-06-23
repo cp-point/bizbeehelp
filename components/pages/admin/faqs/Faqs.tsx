@@ -8,6 +8,7 @@ import Input from '../../../atom/Input';
 import Pagination from '../../../molecules/Pagination';
 import Table, { TableColumn } from '../../../molecules/Table';
 import { Post } from '../../../../service/crud';
+import { ResponseType } from '../../../../enum/Common';
 import type {
     FaqListData,
     FaqSearchCondition,
@@ -57,6 +58,14 @@ const formatDateTime = (value?: string | null) => {
     return normalizedValue.length >= 19 ? normalizedValue.slice(0, 19) : normalizedValue;
 };
 
+const getFirstMonth = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+
+    return `${year}-${month}-01`;
+};
+
 const getToday = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -79,27 +88,54 @@ const Faqs = ({
                   onRefresh,
               }: FaqsProps) => {
     const router = useRouter();
-    const [startDate, setStartDate] = useState(getToday);
+    const [startDate, setStartDate] = useState(getFirstMonth);
     const [endDate, setEndDate] = useState(getToday);
     const [metaTag, setMetaTag] = useState('');
     const [majorName, setMajorName] = useState('');
     const [minorName, setMinorName] = useState('');
     const [title, setTitle] = useState('');
     const [selectedFaqId, setSelectedFaqId] = useState<string | null>(null);
+    const [selectedFaqIds, setSelectedFaqIds] = useState<string[]>([]);
     const [selectedMajorCode, setSelectedMajorCode] = useState('');
     const [changedUseYnMap, setChangedUseYnMap] = useState<Record<string, 'Y' | 'N'>>({});
+    const [deletedFaqIds, setDeletedFaqIds] = useState<string[]>([]);
     const displayedFaqData = useMemo(
         () =>
-            faqData.map((faq) => ({
-                ...faq,
-                useYn: changedUseYnMap[faq.faqId] ?? faq.useYn,
-            })),
-        [changedUseYnMap, faqData],
+            faqData
+                .filter((faq) => !deletedFaqIds.includes(faq.faqId))
+                .map((faq) => ({
+                    ...faq,
+                    useYn: changedUseYnMap[faq.faqId] ?? faq.useYn,
+                })),
+        [changedUseYnMap, deletedFaqIds, faqData],
     );
     const changedUseYnCount = Object.keys(changedUseYnMap).length;
+    const deletedFaqCount = deletedFaqIds.length;
+    const pendingChangeCount = changedUseYnCount + deletedFaqCount;
+    const displayedTotal = Math.max(total - deletedFaqCount, 0);
 
     const handleFaqTitleClick = (faq: FaqListData) => {
         router.push(`/admin/faqs/register?faqId=${encodeURIComponent(faq.faqId)}`);
+    };
+
+    const handleRowClick = (faq: FaqListData, isMultipleSelection: boolean) => {
+        if (!isMultipleSelection) {
+            setSelectedFaqId(faq.faqId);
+            setSelectedFaqIds([faq.faqId]);
+            return;
+        }
+
+        setSelectedFaqIds((prevSelectedFaqIds) => {
+            if (prevSelectedFaqIds.includes(faq.faqId)) {
+                const nextSelectedFaqIds = prevSelectedFaqIds.filter((selectedId) => selectedId !== faq.faqId);
+
+                setSelectedFaqId(nextSelectedFaqIds.at(-1) ?? null);
+                return nextSelectedFaqIds;
+            }
+
+            setSelectedFaqId(faq.faqId);
+            return [...prevSelectedFaqIds, faq.faqId];
+        });
     };
 
     const columns: TableColumn<FaqListData>[] = [
@@ -191,7 +227,9 @@ const Faqs = ({
     };
 
     const handleDelete = () => {
-        if (!selectedFaqId) {
+        const targetFaqIds = selectedFaqIds.length > 0 ? selectedFaqIds : selectedFaqId ? [selectedFaqId] : [];
+
+        if (targetFaqIds.length === 0) {
             alert('삭제할 FAQ를 선택해주세요.');
             return;
         }
@@ -200,23 +238,18 @@ const Faqs = ({
             return;
         }
 
-        Post(
-            '/faq/delete',
-            {
-                faqId: selectedFaqId,
-            },
-            (response) => {
-                if (response.type === 'SUCCESS') {
-                    alert(response.message || '삭제되었습니다.');
-                    setSelectedFaqId(null);
-                    onRefresh();
-                    return;
-                }
+        setDeletedFaqIds((prevDeletedFaqIds) => Array.from(new Set([...prevDeletedFaqIds, ...targetFaqIds])));
+        setChangedUseYnMap((prevChangedUseYnMap) => {
+            const nextChangedUseYnMap = { ...prevChangedUseYnMap };
 
-                alert(response.message || '삭제에 실패했습니다.');
-            },
-            false,
-        );
+            targetFaqIds.forEach((faqId) => {
+                delete nextChangedUseYnMap[faqId];
+            });
+
+            return nextChangedUseYnMap;
+        });
+        setSelectedFaqId(null);
+        setSelectedFaqIds([]);
     };
 
     const handleUseYnChange = (faq: FaqListData, checked: boolean) => {
@@ -236,32 +269,58 @@ const Faqs = ({
         });
     };
 
-    const handleSave = () => {
+    const postRequest = (url: string, payload: object) => {
+        return new Promise<boolean>((resolve) => {
+            Post(
+                url,
+                payload,
+                (response) => {
+                    if (response.type === ResponseType.SUCCESS) {
+                        resolve(true);
+                        return;
+                    }
+
+                    alert(response.message || '요청 처리에 실패했습니다.');
+                    resolve(false);
+                },
+                false,
+            );
+        });
+    };
+
+    const handleSave = async () => {
         const updates: FaqUseYnUpdatePayload = Object.entries(changedUseYnMap).map(([faqId, useYn]) => ({
             faqId,
             useYn,
         }));
 
-        if (updates.length === 0) {
-            alert('변경된 사용여부가 없습니다.');
+        if (updates.length === 0 && deletedFaqIds.length === 0) {
+            alert('변경된 내용이 없습니다.');
             return;
         }
 
-        Post(
-            '/faq/save',
-            updates,
-            (response) => {
-                if (response.type === 'SUCCESS') {
-                    alert('저장이 완료되었습니다.');
-                    setChangedUseYnMap({});
-                    onRefresh();
-                    return;
-                }
+        for (const faqId of deletedFaqIds) {
+            const isSuccess = await postRequest('/faq/delete', { faqId });
 
-                alert(response.message || '저장에 실패했습니다.');
-            },
-            false,
-        );
+            if (!isSuccess) {
+                return;
+            }
+        }
+
+        if (updates.length > 0) {
+            const isSuccess = await postRequest('/faq/save', updates);
+
+            if (!isSuccess) {
+                return;
+            }
+        }
+
+        alert('저장이 완료되었습니다.');
+        setDeletedFaqIds([]);
+        setChangedUseYnMap({});
+        setSelectedFaqId(null);
+        setSelectedFaqIds([]);
+        onRefresh();
     };
 
     return (
@@ -393,7 +452,7 @@ const Faqs = ({
 
             <FaqsSection>
                 <FaqsSectionHeader>
-                    <h2>검색결과 ({total}건)</h2>
+                    <h2>검색결과 ({displayedTotal}건)</h2>
                     <FaqsButtonGroup>
                         <Button
                             type="button"
@@ -419,7 +478,7 @@ const Faqs = ({
                             fontSize="13px"
                             onClick={handleSave}
                         >
-                            저장{changedUseYnCount > 0 ? ` (${changedUseYnCount})` : ''}
+                            저장{pendingChangeCount > 0 ? ` (${pendingChangeCount})` : ''}
                         </Button>
                     </FaqsButtonGroup>
                 </FaqsSectionHeader>
@@ -437,8 +496,8 @@ const Faqs = ({
                     checkboxColor="#16b364"
                     checkboxBorder="1px solid #cdd3dd"
                     checkboxBorderRadius="3px"
-                    selectedRowKey={selectedFaqId}
-                    onRowClick={(faq) => setSelectedFaqId(faq.faqId)}
+                    selectedRowKeys={selectedFaqIds}
+                    onRowClick={(faq, _index, event) => handleRowClick(faq, event.ctrlKey || event.metaKey)}
                     onCheckedChange={(faq, field, checked) => {
                         if (field !== 'useYn') {
                             return;
@@ -449,7 +508,7 @@ const Faqs = ({
                 />
                 <Pagination
                     current={currentPage}
-                    total={total}
+                    total={displayedTotal}
                     pageSize={pageSize}
                     showInfo={false}
                     margin="8px 0 0"

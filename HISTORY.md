@@ -1,5 +1,11 @@
 # 변경 이력
 
+## 2026-06-23
+
+- 09:33 - FAQ목록과 FAQ분류관리 표에서 Ctrl/Command 클릭으로 여러 행을 선택할 수 있도록 다중 선택 기능 추가
+- 09:18 - `/admin/faqs` FAQ목록 삭제 시 즉시 백엔드 요청하지 않고 화면에서만 숨긴 뒤 저장 버튼 클릭 시 `/faq/delete` 요청을 보내도록 수정
+- 09:07 - `/admin/faqs/categories` FAQ 분류관리 조회조건의 대분류/소분류/사용여부/비고 값을 state로 관리하고 조회 버튼 클릭 시 목록 필터에 반영되도록 수정
+
 ## 2026-06-22
 
 - 15:31 - `/admin/faqs/categories` 분류관리 저장 시 삭제 row는 `/major/delete`, `/minor/delete`로, 추가/수정 row는 `/major/upsert`, `/minor/upsert`로 분리해 POST 요청하도록 연결

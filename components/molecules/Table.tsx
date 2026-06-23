@@ -1,4 +1,4 @@
-import type { CSSProperties, Key, ReactNode } from 'react';
+import type { CSSProperties, Key, MouseEvent, ReactNode } from 'react';
 
 import Checkbox from '../atom/Checkbox';
 import {
@@ -36,12 +36,13 @@ export type TableProps<T extends object> = {
     variant?: TableVariant;
     stickyHeader?: boolean;
     selectedRowKey?: Key | null;
+    selectedRowKeys?: Key[];
     emptyCellHeight?: string;
     checkboxColor?: string;
     checkboxBorder?: string;
     checkboxBorderRadius?: string;
     checkedList?: Array<keyof T | string>;
-    onRowClick?: (record: T, index: number) => void;
+    onRowClick?: (record: T, index: number, event: MouseEvent<HTMLTableRowElement>) => void;
     onCheckedChange?: (record: T, field: keyof T | string, checked: boolean, index: number) => void;
 };
 
@@ -100,6 +101,7 @@ const Table = <T extends Record<string, unknown>>({
     variant = 'default',
     stickyHeader = false,
     selectedRowKey,
+    selectedRowKeys,
     emptyCellHeight,
     checkboxColor,
     checkboxBorder,
@@ -125,7 +127,9 @@ const Table = <T extends Record<string, unknown>>({
                         {dataSource.length > 0 ? (
                             dataSource.map((record, rowIndex) => {
                                 const recordKey = getRecordKey(record, rowIndex, rowKey);
-                                const isSelected = selectedRowKey !== undefined && selectedRowKey !== null && String(selectedRowKey) === String(recordKey);
+                                const isSelected =
+                                    selectedRowKeys?.some((selectedRowKeyItem) => String(selectedRowKeyItem) === String(recordKey)) ||
+                                    (selectedRowKey !== undefined && selectedRowKey !== null && String(selectedRowKey) === String(recordKey));
 
                                 return (
                                     <TableRow
@@ -134,7 +138,7 @@ const Table = <T extends Record<string, unknown>>({
                                         $isSelected={isSelected}
                                         $isClickable={Boolean(onRowClick)}
                                         data-selected={isSelected}
-                                        onClick={() => onRowClick?.(record, rowIndex)}
+                                        onClick={(event) => onRowClick?.(record, rowIndex, event)}
                                     >
                                         {columns.map((column) => {
                                             const field = getColumnField(column);

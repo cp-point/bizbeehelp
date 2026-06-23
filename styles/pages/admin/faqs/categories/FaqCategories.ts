@@ -143,7 +143,7 @@ export const FaqCategoriesButtonGroup = styled.div`
 
 export const FaqCategoriesSearchGrid = styled.div`
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     border-top: 1px solid ${colors.coolGray200};
     border-left: 1px solid ${colors.coolGray200};
     background: ${colors.primaryWhite};

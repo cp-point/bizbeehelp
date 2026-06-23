@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import type { MouseEvent } from 'react';
 
 import Button from '../../../../atom/Button';
 import Checkbox from '../../../../atom/Checkbox';
@@ -71,6 +72,12 @@ type CategoryDeletePayload = {
     minorCode?: string;
 };
 type CategoryRequestPayload = CategorySavePayload | CategoryDeletePayload;
+type CategorySearchCondition = {
+    majorCode: string;
+    minorCode: string;
+    useYn: string;
+    remark: string;
+};
 
 type FaqCategoriesProps = {
     majorData?: MajorList;
@@ -99,6 +106,13 @@ const createEmptyEditedRowsByTab = (): EditedRowsByTab => ({
 const createEmptyDeletedIdsByTab = (): DeletedIdsByTab => ({
     major: [],
     minor: [],
+});
+
+const createEmptySearchCondition = (): CategorySearchCondition => ({
+    majorCode: '',
+    minorCode: '',
+    useYn: '',
+    remark: '',
 });
 
 const formatDateTime = (value?: string | null) => {
@@ -218,10 +232,13 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
     const [editedRowsByTab, setEditedRowsByTab] = useState<EditedRowsByTab>(createEmptyEditedRowsByTab);
     const [deletedIdsByTab, setDeletedIdsByTab] = useState<DeletedIdsByTab>(createEmptyDeletedIdsByTab);
     const [selectedRowId, setSelectedRowId] = useState('');
+    const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
     const [activeCell, setActiveCell] = useState<ActiveCell>(null);
     const [editingCell, setEditingCell] = useState<EditingCell>(null);
     const [toastMessage, setToastMessage] = useState('');
     const [hasChanges, setHasChanges] = useState(false);
+    const [searchForm, setSearchForm] = useState<CategorySearchCondition>(createEmptySearchCondition);
+    const [searchCondition, setSearchCondition] = useState<CategorySearchCondition>(createEmptySearchCondition);
     const baseRowsByTab = useMemo<CategoryRowsByTab>(
         () => ({
             major: mapMajorRows(majorData),
@@ -229,20 +246,66 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         }),
         [majorData, minorData],
     );
-    const rows = useMemo(() => {
-        const deletedIds = new Set(deletedIdsByTab[activeTab]);
-        const editedRows = editedRowsByTab[activeTab];
-        const baseRows = baseRowsByTab[activeTab]
-            .filter((row) => !deletedIds.has(row.id))
-            .map((row) => ({
-                ...row,
-                ...editedRows[row.id],
-            }));
+    const allRowsByTab = useMemo<CategoryRowsByTab>(() => {
+        const createRows = (tab: CategoryTab) => {
+            const deletedIds = new Set(deletedIdsByTab[tab]);
+            const editedRows = editedRowsByTab[tab];
+            const baseRows = baseRowsByTab[tab]
+                .filter((row) => !deletedIds.has(row.id))
+                .map((row) => ({
+                    ...row,
+                    ...editedRows[row.id],
+                }));
 
-        return [...baseRows, ...addedRowsByTab[activeTab]];
-    }, [activeTab, addedRowsByTab, baseRowsByTab, deletedIdsByTab, editedRowsByTab]);
+            return [...baseRows, ...addedRowsByTab[tab]];
+        };
+
+        return {
+            major: createRows('major'),
+            minor: createRows('minor'),
+        };
+    }, [addedRowsByTab, baseRowsByTab, deletedIdsByTab, editedRowsByTab]);
+    const rows = useMemo(() => {
+        const normalizedRemark = searchCondition.remark.trim().toLowerCase();
+
+        return allRowsByTab[activeTab].filter((row) => {
+            if (row.id.startsWith('new-')) {
+                return true;
+            }
+
+            if (activeTab === 'major' && searchCondition.majorCode && row.code !== searchCondition.majorCode) {
+                return false;
+            }
+
+            if (activeTab === 'minor' && searchCondition.majorCode && row.majorCode !== searchCondition.majorCode) {
+                return false;
+            }
+
+            if (activeTab === 'minor' && searchCondition.minorCode && row.code !== searchCondition.minorCode) {
+                return false;
+            }
+
+            if (searchCondition.useYn && toUseYn(row.useYn) !== searchCondition.useYn) {
+                return false;
+            }
+
+            if (normalizedRemark && !row.remark.toLowerCase().includes(normalizedRemark)) {
+                return false;
+            }
+
+            return true;
+        });
+    }, [activeTab, allRowsByTab, searchCondition]);
+    const majorOptions = baseRowsByTab.major;
+    const minorOptions = useMemo(() => {
+        return baseRowsByTab.minor.filter((row) => !searchForm.majorCode || row.majorCode === searchForm.majorCode);
+    }, [baseRowsByTab.minor, searchForm.majorCode]);
+    const allRows = allRowsByTab[activeTab];
     const tabLabel = getTabLabel(activeTab);
-    const effectiveSelectedRowId = selectedRowId || rows[0]?.id || '';
+    const selectedRowExists = rows.some((row) => row.id === selectedRowId);
+    const effectiveSelectedRowId = selectedRowExists ? selectedRowId : rows[0]?.id || '';
+    const effectiveSelectedRowIds = selectedRowIds.filter((rowId) => rows.some((row) => row.id === rowId));
+    const displayedSelectedRowIds = effectiveSelectedRowIds.length > 0 ? effectiveSelectedRowIds : effectiveSelectedRowId ? [effectiveSelectedRowId] : [];
 
     useEffect(() => {
         if (!toastMessage) {
@@ -310,6 +373,21 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         }));
     };
 
+    const updateSearchForm = <K extends keyof CategorySearchCondition>(field: K, value: CategorySearchCondition[K]) => {
+        setSearchForm((prevSearchForm) => {
+            const nextSearchForm = {
+                ...prevSearchForm,
+                [field]: value,
+            };
+
+            if (field === 'majorCode' && activeTab === 'minor') {
+                nextSearchForm.minorCode = '';
+            }
+
+            return nextSearchForm;
+        });
+    };
+
     const handleSearch = () => {
         if (hasChanges && !window.confirm('변경사항이 저장되지 않습니다. 무시하고 조회하시겠습니까?')) {
             return;
@@ -318,10 +396,16 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         if (hasChanges) {
             restoreRows(activeTab);
             setSelectedRowId('');
+            setSelectedRowIds([]);
             setActiveCell(null);
             setEditingCell(null);
         }
 
+        setSearchCondition(searchForm);
+        setSelectedRowId('');
+        setSelectedRowIds([]);
+        setActiveCell(null);
+        setEditingCell(null);
         setHasChanges(false);
     };
 
@@ -339,15 +423,18 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         }
 
         setActiveTab(tab);
+        setSearchForm(createEmptySearchCondition());
+        setSearchCondition(createEmptySearchCondition());
         setSelectedRowId('');
+        setSelectedRowIds([]);
         setActiveCell(null);
         setEditingCell(null);
         setHasChanges(false);
     };
 
     const handleAdd = () => {
-        const nextRow = createEmptyRow(rows);
-        const selectedRow = rows.find((row) => row.id === effectiveSelectedRowId);
+        const nextRow = createEmptyRow(allRows);
+        const selectedRow = allRows.find((row) => row.id === effectiveSelectedRowId);
         const defaultMajor = majorData[0];
         const rowToAdd =
             activeTab === 'minor'
@@ -363,31 +450,39 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
             [activeTab]: [...prevRowsByTab[activeTab], rowToAdd],
         }));
         setSelectedRowId(rowToAdd.id);
+        setSelectedRowIds([rowToAdd.id]);
         setActiveCell({ rowId: rowToAdd.id, column: 'code' });
         setEditingCell({ rowId: rowToAdd.id, field: 'code' });
         setHasChanges(true);
     };
 
     const handleDelete = () => {
-        if (!effectiveSelectedRowId || !window.confirm('삭제하시겠습니까?')) {
+        const targetRowIds = displayedSelectedRowIds;
+
+        if (targetRowIds.length === 0 || !window.confirm('삭제하시겠습니까? \n(대분류 삭제시 포함된 소분류와 FAQ도 모두 삭제됩니다.)')) {
             return;
         }
 
-        const isAddedRow = addedRowsByTab[activeTab].some((row) => row.id === effectiveSelectedRowId);
+        const targetRowIdSet = new Set(targetRowIds);
+        const addedRowIds = addedRowsByTab[activeTab].filter((row) => targetRowIdSet.has(row.id)).map((row) => row.id);
+        const existingRowIds = targetRowIds.filter((rowId) => !addedRowIds.includes(rowId));
 
-        if (isAddedRow) {
+        if (addedRowIds.length > 0) {
             setAddedRowsByTab((prevRowsByTab) => ({
                 ...prevRowsByTab,
-                [activeTab]: prevRowsByTab[activeTab].filter((row) => row.id !== effectiveSelectedRowId),
+                [activeTab]: prevRowsByTab[activeTab].filter((row) => !targetRowIdSet.has(row.id)),
             }));
-        } else {
+        }
+
+        if (existingRowIds.length > 0) {
             setDeletedIdsByTab((prevRowsByTab) => ({
                 ...prevRowsByTab,
-                [activeTab]: [...prevRowsByTab[activeTab], effectiveSelectedRowId],
+                [activeTab]: Array.from(new Set([...prevRowsByTab[activeTab], ...existingRowIds])),
             }));
         }
 
         setSelectedRowId('');
+        setSelectedRowIds([]);
         setActiveCell(null);
         setEditingCell(null);
         setHasChanges(true);
@@ -459,6 +554,7 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         restoreRows('major');
         restoreRows('minor');
         setSelectedRowId('');
+        setSelectedRowIds([]);
         setActiveCell(null);
         setEditingCell(null);
         setHasChanges(false);
@@ -466,15 +562,39 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         await onRefresh?.();
     };
 
-    const handleCellSelect = (rowId: string, column: string) => {
-        setSelectedRowId(rowId);
+    const handleCellSelect = (rowId: string, column: string, isMultipleSelection = false) => {
         setActiveCell({ rowId, column });
+
+        if (!isMultipleSelection) {
+            setSelectedRowId(rowId);
+            setSelectedRowIds([rowId]);
+            return;
+        }
+
+        setSelectedRowIds((prevSelectedRowIds) => {
+            if (prevSelectedRowIds.includes(rowId)) {
+                const nextSelectedRowIds = prevSelectedRowIds.filter((selectedId) => selectedId !== rowId);
+
+                setSelectedRowId(nextSelectedRowIds.at(-1) ?? '');
+                return nextSelectedRowIds;
+            }
+
+            setSelectedRowId(rowId);
+            return [...prevSelectedRowIds, rowId];
+        });
+    };
+
+    const handleRowSelect = (rowId: string, event: MouseEvent<HTMLTableRowElement>) => {
+        handleCellSelect(rowId, 'index', event.ctrlKey || event.metaKey);
     };
 
     const getCellProps = (rowId: string, column: string, align?: 'left') => ({
         'data-align': align,
         'data-active': activeCell?.rowId === rowId && activeCell.column === column,
-        onClick: () => handleCellSelect(rowId, column),
+        onClick: (event: MouseEvent<HTMLTableCellElement>) => {
+            event.stopPropagation();
+            handleCellSelect(rowId, column, event.ctrlKey || event.metaKey);
+        },
     });
 
     const updateEditableCell = (rowId: string, field: EditableField, value: string) => {
@@ -549,11 +669,16 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
 
                     <FaqCategoriesSearchGrid>
                         <FaqCategoriesField>
-                            <FaqCategoriesSearchLabel htmlFor="categoryName">{tabLabel}</FaqCategoriesSearchLabel>
+                            <FaqCategoriesSearchLabel htmlFor="majorCode">대분류</FaqCategoriesSearchLabel>
                             <FaqCategoriesSearchControl>
-                                <FaqCategoriesSelect id="categoryName" defaultValue="전체" aria-label={tabLabel}>
-                                    <option value="전체">전체</option>
-                                    {rows.map((row) => (
+                                <FaqCategoriesSelect
+                                    id="majorCode"
+                                    value={searchForm.majorCode}
+                                    aria-label="대분류"
+                                    onChange={(event) => updateSearchForm('majorCode', event.target.value)}
+                                >
+                                    <option value="">전체</option>
+                                    {majorOptions.map((row) => (
                                         <option key={row.id} value={row.code}>
                                             {row.name}
                                         </option>
@@ -561,11 +686,36 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
                                 </FaqCategoriesSelect>
                             </FaqCategoriesSearchControl>
                         </FaqCategoriesField>
+                        {activeTab === 'minor' ? (
+                            <FaqCategoriesField>
+                                <FaqCategoriesSearchLabel htmlFor="minorCode">소분류</FaqCategoriesSearchLabel>
+                                <FaqCategoriesSearchControl>
+                                    <FaqCategoriesSelect
+                                        id="minorCode"
+                                        value={searchForm.minorCode}
+                                        aria-label="소분류"
+                                        onChange={(event) => updateSearchForm('minorCode', event.target.value)}
+                                    >
+                                        <option value="">전체</option>
+                                        {minorOptions.map((row) => (
+                                            <option key={row.id} value={row.code}>
+                                                {row.name}
+                                            </option>
+                                        ))}
+                                    </FaqCategoriesSelect>
+                                </FaqCategoriesSearchControl>
+                            </FaqCategoriesField>
+                        ) : null}
                         <FaqCategoriesField>
                             <FaqCategoriesSearchLabel htmlFor="useYn">사용여부</FaqCategoriesSearchLabel>
                             <FaqCategoriesSearchControl>
-                                <FaqCategoriesSelect id="useYn" defaultValue="전체" aria-label="사용여부">
-                                    <option value="전체">전체</option>
+                                <FaqCategoriesSelect
+                                    id="useYn"
+                                    value={searchForm.useYn}
+                                    aria-label="사용여부"
+                                    onChange={(event) => updateSearchForm('useYn', event.target.value)}
+                                >
+                                    <option value="">전체</option>
                                     <option value="Y">사용</option>
                                     <option value="N">미사용</option>
                                 </FaqCategoriesSelect>
@@ -583,6 +733,8 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
                                     fontSize="13px"
                                     border={`1px solid ${colors.coolGray200}`}
                                     borderRadius="4px"
+                                    value={searchForm.remark}
+                                    onChange={(event) => updateSearchForm('remark', event.target.value)}
                                 />
                             </FaqCategoriesSearchControl>
                         </FaqCategoriesField>
@@ -635,7 +787,11 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
                             </thead>
                             <tbody>
                                 {rows.map((row, index) => (
-                                    <tr key={row.id} data-selected={row.id === effectiveSelectedRowId} onClick={() => setSelectedRowId(row.id)}>
+                                    <tr
+                                        key={row.id}
+                                        data-selected={displayedSelectedRowIds.includes(row.id)}
+                                        onClick={(event) => handleRowSelect(row.id, event)}
+                                    >
                                         <td {...getCellProps(row.id, 'index')}>{index + 1}</td>
                                         {renderEditableCell(row, 'code', row.code)}
                                         {renderEditableCell(row, 'name', row.name, 'left')}
