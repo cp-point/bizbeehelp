@@ -26,14 +26,30 @@ export const AdminHeaderWrapper = styled.header`
     border-bottom: 1px solid ${colors.coolGray200};
     background: ${colors.primaryWhite};
     z-index: 99;
+
+    @media (max-width: 640px) {
+        height: auto;
+        min-height: 64px;
+        gap: 12px;
+        padding: 12px 16px;
+    }
 `;
 
 export const AdminHeaderLogo = styled(Link)`
     display: inline-flex;
     align-items: center;
+    min-width: 0;
 
     img {
         display: block;
+        width: 146px;
+        height: auto;
+    }
+
+    @media (max-width: 640px) {
+        img {
+            width: 118px;
+        }
     }
 `;
 
@@ -41,6 +57,12 @@ export const AdminHeaderActions = styled.div`
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
+
+    @media (max-width: 640px) {
+        justify-content: flex-end;
+        gap: 6px;
+    }
 `;
 
 export const AdminHeaderButton = styled(Link)<AdminHeaderButtonProps>`
@@ -66,5 +88,11 @@ export const AdminHeaderButton = styled(Link)<AdminHeaderButtonProps>`
         border-color: ${(props) => (props.$variant === 'line' ? colors.green600 : colors.coolGray200)};
         color: ${(props) => (props.$variant === 'line' ? colors.greenPrimary : colors.coolGray800)};
         background: ${(props) => (props.$variant === 'line' ? colors.green50 : colors.coolGray50)};
+    }
+
+    @media (max-width: 640px) {
+        padding: 9px 10px;
+        font-size: 13px;
+        line-height: 14px;
     }
 `;

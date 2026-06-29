@@ -12,8 +12,14 @@ export const PaginationWrapper = styled.div<PaginationWrapperProps>`
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
     gap: 6px;
     margin: ${(props) => props.$margin};
+
+    @media (max-width: 640px) {
+        justify-content: flex-start;
+        gap: 4px;
+    }
 `;
 
 export const PaginationButton = styled.button<PaginationButtonProps>`
@@ -37,6 +43,13 @@ export const PaginationButton = styled.button<PaginationButtonProps>`
         color: #b8bec7;
         background-color: #f5f6f8;
         cursor: not-allowed;
+    }
+
+    @media (max-width: 640px) {
+        min-width: 30px;
+        height: 30px;
+        padding: 0 8px;
+        font-size: 13px;
     }
 `;
 

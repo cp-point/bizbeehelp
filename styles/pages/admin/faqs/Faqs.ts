@@ -19,8 +19,8 @@ export const FaqsPage = styled.main`
     display: flex;
     flex-direction: column;
     gap: 24px;
-    min-width: 1254px;
     width: 100%;
+    min-width: 0;
     color: ${colors.coolGray800};
     background: ${colors.primaryWhite};
 `;
@@ -29,7 +29,13 @@ export const FaqsHeader = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
     min-height: 56px;
+
+    @media (max-width: 640px) {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 `;
 
 export const FaqsTitle = styled.h1`
@@ -62,6 +68,10 @@ export const FaqsAddLink = styled.a`
         border-color: #039855;
         background: #039855;
     }
+
+    @media (max-width: 640px) {
+        width: 100%;
+    }
 `;
 
 export const FaqsSection = styled.section`
@@ -74,6 +84,7 @@ export const FaqsSectionHeader = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
 
     h2 {
         margin: 0;
@@ -82,12 +93,25 @@ export const FaqsSectionHeader = styled.div`
         line-height: 1.4;
         color: ${colors.coolGray800};
     }
+
+    @media (max-width: 640px) {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 `;
 
 export const FaqsButtonGroup = styled.div`
     display: inline-flex;
     align-items: center;
     gap: 8px;
+
+    @media (max-width: 640px) {
+        width: 100%;
+
+        button {
+            flex: 1;
+        }
+    }
 `;
 
 export const FaqsForm = styled.div`
@@ -96,6 +120,14 @@ export const FaqsForm = styled.div`
     border-top: 1px solid ${colors.coolGray200};
     border-left: 1px solid ${colors.coolGray200};
     background: ${colors.primaryWhite};
+
+    @media (max-width: 1180px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 760px) {
+        grid-template-columns: 1fr;
+    }
 `;
 
 export const FaqsField = styled.div<FaqsFieldProps>`
@@ -109,7 +141,21 @@ export const FaqsField = styled.div<FaqsFieldProps>`
         props.$wide === 'large' &&
         css`
             grid-column: span 2;
-        `}
+        `};
+
+    @media (max-width: 760px) {
+        grid-template-columns: 96px minmax(0, 1fr);
+
+        ${(props) =>
+            props.$wide === 'large' &&
+            css`
+                grid-column: auto;
+            `}
+    }
+
+    @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+    }
 `;
 
 export const FaqsLabel = styled.label`
@@ -124,6 +170,14 @@ export const FaqsLabel = styled.label`
     text-align: right;
     color: ${colors.coolGray800};
     background: ${colors.coolGrayBackground};
+
+    @media (max-width: 480px) {
+        justify-content: flex-start;
+        min-height: 34px;
+        border-right: 0;
+        border-bottom: 1px solid ${colors.coolGray200};
+        text-align: left;
+    }
 `;
 
 export const FaqsDateRange = styled.div`
@@ -132,6 +186,11 @@ export const FaqsDateRange = styled.div`
     gap: 8px;
     min-width: 0;
     padding: 8px;
+
+    @media (max-width: 480px) {
+        align-items: stretch;
+        flex-direction: column;
+    }
 `;
 
 const control = css`
@@ -153,7 +212,7 @@ const control = css`
 `;
 
 export const FaqsDateInput = styled.input`
-    ${control}
+    ${control};
     position: relative;
     min-width: 0;
     padding-right: 34px;
@@ -176,6 +235,10 @@ export const FaqsDateDivider = styled.span`
     font-size: 12px;
     line-height: 1;
     color: ${colors.coolGray600};
+
+    @media (max-width: 480px) {
+        display: none;
+    }
 `;
 
 export const FaqsSelectBox = styled.div`
@@ -198,7 +261,7 @@ export const FaqsSelectBox = styled.div`
 `;
 
 export const FaqsSelect = styled.select`
-    ${control}
+    ${control};
     appearance: none;
     padding-right: 34px;
     cursor: pointer;

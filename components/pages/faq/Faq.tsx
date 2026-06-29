@@ -1,10 +1,18 @@
 'use client';
 
 import Image from 'next/image';
-import type { ReactNode } from 'react';
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { ReactNode, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import type { FaqMenuGroup, FaqSection } from './Faq.data';
-import { companyAddress, companyMeta, faqMenuGroups, faqSections, footerLinks, footerPhoneNumber, relatedSites, searchKeywords } from './Faq.data';
+import {
+    companyAddress,
+    companyMeta,
+    faqMenuGroups,
+    faqSections,
+    footerLinks,
+    footerPhoneNumber,
+    relatedSites,
+    searchKeywords,
+} from './Faq.data';
 import type { FaqData, MajorCategoryData } from '../../../types/Faq';
 import * as S from '../../../styles/components/pages/pub/faq/Faq';
 import { userStore } from '../../../store/userStore';
@@ -576,7 +584,8 @@ const Faq = ({ faqData }: FaqProps) => {
                         </S.InfoBox>
                     </S.Contents>
                 </S.BodyInner>
-                <S.FooterTopButton type="button" aria-label="상단으로 이동" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                <S.FooterTopButton type="button" aria-label="상단으로 이동"
+                                   onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                     <Image src="/assets/images/footer-arrow-up.svg" alt="" width={36} height={36} aria-hidden="true" />
                 </S.FooterTopButton>
             </S.Body>
@@ -619,7 +628,8 @@ const Faq = ({ faqData }: FaqProps) => {
                             </S.CompanyMetaList>
                         </S.CompanyInfo>
                         <S.FooterPhone>
-                            <Image src="/assets/images/footer-phone.svg" alt="" width={36} height={36} aria-hidden="true" />
+                            <Image src="/assets/images/footer-phone.svg" alt="" width={36} height={36}
+                                   aria-hidden="true" />
                             <strong>{footerPhoneNumber}</strong>
                         </S.FooterPhone>
                     </S.FooterInfoRow>
@@ -633,9 +643,11 @@ const Faq = ({ faqData }: FaqProps) => {
                                 }
                             }}
                         >
-                            <S.RelatedSitesButton type="button" aria-expanded={isRelatedSitesOpen} onClick={() => setIsRelatedSitesOpen((isOpen) => !isOpen)}>
+                            <S.RelatedSitesButton type="button" aria-expanded={isRelatedSitesOpen}
+                                                  onClick={() => setIsRelatedSitesOpen((isOpen) => !isOpen)}>
                                 관련 사이트
-                                <Image src="/assets/images/footer-related-plus.svg" alt="" width={16} height={16} aria-hidden="true" />
+                                <Image src="/assets/images/footer-related-plus.svg" alt="" width={16} height={16}
+                                       aria-hidden="true" />
                             </S.RelatedSitesButton>
                             <S.RelatedSitesMenu $isOpen={isRelatedSitesOpen}>
                                 {relatedSites.map((site) => (

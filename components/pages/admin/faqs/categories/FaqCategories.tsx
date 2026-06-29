@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
 import type { KeyboardEvent, MouseEvent } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import Button from '../../../../atom/Button';
 import Checkbox from '../../../../atom/Checkbox';
@@ -26,8 +26,8 @@ import {
     FaqCategoriesSection,
     FaqCategoriesSectionHeader,
     FaqCategoriesSelect,
-    FaqCategoriesTabList,
     FaqCategoriesTableScroll,
+    FaqCategoriesTabList,
     FaqCategoriesTitle,
     FaqCategoriesToast,
 } from '../../../../../styles/pages/admin/faqs/categories/FaqCategories';
@@ -377,7 +377,10 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         if (addedRow) {
             setAddedRowsByTab((prevRowsByTab) => ({
                 ...prevRowsByTab,
-                [activeTab]: prevRowsByTab[activeTab].map((row) => (row.id === rowId ? { ...row, [field]: value } : row)),
+                [activeTab]: prevRowsByTab[activeTab].map((row) => (row.id === rowId ? {
+                    ...row,
+                    [field]: value,
+                } : row)),
             }));
         } else {
             setEditedRowsByTab((prevRowsByTab) => ({
@@ -476,10 +479,10 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         const rowToAdd =
             activeTab === 'minor'
                 ? {
-                      ...nextRow,
-                      majorCode: selectedRow?.majorCode ?? defaultMajor?.majorCode,
-                      majorName: selectedRow?.majorName ?? defaultMajor?.majorName,
-                  }
+                    ...nextRow,
+                    majorCode: selectedRow?.majorCode ?? defaultMajor?.majorCode,
+                    majorName: selectedRow?.majorName ?? defaultMajor?.majorName,
+                }
                 : nextRow;
 
         setAddedRowsByTab((prevRowsByTab) => ({
@@ -786,50 +789,50 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
                                 <col style={{ width: 160 }} />
                             </colgroup>
                             <thead>
-                                <tr>
-                                    <th aria-label="번호" />
-                                    <th>{getCodeLabel(activeTab)}</th>
-                                    <th>{getNameLabel(activeTab)}</th>
-                                    <th>순번</th>
-                                    <th>사용여부</th>
-                                    <th>비고</th>
-                                    <th>등록일시</th>
-                                    <th>수정일시</th>
-                                    <th>삭제일시</th>
-                                </tr>
+                            <tr>
+                                <th aria-label="번호" />
+                                <th>{getCodeLabel(activeTab)}</th>
+                                <th>{getNameLabel(activeTab)}</th>
+                                <th>순번</th>
+                                <th>사용여부</th>
+                                <th>비고</th>
+                                <th>등록일시</th>
+                                <th>수정일시</th>
+                                <th>삭제일시</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                {rows.map((row, index) => (
-                                    <tr
-                                        key={row.id}
-                                        data-selected={displayedSelectedRowIds.includes(row.id)}
-                                        onClick={(event) => handleRowSelect(row.id, event)}
-                                    >
-                                        <td {...getCellProps(row.id, 'index')}>{index + 1}</td>
-                                        {renderEditableCell(row, 'code', row.code)}
-                                        {renderEditableCell(row, 'name', row.name, 'left')}
-                                        {renderEditableCell(row, 'sortOrder', row.sortOrder)}
-                                        <td {...getCellProps(row.id, 'useYn')}>
-                                            <Checkbox
-                                                checked={row.useYn}
-                                                size="16px"
-                                                color={colors.greenPrimary}
-                                                border={`1px solid ${colors.coolGray200}`}
-                                                borderRadius="3px"
-                                                onChange={(event) => updateRow(row.id, 'useYn', event.target.checked)}
-                                            />
-                                        </td>
-                                        {renderEditableCell(row, 'remark', row.remark, 'left')}
-                                        <td {...getCellProps(row.id, 'createdAt')}>{row.createdAt}</td>
-                                        <td {...getCellProps(row.id, 'updatedAt')}>{row.updatedAt}</td>
-                                        <td {...getCellProps(row.id, 'deletedAt')}>{row.deletedAt}</td>
-                                    </tr>
-                                ))}
-                                {rows.length === 0 ? (
-                                    <tr>
-                                        <FaqCategoriesEmptyCell colSpan={9}>조회 결과가 없습니다.</FaqCategoriesEmptyCell>
-                                    </tr>
-                                ) : null}
+                            {rows.map((row, index) => (
+                                <tr
+                                    key={row.id}
+                                    data-selected={displayedSelectedRowIds.includes(row.id)}
+                                    onClick={(event) => handleRowSelect(row.id, event)}
+                                >
+                                    <td {...getCellProps(row.id, 'index')}>{index + 1}</td>
+                                    {renderEditableCell(row, 'code', row.code)}
+                                    {renderEditableCell(row, 'name', row.name, 'left')}
+                                    {renderEditableCell(row, 'sortOrder', row.sortOrder)}
+                                    <td {...getCellProps(row.id, 'useYn')}>
+                                        <Checkbox
+                                            checked={row.useYn}
+                                            size="16px"
+                                            color={colors.greenPrimary}
+                                            border={`1px solid ${colors.coolGray200}`}
+                                            borderRadius="3px"
+                                            onChange={(event) => updateRow(row.id, 'useYn', event.target.checked)}
+                                        />
+                                    </td>
+                                    {renderEditableCell(row, 'remark', row.remark, 'left')}
+                                    <td {...getCellProps(row.id, 'createdAt')}>{row.createdAt}</td>
+                                    <td {...getCellProps(row.id, 'updatedAt')}>{row.updatedAt}</td>
+                                    <td {...getCellProps(row.id, 'deletedAt')}>{row.deletedAt}</td>
+                                </tr>
+                            ))}
+                            {rows.length === 0 ? (
+                                <tr>
+                                    <FaqCategoriesEmptyCell colSpan={9}>조회 결과가 없습니다.</FaqCategoriesEmptyCell>
+                                </tr>
+                            ) : null}
                             </tbody>
                         </FaqCategoriesDataTable>
                     </FaqCategoriesTableScroll>

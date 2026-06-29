@@ -39,10 +39,12 @@ type TableEmptyCellProps = {
 export const TableWrapper = styled.div<TableWrapperProps>`
     width: ${(props) => props.$width};
     margin: ${(props) => props.$margin};
+    min-width: 0;
 `;
 
 export const TableContainer = styled.div<TableContainerProps>`
     width: 100%;
+    max-width: 100%;
     overflow-x: auto;
     border: 1px solid #d9dde3;
     border-radius: 6px;
@@ -91,7 +93,11 @@ export const TableElement = styled.table<TableElementProps>`
                     z-index: 20;
                 }
             `}
-        `}
+        `};
+
+    @media (max-width: 768px) {
+        min-width: ${(props) => props.$minWidth ?? '720px'};
+    }
 `;
 
 export const TableHeaderCell = styled.th<TableCellProps>`

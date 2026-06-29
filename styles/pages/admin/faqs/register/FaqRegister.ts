@@ -111,8 +111,8 @@ export const FaqRegisterPage = styled.main`
     display: flex;
     flex-direction: column;
     gap: 24px;
-    min-width: 1254px;
     width: 100%;
+    min-width: 0;
     color: ${colors.coolGray800};
     background: ${colors.primaryWhite};
 
@@ -128,7 +128,13 @@ export const FaqRegisterHeader = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
     min-height: 56px;
+
+    @media (max-width: 640px) {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 `;
 
 export const FaqRegisterTitle = styled.h1`
@@ -143,6 +149,10 @@ export const FaqRegisterButtonGroup = styled.div`
     display: inline-flex;
     align-items: center;
     gap: 8px;
+
+    @media (max-width: 640px) {
+        width: 100%;
+    }
 `;
 
 export const FaqRegisterButton = styled.button<FaqRegisterButtonProps>`
@@ -160,7 +170,11 @@ export const FaqRegisterButton = styled.button<FaqRegisterButtonProps>`
         background-color 0.2s;
 
     ${(props) => buttonSize[props.$size]}
-    ${(props) => buttonVariant[props.$variant]}
+    ${(props) => buttonVariant[props.$variant]};
+
+    @media (max-width: 640px) {
+        flex: 1;
+    }
 `;
 
 export const FaqRegisterFormSection = styled.section`
@@ -172,11 +186,20 @@ export const FaqRegisterFormGrid = styled.div`
     grid-template-columns: repeat(3, minmax(0, 1fr));
     border-top: 1px solid ${colors.coolGray200};
     border-left: 1px solid ${colors.coolGray200};
+
+    @media (max-width: 1180px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 760px) {
+        grid-template-columns: 1fr;
+    }
 `;
 
 export const FaqRegisterFormCell = styled.div<FaqRegisterFormCellProps>`
     display: grid;
     grid-template-columns: 120px minmax(0, 1fr);
+    min-width: 0;
     min-height: 44px;
     border-right: 1px solid ${colors.coolGray200};
     border-bottom: 1px solid ${colors.coolGray200};
@@ -191,7 +214,21 @@ export const FaqRegisterFormCell = styled.div<FaqRegisterFormCellProps>`
         props.$span === 'full' &&
         css`
             grid-column: 1 / -1;
-        `}
+        `};
+
+    @media (max-width: 760px) {
+        grid-template-columns: 96px minmax(0, 1fr);
+
+        ${(props) =>
+            props.$span === 'wide' &&
+            css`
+                grid-column: auto;
+            `}
+    }
+
+    @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+    }
 `;
 
 export const FaqRegisterLabel = styled.label`
@@ -206,6 +243,14 @@ export const FaqRegisterLabel = styled.label`
     text-align: right;
     color: ${colors.coolGray800};
     background: ${colors.coolGrayBackground};
+
+    @media (max-width: 480px) {
+        justify-content: flex-start;
+        min-height: 34px;
+        border-right: 0;
+        border-bottom: 1px solid ${colors.coolGray200};
+        text-align: left;
+    }
 `;
 
 export const FaqRegisterRequiredMark = styled.span`
@@ -255,7 +300,7 @@ export const FaqRegisterSelectBox = styled.div`
 `;
 
 export const FaqRegisterSelect = styled.select`
-    ${control}
+    ${control};
     width: 100%;
     margin: 0;
     appearance: none;
@@ -299,6 +344,10 @@ export const FaqRegisterEditorSection = styled.section`
     height: clamp(520px, calc(100vh - 230px), 720px);
     border: 1px solid ${colors.coolGray200};
     background: ${colors.primaryWhite};
+
+    @media (max-width: 760px) {
+        height: 420px;
+    }
 `;
 
 export const FaqRegisterEditorTextarea = styled.textarea`

@@ -81,12 +81,12 @@ const FaqRegister = () => {
     const { data: faqDetail } = useSWR<FaqDetailData>(
         faqId
             ? {
-                  url: '/faq/detail',
-                  method: 'POST',
-                  param: {
-                      faqId,
-                  },
-              }
+                url: '/faq/detail',
+                method: 'POST',
+                param: {
+                    faqId,
+                },
+            }
             : null,
         fetcher,
         {
@@ -120,12 +120,12 @@ const FaqRegister = () => {
     const { data: minorData = [] } = useSWR<MinorList>(
         selectedMajorCode
             ? {
-                  url: '/minor',
-                  method: 'GET',
-                  param: {
-                      majorCode: selectedMajorCode,
-                  },
-              }
+                url: '/minor',
+                method: 'GET',
+                param: {
+                    majorCode: selectedMajorCode,
+                },
+            }
             : null,
         fetcher,
         {
@@ -270,7 +270,8 @@ const FaqRegister = () => {
                             대분류 <S.FaqRegisterRequiredMark>*</S.FaqRegisterRequiredMark>
                         </S.FaqRegisterLabel>
                         <S.FaqRegisterSelectBox>
-                            <S.FaqRegisterSelect value={selectedMajorCode} onChange={(event) => handleMajorChange(event.target.value)}>
+                            <S.FaqRegisterSelect value={selectedMajorCode}
+                                                 onChange={(event) => handleMajorChange(event.target.value)}>
                                 <option value="">선택</option>
                                 {majorData.map((major) => (
                                     <option key={major.majorCode} value={major.majorCode}>
@@ -301,19 +302,22 @@ const FaqRegister = () => {
                     </S.FaqRegisterFormCell>
                     <S.FaqRegisterFormCell>
                         <S.FaqRegisterLabel>메타태그</S.FaqRegisterLabel>
-                        <S.FaqRegisterInput value={metaTag} placeholder="메타태그 입력" onChange={(event) => updateFormValue('metaTag', event.target.value)} />
+                        <S.FaqRegisterInput value={metaTag} placeholder="메타태그 입력"
+                                            onChange={(event) => updateFormValue('metaTag', event.target.value)} />
                     </S.FaqRegisterFormCell>
 
                     <S.FaqRegisterFormCell $span="full">
                         <S.FaqRegisterLabel>
                             질문 <S.FaqRegisterRequiredMark>*</S.FaqRegisterRequiredMark>
                         </S.FaqRegisterLabel>
-                        <S.FaqRegisterInput value={title} placeholder="질문 입력" onChange={(event) => updateFormValue('title', event.target.value)} />
+                        <S.FaqRegisterInput value={title} placeholder="질문 입력"
+                                            onChange={(event) => updateFormValue('title', event.target.value)} />
                     </S.FaqRegisterFormCell>
 
                     <S.FaqRegisterFormCell $span="wide">
                         <S.FaqRegisterLabel>비고</S.FaqRegisterLabel>
-                        <S.FaqRegisterInput value={remark} placeholder="비고 입력" onChange={(event) => updateFormValue('remark', event.target.value)} />
+                        <S.FaqRegisterInput value={remark} placeholder="비고 입력"
+                                            onChange={(event) => updateFormValue('remark', event.target.value)} />
                     </S.FaqRegisterFormCell>
                     <S.FaqRegisterFormCell>
                         <S.FaqRegisterLabel>

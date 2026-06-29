@@ -52,8 +52,8 @@ const toastEnter = keyframes`
 export const FaqCategoriesPage = styled.main`
     display: flex;
     flex-direction: column;
-    min-width: 1254px;
     width: 100%;
+    min-width: 0;
     color: ${colors.coolGray800};
     background: ${colors.primaryWhite};
 
@@ -88,6 +88,7 @@ export const FaqCategoriesTabList = styled.div`
     display: flex;
     align-items: center;
     border-bottom: 1px solid ${colors.coolGray150};
+    overflow-x: auto;
 
     button {
         padding: 8px 24px 12px;
@@ -99,6 +100,7 @@ export const FaqCategoriesTabList = styled.div`
         color: ${colors.coolGray600};
         background: ${colors.primaryWhite};
         cursor: pointer;
+        white-space: nowrap;
     }
 
     button[data-active='true'] {
@@ -125,6 +127,7 @@ export const FaqCategoriesSectionHeader = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
 
     h2 {
         margin: 0;
@@ -133,12 +136,25 @@ export const FaqCategoriesSectionHeader = styled.div`
         line-height: 1.4;
         color: ${colors.coolGray800};
     }
+
+    @media (max-width: 640px) {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 `;
 
 export const FaqCategoriesButtonGroup = styled.div`
     display: inline-flex;
     align-items: center;
     gap: 8px;
+
+    @media (max-width: 640px) {
+        width: 100%;
+
+        button {
+            flex: 1;
+        }
+    }
 `;
 
 export const FaqCategoriesSearchGrid = styled.div`
@@ -147,6 +163,14 @@ export const FaqCategoriesSearchGrid = styled.div`
     border-top: 1px solid ${colors.coolGray200};
     border-left: 1px solid ${colors.coolGray200};
     background: ${colors.primaryWhite};
+
+    @media (max-width: 1180px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 760px) {
+        grid-template-columns: 1fr;
+    }
 `;
 
 export const FaqCategoriesField = styled.div`
@@ -155,6 +179,14 @@ export const FaqCategoriesField = styled.div`
     min-width: 0;
     border-right: 1px solid ${colors.coolGray200};
     border-bottom: 1px solid ${colors.coolGray200};
+
+    @media (max-width: 760px) {
+        grid-template-columns: 96px minmax(0, 1fr);
+    }
+
+    @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+    }
 `;
 
 export const FaqCategoriesSearchLabel = styled.label`
@@ -169,6 +201,14 @@ export const FaqCategoriesSearchLabel = styled.label`
     text-align: right;
     color: ${colors.coolGray800};
     background: ${colors.coolGrayBackground};
+
+    @media (max-width: 480px) {
+        justify-content: flex-start;
+        min-height: 34px;
+        border-right: 0;
+        border-bottom: 1px solid ${colors.coolGray200};
+        text-align: left;
+    }
 `;
 
 export const FaqCategoriesSearchControl = styled.div`
@@ -203,7 +243,7 @@ export const FaqCategoriesTableScroll = styled.div`
 
 export const FaqCategoriesDataTable = styled.table`
     width: 100%;
-    min-width: 1536px;
+    min-width: 1376px;
     border-collapse: separate;
     border-spacing: 0;
     border-left: 1px solid ${colors.coolGray200};
@@ -292,4 +332,19 @@ export const FaqCategoriesToast = styled.div`
     background: ${colors.coolGray600};
     animation: ${toastEnter} 0.2s ease-out;
     z-index: 20;
+
+    @media (max-width: 1024px) {
+        left: 24px;
+    }
+
+    @media (max-width: 640px) {
+        right: 12px;
+        bottom: 16px;
+        left: 12px;
+        width: auto;
+        height: auto;
+        min-height: 56px;
+        padding: 12px 18px;
+        font-size: 14px;
+    }
 `;
