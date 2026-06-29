@@ -67,11 +67,36 @@ const getVisibleFaqs = (faqData: MajorCategoryData[]) => {
         );
 };
 
+const addKeyword = (keywords: Set<string>, keyword?: string | null) => {
+    const value = keyword?.trim();
+
+    if (value) {
+        keywords.add(value);
+    }
+};
+
 const getKeywords = (faqData: MajorCategoryData[]) => {
-    return faqData.flatMap((majorCategory) => [
-        majorCategory.majorName,
-        ...(majorCategory.minorCategories ?? []).map((minorCategory) => minorCategory.minorName),
-    ]);
+    const keywords = new Set<string>();
+
+    faqData
+        .filter((majorCategory) => isUseYn(majorCategory.useYn))
+        .forEach((majorCategory) => {
+            addKeyword(keywords, majorCategory.majorName);
+
+            (majorCategory.minorCategories ?? [])
+                .filter((minorCategory) => isUseYn(minorCategory.useYn))
+                .forEach((minorCategory) => {
+                    addKeyword(keywords, minorCategory.minorName);
+
+                    (minorCategory.faqs ?? [])
+                        .filter((faq) => isUseYn(faq.useYn))
+                        .forEach((faq) => {
+                            addKeyword(keywords, faq.metaTag);
+                        });
+                });
+        });
+
+    return Array.from(keywords);
 };
 
 const createFaqJsonLd = (faqs: Array<FaqData & { majorName: string; minorName: string }>) => ({
@@ -92,8 +117,6 @@ const stringifyJsonLd = (value: unknown) => JSON.stringify(value).replace(/</g, 
 export async function generateMetadata(): Promise<Metadata> {
     const faqData = await getFaqData();
     const keywords = getKeywords(faqData);
-
-    console.log(keywords);
 
     return {
         title: 'FAQ | BizHelp',
