@@ -1,29 +1,125 @@
-'use client';
-
+import { cache } from 'react';
+import type { Metadata } from 'next';
 import Faq from '../../../components/pages/faq/Faq';
-import useSWR from 'swr';
-import axiosInstance from '../../../libs/axios';
-import type { Request as ApiRequest } from '../../../types/Common';
-import type { MajorCategoryData } from '../../../types/Faq';
+import type { FaqData, MajorCategoryData } from '../../../types/Faq';
 
-const fetcher = (payload: ApiRequest) => axiosInstance.post('/api/backend', payload).then((res) => res.data.result);
-const Page = () => {
+const DOMAIN = process.env.BACK_URL || process.env.NEXT_PUBLIC_BACK_URL || process.env.BASE_URL;
 
+export const dynamic = 'force-dynamic';
 
-    const { data: faqData } = useSWR<MajorCategoryData[]>(
-        {
-            url: `/faq`,
+type BackendFaqResponse = {
+    result?: MajorCategoryData[];
+};
+
+const getBackendUrl = (url: string) => {
+    if (!DOMAIN) {
+        return '';
+    }
+
+    return `${DOMAIN}${url}`;
+};
+
+const isUseYn = (useYn: string) => useYn === 'Y';
+
+const getFaqData = cache(async (): Promise<MajorCategoryData[]> => {
+    const backendUrl = getBackendUrl('/faq');
+
+    if (!backendUrl) {
+        return [];
+    }
+
+    try {
+        const response = await fetch(backendUrl, {
             method: 'GET',
-        },
-        fetcher,
-        {
-            revalidateOnFocus: false,
-            revalidateOnReconnect: false,
-            fallbackData: [],
-        },
-    );
+            cache: 'no-store',
+            headers: {
+                Accept: 'application/json',
+            },
+        });
 
-    return <Faq faqData={faqData} />;
+        if (!response.ok) {
+            return [];
+        }
+
+        const data: BackendFaqResponse | MajorCategoryData[] = await response.json();
+
+        return Array.isArray(data) ? data : data.result ?? [];
+    } catch {
+        return [];
+    }
+});
+
+const getVisibleFaqs = (faqData: MajorCategoryData[]) => {
+    return faqData
+        .filter((majorCategory) => isUseYn(majorCategory.useYn))
+        .flatMap((majorCategory) =>
+            (majorCategory.minorCategories ?? [])
+                .filter((minorCategory) => isUseYn(minorCategory.useYn))
+                .flatMap((minorCategory) =>
+                    (minorCategory.faqs ?? [])
+                        .filter((faq) => isUseYn(faq.useYn))
+                        .map((faq) => ({
+                            ...faq,
+                            majorName: majorCategory.majorName,
+                            minorName: minorCategory.minorName,
+                        })),
+                ),
+        );
+};
+
+const getKeywords = (faqData: MajorCategoryData[]) => {
+    return faqData.flatMap((majorCategory) => [
+        majorCategory.majorName,
+        ...(majorCategory.minorCategories ?? []).map((minorCategory) => minorCategory.minorName),
+    ]);
+};
+
+const createFaqJsonLd = (faqs: Array<FaqData & { majorName: string; minorName: string }>) => ({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.title,
+        acceptedAnswer: {
+            '@type': 'Answer',
+            text: faq.content,
+        },
+    })),
+});
+
+const stringifyJsonLd = (value: unknown) => JSON.stringify(value).replace(/</g, '\\u003c');
+
+export async function generateMetadata(): Promise<Metadata> {
+    const faqData = await getFaqData();
+    const keywords = getKeywords(faqData);
+
+    console.log(keywords);
+
+    return {
+        title: 'FAQ | BizHelp',
+        description: '비즈비 도입, ERP 사용, 그룹웨어 관련 자주 묻는 질문을 확인할 수 있습니다.',
+        keywords,
+    };
+}
+
+const Page = async () => {
+    const faqData = await getFaqData();
+    const visibleFaqs = getVisibleFaqs(faqData);
+
+
+    return (
+        <>
+            {visibleFaqs.length > 0 && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: stringifyJsonLd(createFaqJsonLd(visibleFaqs)),
+                    }}
+                />
+            )}
+            <Faq faqData={faqData} />
+        </>
+    );
 };
 
 export default Page;
