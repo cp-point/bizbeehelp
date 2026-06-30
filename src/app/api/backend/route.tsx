@@ -9,7 +9,7 @@ const BACKEND_ENV_SOURCE = process.env.BACK_URL
         : process.env.BASE_URL
             ? 'BASE_URL'
             : 'NOT_CONFIGURED';
-const DOMAIN = process.env.BACK_URL || process.env.NEXT_PUBLIC_BACK_URL || process.env.BASE_URL || 'https://help-api.bizbee.co.kr/api';
+const DOMAIN = process.env.BACK_URL || process.env.NEXT_PUBLIC_BACK_URL || process.env.BASE_URL || 'https://help-api.bizbee.co.kr';
 
 const API_PATH = {
     LOGIN: '/admin/login',
