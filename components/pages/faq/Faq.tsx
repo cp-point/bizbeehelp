@@ -404,19 +404,19 @@ const Faq = ({ faqData }: FaqProps) => {
                     <Image src="/assets/images/header-logo.svg" alt="bizbee Help" width={146} height={32} priority />
                 </S.HeaderLogo>
                 <S.HeaderActions>
-                    {userData ? (
-                        <S.HeaderButton type="button" $variant="solid" onClick={() => {
-                            router.push('/admin/faqs');
-                        }}>
-                            관리자
-                        </S.HeaderButton>
-                    ) : (
-                        <S.HeaderButton type="button" $variant="line" onClick={() => {
-                            router.push('/admin/login');
-                        }}>
-                            로그인
-                        </S.HeaderButton>
-                    )}
+                    {/*{userData ? (*/}
+                    {/*<S.HeaderButton type="button" $variant="solid" onClick={() => {*/}
+                    {/*    router.push('/admin/faqs');*/}
+                    {/*}}>*/}
+                    {/*    관리자*/}
+                    {/*</S.HeaderButton>*/}
+                    {/*) : (*/}
+                    {/*    // <S.HeaderButton type="button" $variant="line" onClick={() => {*/}
+                    {/*    //     router.push('/admin/login');*/}
+                    {/*    // }}>*/}
+                    {/*    //     로그인*/}
+                    {/*    // </S.HeaderButton>*/}
+                    {/*)}*/}
                     <S.HeaderButton type="button" $variant="line">
                         비즈비 홈페이지
                     </S.HeaderButton>
