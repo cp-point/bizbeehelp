@@ -5,11 +5,11 @@ import { Request, Response } from '../../../../types/Common';
 const BACKEND_ENV_SOURCE = process.env.BACK_URL
     ? 'BACK_URL'
     : process.env.NEXT_PUBLIC_BACK_URL
-      ? 'NEXT_PUBLIC_BACK_URL'
-      : process.env.BASE_URL
-        ? 'BASE_URL'
-        : 'NOT_CONFIGURED';
-const DOMAIN = process.env.BACK_URL || process.env.NEXT_PUBLIC_BACK_URL || process.env.BASE_URL;
+        ? 'NEXT_PUBLIC_BACK_URL'
+        : process.env.BASE_URL
+            ? 'BASE_URL'
+            : 'NOT_CONFIGURED';
+const DOMAIN = process.env.BACK_URL || process.env.NEXT_PUBLIC_BACK_URL || process.env.BASE_URL || 'https://help-api.bizbee.co.kr/api';
 
 const API_PATH = {
     LOGIN: '/admin/login',
