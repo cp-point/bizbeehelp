@@ -400,7 +400,7 @@ const Faq = ({ faqData }: FaqProps) => {
     return (
         <S.Page>
             <S.Header>
-                <S.HeaderLogo href="/pub/faq" aria-label="Bizbee Help 홈">
+                <S.HeaderLogo href="/faq" aria-label="Bizbee Help 홈">
                     <Image src="/assets/images/header-logo.svg" alt="bizbee Help" width={146} height={32} priority />
                 </S.HeaderLogo>
                 <S.HeaderActions>
