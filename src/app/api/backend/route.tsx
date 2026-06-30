@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ResponseType } from '../../../../enum/Common';
 import { Request, Response } from '../../../../types/Common';
 
+const BACKEND_ENV_SOURCE = process.env.BACK_URL
+    ? 'BACK_URL'
+    : process.env.NEXT_PUBLIC_BACK_URL
+      ? 'NEXT_PUBLIC_BACK_URL'
+      : process.env.BASE_URL
+        ? 'BASE_URL'
+        : 'NOT_CONFIGURED';
 const DOMAIN = process.env.BACK_URL || process.env.NEXT_PUBLIC_BACK_URL || process.env.BASE_URL;
 
 const API_PATH = {
@@ -54,6 +61,16 @@ const getBackendUrlWithQuery = (url: string, param?: object) => {
     const queryString = searchParams.toString();
 
     return queryString ? `${backendUrl}?${queryString}` : backendUrl;
+};
+
+const logBackendRequest = (method: string, requestUrl: string, backendUrl: string) => {
+    console.info('[Backend Proxy Request]', {
+        envSource: BACKEND_ENV_SOURCE,
+        domain: DOMAIN || null,
+        method,
+        requestUrl,
+        backendUrl,
+    });
 };
 
 const getErrorMessage = (error: unknown) => {
@@ -168,7 +185,11 @@ const createProxyResponse = ({ data, cookies }: BackendResult, context: Response
 const requestBackendJson = async (param: Request, headers: Headers) => {
     headers.set('Content-Type', 'application/json');
 
-    const res = await fetch(param.method === 'GET' ? getBackendUrlWithQuery(param.url, param.param) : getBackendUrl(param.url), {
+    const backendUrl = param.method === 'GET' ? getBackendUrlWithQuery(param.url, param.param) : getBackendUrl(param.url);
+
+    logBackendRequest(param.method, param.url, backendUrl);
+
+    const res = await fetch(backendUrl, {
         method: param.method,
         headers,
         body: param.method === 'GET' ? undefined : JSON.stringify(param.param || {}),
@@ -191,7 +212,11 @@ const requestBackendFormData = async (formData: FormData, headers: Headers) => {
 
     formData.delete('url');
 
-    const res = await fetch(getBackendUrl(url), {
+    const backendUrl = getBackendUrl(url);
+
+    logBackendRequest('POST', url, backendUrl);
+
+    const res = await fetch(backendUrl, {
         method: 'POST',
         headers,
         body: formData,
