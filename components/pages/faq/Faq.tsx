@@ -17,6 +17,7 @@ import type { FaqData, MajorCategoryData } from '../../../types/Faq';
 import * as S from '../../../styles/components/pages/pub/faq/Faq';
 import { userStore } from '../../../store/userStore';
 import { useRouter } from 'next/navigation';
+import { getPlainTextFromHtml, hasHtmlTag, plainTextToHtml, sanitizeEditorHtml } from '../../../utils/html';
 
 type SearchIconProps = {
     size?: number;
@@ -107,6 +108,8 @@ const getHighlightedText = (text: string, query: string): ReactNode => {
 };
 
 const getFaqContent = (content: string) => {
+    const contentHtml = sanitizeEditorHtml(hasHtmlTag(content) ? content : plainTextToHtml(content));
+    const searchText = getPlainTextFromHtml(contentHtml);
     const lines = content
         .split(/\r?\n/)
         .map((line) => line.trim())
@@ -116,6 +119,8 @@ const getFaqContent = (content: string) => {
     return {
         answer,
         bullets: bulletLines.map((line) => line.replace(/^[-•]\s*/, '')),
+        contentHtml,
+        searchText,
     };
 };
 
@@ -151,13 +156,15 @@ const createFaqSections = (faqData?: MajorCategoryData[]): FaqSection[] => {
                 items: sortFaqs(minorCategory.faqs ?? [])
                     .filter((faq) => faq.useYn === 'Y')
                     .map((faq) => {
-                        const { answer, bullets } = getFaqContent(faq.content);
+                        const { answer, bullets, contentHtml, searchText } = getFaqContent(faq.content);
 
                         return {
                             id: String(faq.faqId),
                             question: faq.title,
                             answer,
                             bullets: bullets.length > 0 ? bullets : undefined,
+                            contentHtml,
+                            searchText,
                         };
                     }),
             })),
@@ -212,8 +219,6 @@ const MenuContent = ({ menuGroups, selectedMenuId, onMenuClick }: MenuContentPro
 
 const Faq = ({ faqData }: FaqProps) => {
 
-    const router = useRouter();
-
     const [selectedMenuId, setSelectedMenuId] = useState('all');
     const [openedItemId, setOpenedItemId] = useState('');
     const [isMenuScrolling, setIsMenuScrolling] = useState(false);
@@ -226,11 +231,6 @@ const Faq = ({ faqData }: FaqProps) => {
     const floatingOffsetRef = useRef(0);
     const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
     const mobileMenuRef = useRef<HTMLDivElement | null>(null);
-    const userData = useSyncExternalStore(
-        userStore.subscribe,
-        () => userStore.getState().userData,
-        () => null,
-    );
     const hasFaqData = Boolean(faqData && faqData.length > 0);
     const sections = useMemo(() => createFaqSections(faqData), [faqData]);
     const menuGroups = useMemo(() => createFaqMenuGroups(faqData, hasFaqData), [faqData, hasFaqData]);
@@ -334,7 +334,7 @@ const Faq = ({ faqData }: FaqProps) => {
             .map((section) => ({
                 ...section,
                 items: section.items.filter((item) => {
-                    const searchableText = [item.question, item.answer, ...(item.bullets ?? [])].join(' ').toLowerCase();
+                    const searchableText = [item.question, item.searchText ?? item.answer, ...(item.bullets ?? [])].join(' ').toLowerCase();
 
                     return searchableText.includes(normalizedQuery);
                 }),
@@ -538,13 +538,21 @@ const Faq = ({ faqData }: FaqProps) => {
                                                                   aria-hidden={!isOpen}>
                                                     <S.AccordionPanelInner $isOpen={isOpen}
                                                                            $isInstant={isMenuScrolling}>
-                                                        <p>{getHighlightedText(item.answer, submittedSearchQuery)}</p>
-                                                        {item.bullets && (
-                                                            <ul>
-                                                                {item.bullets.map((bullet) => (
-                                                                    <li key={bullet}>{getHighlightedText(bullet, submittedSearchQuery)}</li>
-                                                                ))}
-                                                            </ul>
+                                                        {item.contentHtml ? (
+                                                            <S.FaqContentHtml
+                                                                dangerouslySetInnerHTML={{ __html: item.contentHtml }}
+                                                            />
+                                                        ) : (
+                                                            <>
+                                                                <p>{getHighlightedText(item.answer, submittedSearchQuery)}</p>
+                                                                {item.bullets && (
+                                                                    <ul>
+                                                                        {item.bullets.map((bullet) => (
+                                                                            <li key={bullet}>{getHighlightedText(bullet, submittedSearchQuery)}</li>
+                                                                        ))}
+                                                                    </ul>
+                                                                )}
+                                                            </>
                                                         )}
                                                     </S.AccordionPanelInner>
                                                 </S.AccordionPanel>

@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import localFont from 'next/font/local';
+import GlobalLoading from '../../components/molecules/GlobalLoading';
 import StyledComponentsRegistry from '../../components/StyledComponentsRegistry';
 import './globals.css';
 
@@ -66,7 +68,12 @@ export default function RootLayout({ children }: Readonly<{
     return (
         <html lang="ko" className={pretendard.variable}>
         <body>
-        <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+        <StyledComponentsRegistry>
+            {children}
+            <Suspense fallback={null}>
+                <GlobalLoading />
+            </Suspense>
+        </StyledComponentsRegistry>
         </body>
         </html>
     );

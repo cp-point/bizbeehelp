@@ -1,5 +1,34 @@
 # 변경 이력
 
+## 2026-07-01 16:10
+
+- FAQ 등록/수정 에디터를 Tiptap 공식 SimpleEditor 템플릿 기반 컴포넌트로 교체
+- 에디터 이미지 저장 흐름을 `faq_file` 저장 후 `faq.content`에는 `/api/faq/file/{fileId}` 참조 URL이 들어가도록 수정
+- FAQ 이미지 저장 요청 payload를 백엔드 `FaqFileSaveRequestDTO` 구조에 맞게 `faqId`와 `files` 배열로 전송하도록 수정
+- `/api/faq/file/[fileId]` 이미지 조회 프록시 라우트 추가
+- 전역 로딩 오버레이와 `src/app/loading.tsx` 추가
+- SimpleEditor가 등록 화면 입력 영역 크기에 맞게 차도록 스타일 수정 및 텍스트 드래그 선택 색상 보정
+- SimpleEditor CSS 변수/주야간 모드/툴바 hover-active/link-popover 색상 보정
+- 에디터 저장 시 밑줄, 형광펜, 위첨자, 아래첨자, 정렬 스타일이 유지되도록 HTML sanitize 허용 범위 수정
+- 에디터 툴바 버튼 active/redo 상태가 selection/transaction 변경 시 갱신되도록 Tiptap UI 훅 수정
+- 목록, 제목, 인용, 코드블록, 링크, 하이라이트 툴바 상태도 커서 위치에 맞게 갱신되도록 보정
+- 백엔드 FAQ HTML sanitizer가 `mark`, `u`, `sub`, `sup`, 안전한 `text-align/background-color` 스타일을 보존하도록 수정
+- 에디터 이미지 추가 버튼 클릭 시 업로드 노드 삽입 없이 바로 파일 선택창이 열리도록 수정
+- 에디터 입력 중 sanitize 재주입으로 공백 입력이 방해되지 않도록 입력 중에는 원본 HTML을 유지하고 저장 시 sanitize하도록 수정
+- 임시 `/simple` 데모 경로 제거
+
+## 2026-07-01 15:20
+
+- FAQ 등록/수정 본문 입력 영역에 TipTap 에디터를 적용하고 이미지/링크/placeholder 기능을 추가
+- 에디터 저장 전 및 공개 FAQ 렌더링 전 HTML sanitize 처리를 추가
+- 공개 `/faq` 화면에서 HTML 본문을 렌더링하도록 수정하고 검색용 plain text 변환을 추가
+- `docs/faq-static-data.sql` 테스트 FAQ 본문 데이터를 HTML 형식으로 변경
+
+## 2026-06-30 15:08
+
+- 사이냅소프트 에디터 라이센스 파일 확인
+- 라이센스 키 파일이 커밋되지 않도록 `/licence/` 경로를 `.gitignore`에 추가
+
 ## 2026-06-29 14:26
 
 - `/faq` metadata keywords 생성 시 공개 상태인 FAQ의 `metaTag` 값도 함께 포함되도록 수정

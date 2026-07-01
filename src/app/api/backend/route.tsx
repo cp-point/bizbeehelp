@@ -187,7 +187,7 @@ const requestBackendJson = async (param: Request, headers: Headers) => {
 
     const backendUrl = param.method === 'GET' ? getBackendUrlWithQuery(param.url, param.param) : getBackendUrl(param.url);
 
-    logBackendRequest(param.method, param.url, backendUrl);
+    // logBackendRequest(param.method, param.url, backendUrl);
 
     const res = await fetch(backendUrl, {
         method: param.method,
@@ -214,7 +214,7 @@ const requestBackendFormData = async (formData: FormData, headers: Headers) => {
 
     const backendUrl = getBackendUrl(url);
 
-    logBackendRequest('POST', url, backendUrl);
+    // logBackendRequest('POST', url, backendUrl);
 
     const res = await fetch(backendUrl, {
         method: 'POST',

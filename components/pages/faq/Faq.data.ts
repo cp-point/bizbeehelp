@@ -12,6 +12,8 @@ export type FaqItem = {
   question: string;
   answer: string;
   bullets?: string[];
+  contentHtml?: string;
+  searchText?: string;
 };
 
 export type FaqSection = {

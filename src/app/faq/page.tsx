@@ -2,6 +2,7 @@ import { cache } from 'react';
 import type { Metadata } from 'next';
 import Faq from '../../../components/pages/faq/Faq';
 import type { FaqData, MajorCategoryData } from '../../../types/Faq';
+import { getPlainTextFromHtml, sanitizeEditorHtml } from '../../../utils/html';
 
 const DOMAIN = process.env.BACK_URL || process.env.NEXT_PUBLIC_BACK_URL || process.env.BASE_URL;
 
@@ -107,7 +108,7 @@ const createFaqJsonLd = (faqs: Array<FaqData & { majorName: string; minorName: s
         name: faq.title,
         acceptedAnswer: {
             '@type': 'Answer',
-            text: faq.content,
+            text: getPlainTextFromHtml(sanitizeEditorHtml(faq.content)),
         },
     })),
 });

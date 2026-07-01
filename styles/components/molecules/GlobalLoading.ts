@@ -1,0 +1,12 @@
+import styled from 'styled-components';
+
+export const GlobalLoadingOverlay = styled.div`
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(2px);
+`;

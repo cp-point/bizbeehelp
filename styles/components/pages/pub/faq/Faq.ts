@@ -868,7 +868,7 @@ export const AccordionPanel = styled.div<OpenProps>`
     transition: ${(props) =>
             props.$isInstant
                     ? 'none'
-                    : css`
+                    : css`,
                         grid-template-rows 0.3s ease,
           opacity 0.2s ease
                     `};
@@ -903,6 +903,114 @@ export const AccordionPanelInner = styled.div<OpenProps>`
 
     li + li {
         margin-top: 2px;
+    }
+`;
+
+export const FaqContentHtml = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    p,
+    ul,
+    ol,
+    blockquote,
+    pre,
+    h1,
+    h2,
+    h3 {
+        margin: 0;
+    }
+
+    h1,
+    h2,
+    h3 {
+        font-weight: 700;
+        line-height: 1.35;
+        color: ${colors.coolGray800};
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    h2 {
+        font-size: 19px;
+    }
+
+    h3 {
+        font-size: 17px;
+    }
+
+    p {
+        line-height: 1.7;
+    }
+
+    ul,
+    ol {
+        padding-left: 23px;
+    }
+
+    li + li {
+        margin-top: 4px;
+    }
+
+    ul[data-type='taskList'] {
+        padding-left: 0;
+        list-style: none;
+    }
+
+    ul[data-type='taskList'] li {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    ul[data-type='taskList'] label {
+        flex: 0 0 auto;
+        margin-top: 2px;
+    }
+
+    ul[data-type='taskList'] div {
+        flex: 1;
+    }
+
+    blockquote {
+        padding: 10px 14px;
+        border-left: 3px solid ${colors.greenPrimary};
+        background: ${colors.primaryWhite};
+    }
+
+    a {
+        color: ${colors.greenPrimary};
+        text-decoration: underline;
+        word-break: break-all;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border: 1px solid ${colors.coolGray150};
+        border-radius: 6px;
+    }
+
+    strong {
+        font-weight: 700;
+    }
+
+    @media (max-width: 767px) {
+        h1 {
+            font-size: 20px;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
     }
 `;
 
@@ -1031,7 +1139,7 @@ const pillButton = css`
 `;
 
 export const CallButton = styled.button`
-    ${pillButton}
+    ${pillButton};
     gap: 4px;
     border: 2px solid ${colors.greenPrimary};
     color: ${colors.greenPrimary};
@@ -1054,7 +1162,7 @@ export const CallButton = styled.button`
 `;
 
 export const InquiryButton = styled.button`
-    ${pillButton}
+    ${pillButton};
     border: 2px solid ${colors.greenPrimary};
     color: ${colors.primaryWhite};
     background: ${colors.greenPrimary};
