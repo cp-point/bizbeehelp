@@ -4,7 +4,7 @@ import Faq from '../../../components/pages/faq/Faq';
 import type { FaqData, MajorCategoryData } from '../../../types/Faq';
 import { getPlainTextFromHtml, sanitizeEditorHtml } from '../../../utils/html';
 
-const DOMAIN = process.env.BACK_URL || process.env.NEXT_PUBLIC_BACK_URL || process.env.BASE_URL;
+const DOMAIN = process.env.BACK_URL || process.env.NEXT_PUBLIC_BACK_URL || process.env.BASE_URL || 'https://help-api.bizbee.co.kr';
 
 export const dynamic = 'force-dynamic';
 
