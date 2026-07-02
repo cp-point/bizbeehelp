@@ -11,15 +11,14 @@ import {
     LoginForm,
     LoginLogoArea,
     LoginMessage,
-    LoginStatusArea,
-    LoginStatusText,
     LoginWrapper,
 } from '../../../../styles/pages/admin/Login';
 import { Post } from '../../../../service/crud';
 import type { User } from '../../../../store/userStore';
 import { userStore } from '../../../../store/userStore';
-import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+const ADMIN_FAQ_LIST_PATH = '/admin/faqs';
+const ADMIN_LOGIN_PATH = '/admin/login';
 
 const isLoginResult = (result: unknown): result is User => {
     if (!result || typeof result !== 'object') {
@@ -47,11 +46,16 @@ const Page = () => {
         if (searchParams.get('loginRequired') === 'true') {
             alert('로그인이 필요합니다.');
             userStore.getState().reset();
-            window.history.replaceState(null, '', '/admin/login');
+            window.history.replaceState(null, '', ADMIN_LOGIN_PATH);
+            return;
         }
-    }, []);
 
-    const handleSubmit = (event: React.SubmitEvent) => {
+        if (userData) {
+            window.location.replace(ADMIN_FAQ_LIST_PATH);
+        }
+    }, [userData]);
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         if (!loginId || !password) {
@@ -70,31 +74,16 @@ const Page = () => {
             (response) => {
                 if (response.type === 'SUCCESS') {
                     setMessage(response.message || '로그인되었습니다.');
+
                     if (isLoginResult(response.result)) {
                         userStore.getState().setUserData(response.result);
                     }
-                    window.location.href = '/admin/faqs';
+
+                    window.location.href = ADMIN_FAQ_LIST_PATH;
                     return;
                 }
 
                 setMessage(response.message || '로그인에 실패했습니다.');
-            },
-            false,
-        );
-    };
-
-    const handleClickLogout = () => {
-        Post(
-            '/admin/logout',
-            {},
-            (response) => {
-                if (response.type === 'SUCCESS') {
-                    userStore.getState().reset();
-                    setMessage('');
-                    return;
-                }
-
-                alert(response.message || '로그아웃에 실패했습니다.');
             },
             false,
         );
@@ -109,89 +98,72 @@ const Page = () => {
         event.currentTarget.form?.requestSubmit();
     };
 
+    if (userData) {
+        return null;
+    }
+
     return (
         <LoginWrapper>
             <LoginCard>
                 <LoginLogoArea>
                     <Image src="/assets/images/header-logo.svg" alt="bizbee Help" width={219} height={48} priority />
                 </LoginLogoArea>
-                {userData ? (
-                    <LoginStatusArea>
-                        <LoginStatusText>{userData.userId}님은 로그인이 완료되었습니다.</LoginStatusText>
-                        <Button
-                            type="button"
-                            width="40px"
-                            height="40px"
-                            padding="0"
+                <LoginForm noValidate onSubmit={handleSubmit}>
+                    <LoginField>
+                        <Input
+                            id="loginId"
+                            name="loginId"
+                            value={loginId}
+                            placeholder="아이디"
+                            autoComplete="username"
+                            height="52px"
+                            padding="0 20px"
                             color="#0f1b2a"
-                            backgroundColor="#ffffff"
-                            border="1px solid #e4e8ee"
+                            border={`1px solid ${message ? '#f04438' : '#e4e8ee'}`}
                             borderRadius="4px"
-                            shadow="none"
-                            ariaLabel="로그아웃"
-                            onClick={handleClickLogout}
-                        >
-                            <FontAwesomeIcon icon={faArrowRightFromBracket} />
-                        </Button>
-                    </LoginStatusArea>
-                ) : (
-                    <LoginForm noValidate onSubmit={handleSubmit}>
-                        <LoginField>
-                            <Input
-                                id="loginId"
-                                name="loginId"
-                                value={loginId}
-                                placeholder="아이디"
-                                autoComplete="username"
-                                height="52px"
-                                padding="0 20px"
-                                color="#0f1b2a"
-                                border={`1px solid ${message ? '#f04438' : '#e4e8ee'}`}
-                                borderRadius="4px"
-                                onChange={(event) => setLoginId(event.target.value)}
-                                onKeyDown={handleEnterKeyDown}
-                            />
-                        </LoginField>
-                        <LoginField>
-                            <Input
-                                id="password"
-                                type="password"
-                                name="password"
-                                value={password}
-                                placeholder="비밀번호"
-                                autoComplete="current-password"
-                                height="52px"
-                                padding="0 20px"
-                                color="#0f1b2a"
-                                border={`1px solid ${message ? '#f04438' : '#e4e8ee'}`}
-                                borderRadius="4px"
-                                onChange={(event) => setPassword(event.target.value)}
-                                onKeyDown={handleEnterKeyDown}
-                            />
-                        </LoginField>
-                        {message ? (
-                            <LoginMessage role="alert">
-                                <Image src="/assets/images/icon-login-error.svg" alt="" width={16} height={16} />
-                                <span>{message}</span>
-                            </LoginMessage>
-                        ) : null}
-                        <Button
-                            type="submit"
-                            width="100%"
-                            height="56px"
-                            margin={message ? '10px 0 0' : '56px 0 0'}
-                            padding="0"
-                            color="#ffffff"
-                            backgroundColor="#16b364"
-                            border="0"
+                            onChange={(event) => setLoginId(event.target.value)}
+                            onKeyDown={handleEnterKeyDown}
+                        />
+                    </LoginField>
+                    <LoginField>
+                        <Input
+                            id="password"
+                            type="password"
+                            name="password"
+                            value={password}
+                            placeholder="비밀번호"
+                            autoComplete="current-password"
+                            height="52px"
+                            padding="0 20px"
+                            color="#0f1b2a"
+                            border={`1px solid ${message ? '#f04438' : '#e4e8ee'}`}
                             borderRadius="4px"
-                            shadow="none"
-                            fontSize="16px"
-                        >
-                            로그인
-                        </Button>
-                    </LoginForm>
-                )}
+                            onChange={(event) => setPassword(event.target.value)}
+                            onKeyDown={handleEnterKeyDown}
+                        />
+                    </LoginField>
+                    {message ? (
+                        <LoginMessage role="alert">
+                            <Image src="/assets/images/icon-login-error.svg" alt="" width={16} height={16} />
+                            <span>{message}</span>
+                        </LoginMessage>
+                    ) : null}
+                    <Button
+                        type="submit"
+                        width="100%"
+                        height="56px"
+                        margin={message ? '10px 0 0' : '56px 0 0'}
+                        padding="0"
+                        color="#ffffff"
+                        backgroundColor="#16b364"
+                        border="0"
+                        borderRadius="4px"
+                        shadow="none"
+                        fontSize="16px"
+                    >
+                        로그인
+                    </Button>
+                </LoginForm>
 
                 <LoginCopyright>Copyright © bizbee. All Rights Reserved.</LoginCopyright>
             </LoginCard>
