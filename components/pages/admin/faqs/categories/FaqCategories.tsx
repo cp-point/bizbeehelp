@@ -278,6 +278,16 @@ const getSelectedRowIds = (rows: CategoryRow[], selectedRowId: string, selectedR
     return rows[0]?.id ? [rows[0].id] : [];
 };
 
+const getPendingChangeCount = (
+    addedRowsByTab: CategoryRowsByTab,
+    editedRowsByTab: EditedRowsByTab,
+    deletedIdsByTab: DeletedIdsByTab,
+) => {
+    return (['major', 'minor'] as CategoryTab[]).reduce((count, tab) => {
+        return count + addedRowsByTab[tab].length + Object.keys(editedRowsByTab[tab]).length + deletedIdsByTab[tab].length;
+    }, 0);
+};
+
 const postRows = (url: string, rows: CategoryRequestPayload[]) => {
     return new Promise<boolean>((resolve) => {
         if (rows.length === 0) {
@@ -336,6 +346,7 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
     const allRows = allRowsByTab[activeTab];
     const tabLabel = getTabLabel(activeTab);
     const displayedSelectedRowIds = getSelectedRowIds(rows, selectedRowId, selectedRowIds);
+    const pendingChangeCount = getPendingChangeCount(addedRowsByTab, editedRowsByTab, deletedIdsByTab);
 
     useEffect(() => {
         if (!toastMessage) {
@@ -796,7 +807,7 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
                                 추가
                             </Button>
                             <Button {...buttonProps} onClick={handleSave}>
-                                저장
+                                저장{pendingChangeCount > 0 ? ` (${pendingChangeCount})` : ''}
                             </Button>
                         </FaqCategoriesButtonGroup>
                     </FaqCategoriesSectionHeader>

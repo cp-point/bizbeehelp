@@ -442,7 +442,6 @@ export const KeywordList = styled.div`
 
   @media (max-width: 767px) {
     flex-wrap: nowrap;
-    justify-content: flex-start;
     justify-content: safe center;
     width: 100%;
     padding: 0 16px;

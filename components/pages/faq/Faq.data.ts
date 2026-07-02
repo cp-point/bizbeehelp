@@ -29,31 +29,6 @@ export type FooterLink = {
   isCurrent?: boolean;
 };
 
-export type CompanyMeta = {
-  label: string;
-  value: string;
-};
-
-export const relatedSites = [
-  { label: '비즈비 eSign', href: 'https://esign.bizbee.co.kr' },
-  { label: '비즈비 Taxbill', href: 'https://taxbill.bizbee.co.kr' },
-  { label: '비즈비', href: 'https://bizbee.co.kr' },
-  { label: '비즈비 ERP', href: 'https://erp.bizbee.co.kr' },
-  { label: '비즈비 Groupware', href: 'https://groupware.bizbee.co.kr' },
-  { label: '비즈비 Tax', href: 'https://taxrecon.bizbee.co.kr' },
-  { label: '비즈비 환급왕', href: 'https://www.refundking.co.kr' },
-  { label: '비즈비 등기왕', href: 'https://www.regking.co.kr' },
-  { label: '세무사사랑', href: 'https://bizbee.co.kr/taxlove' },
-  { label: '에듀퓨어', href: 'https://www.edupure.net' },
-  { label: '스마트웰', href: 'https://www.smartwel.co.kr' },
-  { label: '바이이즈', href: 'https://www.buyis.co.kr' },
-  { label: '세무법인 혜안', href: 'https://xn--v92b8yy5h64e87cs86a.com' },
-  { label: '티아이커머스', href: 'https://ticommerce.co.kr' },
-  { label: '중기이코노미기업지원단', href: 'https://www.junggico.co.kr' },
-  { label: '와이즈앤리치', href: 'https://wisenrich.co.kr' },
-  { label: '비즈비 blog', href: 'https://blog.naver.com/alstjgp48243' },
-];
-
 export const footerLinks: FooterLink[] = [
   { label: '회사소개', href: 'https://bizbee.co.kr', isExternal: true },
   { label: '이용약관', href: '#terms' },
@@ -64,16 +39,6 @@ export const companyAddress = {
   name: '주식회사 비즈비',
   address: '06657 서울특별시 서초구 반포대로 45 (서초동, 명정빌딩) 2층',
 };
-
-export const companyMeta: CompanyMeta[] = [
-  { label: '대표이사', value: '김태형' },
-  { label: '사업자등록번호', value: '573-81-02048' },
-  { label: '도입문의', value: '1533-6091' },
-  { label: '사용문의', value: '1533-5443' },
-  { label: '이메일', value: 'contact@bizbee.co.kr' },
-];
-
-export const footerPhoneNumber = '1533-6091';
 
 export const searchKeywords = ['요금', '로그인', '급여', '전표', '회의실'];
 

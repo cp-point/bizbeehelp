@@ -2,12 +2,10 @@ import { cache } from 'react';
 import type { Metadata } from 'next';
 import Faq from '../../../components/pages/faq/Faq';
 import type { FaqData, MajorCategoryData } from '../../../types/Faq';
-import type { FooterInfoData, FooterInfoResponse, RelatedSite, RelatedSiteResponse } from '../../../types/Footer';
+import { getFooterInfo, getRelatedSites } from '../../../service/siteMgmt';
 import { getPlainTextFromHtml, sanitizeEditorHtml } from '../../../utils/html';
 
 const DOMAIN = process.env.BACK_URL || process.env.NEXT_PUBLIC_BACK_URL || process.env.BASE_URL || 'https://help-api.bizbee.co.kr';
-const SITE_MGMT_DOMAIN = 'https://service.aio.bizbee.co.kr';
-const MGMT_CORP_CD = '10';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,48 +49,6 @@ const getFaqData = cache(async (): Promise<MajorCategoryData[]> => {
     } catch {
         return [];
     }
-});
-
-const postSiteMgmt = async <T,>(url: string): Promise<T | null> => {
-    try {
-        const response = await fetch(`${SITE_MGMT_DOMAIN}${url}`, {
-            method: 'POST',
-            cache: 'no-store',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                mgmtCorpCd: MGMT_CORP_CD,
-            }),
-        });
-
-        if (!response.ok) {
-            return null;
-        }
-
-        return await response.json() as T;
-    } catch {
-        return null;
-    }
-};
-
-const getFooterInfo = cache(async (): Promise<FooterInfoData | null> => {
-    const data = await postSiteMgmt<FooterInfoResponse>('/api/siteMgmt/footerInfo');
-
-    return data?.data ?? null;
-});
-
-const getRelatedSites = cache(async (): Promise<RelatedSite[]> => {
-    const data = await postSiteMgmt<RelatedSiteResponse>('/api/siteMgmt/siteUrl');
-
-    return (data?.data ?? [])
-        .filter((site) => site.useYn === '1' && site.siteNm?.trim() && site.siteUrl?.trim())
-        .sort((a, b) => (a.seq ?? 0) - (b.seq ?? 0))
-        .map((site) => ({
-            label: site.siteNm?.trim() ?? '',
-            href: site.siteUrl?.trim() ?? '',
-        }));
 });
 
 const getVisibleFaqs = (faqData: MajorCategoryData[]) => {

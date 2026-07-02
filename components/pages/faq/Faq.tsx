@@ -12,7 +12,7 @@ import {
 } from './Faq.data';
 import type { FaqData, MajorCategoryData } from '../../../types/Faq';
 import type { FooterInfoData, RelatedSite } from '../../../types/Footer';
-import * as S from '../../../styles/components/pages/pub/faq/Faq';
+import * as S from '../../../styles/pages/faq/Faq';
 import { getPlainTextFromHtml, hasHtmlTag, plainTextToHtml, sanitizeEditorHtml } from '../../../utils/html';
 
 type SearchIconProps = {
@@ -33,6 +33,22 @@ type FaqProps = {
     faqData?: MajorCategoryData[];
     footerInfo?: FooterInfoData | null;
     relatedSites?: RelatedSite[];
+};
+
+type CompanyMetaItem = {
+    label: string;
+    value: string;
+};
+
+type FooterViewModel = {
+    companyAddress: {
+        name: string;
+        address: string;
+    };
+    companyMeta: CompanyMetaItem[];
+    footerPhoneNumber: string;
+    copyright: string;
+    relatedSites: RelatedSite[];
 };
 
 const SearchIcon = ({ size = 28 }: SearchIconProps) => (
@@ -192,6 +208,29 @@ const createFaqMenuGroups = (
         .filter((group) => group.items.length > 0);
 };
 
+const getTrimmedValue = (value?: string | null) => value?.trim() ?? '';
+
+const createFooterViewModel = (footerInfo?: FooterInfoData | null, relatedSites: RelatedSite[] = []): FooterViewModel => {
+    const companyMeta = [
+        { label: '대표이사', value: getTrimmedValue(footerInfo?.ceoNm) },
+        { label: '사업자등록번호', value: getTrimmedValue(footerInfo?.bizRegNo) },
+        { label: '도입문의', value: getTrimmedValue(footerInfo?.phoneNo) },
+        { label: '사용문의', value: getTrimmedValue(footerInfo?.helpdeskPhoneNo) },
+        { label: '이메일', value: getTrimmedValue(footerInfo?.email) },
+    ].filter((item) => item.value);
+
+    return {
+        companyAddress: {
+            name: fallbackCompanyAddress.name,
+            address: getTrimmedValue(footerInfo?.corpAddr),
+        },
+        companyMeta,
+        footerPhoneNumber: getTrimmedValue(footerInfo?.phoneNo),
+        copyright: getTrimmedValue(footerInfo?.iprInfo),
+        relatedSites,
+    };
+};
+
 const MenuContent = ({ menuGroups, selectedMenuId, onMenuClick }: MenuContentProps) => (
     <>
         <S.AllMenuButton type="button" $isActive={selectedMenuId === 'all'} onClick={() => onMenuClick('all')}>
@@ -232,23 +271,13 @@ const Faq = ({ faqData, footerInfo, relatedSites }: FaqProps) => {
     const hasFaqData = Boolean(faqData && faqData.length > 0);
     const sections = useMemo(() => createFaqSections(faqData), [faqData]);
     const menuGroups = useMemo(() => createFaqMenuGroups(faqData, hasFaqData), [faqData, hasFaqData]);
-    const companyAddress = {
-        name: fallbackCompanyAddress.name,
-        address: footerInfo?.corpAddr?.trim() ?? '',
-    };
-    const companyMeta = [
-        { label: '대표이사', value: footerInfo?.ceoNm?.trim() ?? '' },
-        {
-            label: '사업자등록번호',
-            value: footerInfo?.bizRegNo?.trim() ?? '',
-        },
-        { label: '도입문의', value: footerInfo?.phoneNo?.trim() ?? '' },
-        { label: '사용문의', value: footerInfo?.helpdeskPhoneNo?.trim() ?? '' },
-        { label: '이메일', value: footerInfo?.email?.trim() ?? '' },
-    ].filter((item) => item.value);
-    const footerPhoneNumber = footerInfo?.phoneNo?.trim() ?? '';
-    const copyright = footerInfo?.iprInfo?.trim() ?? '';
-    const relatedSiteItems = relatedSites ?? [];
+    const {
+        companyAddress,
+        companyMeta,
+        footerPhoneNumber,
+        copyright,
+        relatedSites: relatedSiteItems,
+    } = useMemo(() => createFooterViewModel(footerInfo, relatedSites), [footerInfo, relatedSites]);
 
     useEffect(() => {
         if (!isMobileMenuOpen) {
@@ -616,7 +645,7 @@ const Faq = ({ faqData, footerInfo, relatedSites }: FaqProps) => {
 
             <S.Footer>
                 <S.FooterTop>
-                    <S.FooterLogo href="/pub/faq" aria-label="bizbee">
+                    <S.FooterLogo href="/faq" aria-label="bizbee">
                         <Image src="/assets/images/footer-logo.svg" alt="bizbee" width={127} height={38} />
                     </S.FooterLogo>
                     <S.FooterLinks aria-label="정책 링크">

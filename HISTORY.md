@@ -1,5 +1,18 @@
 # 변경 이력
 
+## 2026-07-02 10:15
+
+- FAQ분류관리 저장 버튼에 추가/수정/삭제 대기 건수를 `저장 (n)` 형태로 표시
+
+## 2026-07-02 09:54
+
+- `/faq` 페이지가 사용하던 `pub` 스타일 의존을 `styles/pages/faq/Faq.ts`로 분리
+- 사이트관리 푸터/관련사이트 API 호출을 `service/siteMgmt.ts`로 캡슐화하고 관련사이트 URL은 `http/https`만 허용하도록 검증 추가
+- FAQ 푸터 표시 데이터 생성 로직을 view model 함수로 분리해 렌더링 코드 책임 축소
+- `Post`, `Patch`, `Delete` 중복 요청 로직을 `service/crud.ts` 내부 공통 프록시 요청 함수로 정리
+- 사용하지 않는 퍼블리싱 샘플 `src/app/pub`, `components/pages/pub`, `styles/components/pages/pub` 디렉터리 삭제
+- 사용하지 않는 정적 푸터 fallback 데이터와 백엔드 프록시 디버그 로그 코드를 제거
+
 ## 2026-07-02 09:30
 
 - `/faq` 푸터 정보를 사이트관리 `footerInfo` API에서 POST로 조회해 회사 주소, 대표이사, 사업자등록번호, 도입문의, 사용문의, 이메일, copyright에 반영

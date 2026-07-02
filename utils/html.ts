@@ -28,7 +28,6 @@ const SAFE_TAGS = new Set([
 const SAFE_ATTRIBUTES = new Set(['alt', 'checked', 'class', 'data-checked', 'data-color', 'data-type', 'disabled', 'href', 'src', 'style', 'target', 'title', 'type']);
 const SAFE_URL_PATTERN = /^(https?:|mailto:|tel:|\/|#|data:image\/(?:png|jpe?g|gif|webp|bmp|svg\+xml);base64,)/i;
 const HTML_TAG_PATTERN = /<\/?[a-z][\s\S]*>/i;
-const SAFE_TEXT_ALIGN_PATTERN = /(?:^|;)\s*text-align\s*:\s*(left|center|right|justify)\s*;?\s*$/i;
 const SAFE_HIGHLIGHT_COLOR_PATTERN =
     /(?:^|;)\s*background-color\s*:\s*(var\(--tt-color-highlight-[a-z-]+\)|#[0-9a-f]{3,8}|rgba?\([^)]+\)|hsla?\([^)]+\)|[a-z]+)\s*;?\s*$/i;
 
