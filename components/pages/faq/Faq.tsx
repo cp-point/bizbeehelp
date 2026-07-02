@@ -1,22 +1,18 @@
 'use client';
 
 import Image from 'next/image';
-import { ReactNode, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import type { FaqMenuGroup, FaqSection } from './Faq.data';
 import {
-    companyAddress,
-    companyMeta,
+    companyAddress as fallbackCompanyAddress,
     faqMenuGroups,
     faqSections,
     footerLinks,
-    footerPhoneNumber,
-    relatedSites,
     searchKeywords,
 } from './Faq.data';
 import type { FaqData, MajorCategoryData } from '../../../types/Faq';
+import type { FooterInfoData, RelatedSite } from '../../../types/Footer';
 import * as S from '../../../styles/components/pages/pub/faq/Faq';
-import { userStore } from '../../../store/userStore';
-import { useRouter } from 'next/navigation';
 import { getPlainTextFromHtml, hasHtmlTag, plainTextToHtml, sanitizeEditorHtml } from '../../../utils/html';
 
 type SearchIconProps = {
@@ -35,6 +31,8 @@ type MenuContentProps = {
 
 type FaqProps = {
     faqData?: MajorCategoryData[];
+    footerInfo?: FooterInfoData | null;
+    relatedSites?: RelatedSite[];
 };
 
 const SearchIcon = ({ size = 28 }: SearchIconProps) => (
@@ -217,7 +215,7 @@ const MenuContent = ({ menuGroups, selectedMenuId, onMenuClick }: MenuContentPro
     </>
 );
 
-const Faq = ({ faqData }: FaqProps) => {
+const Faq = ({ faqData, footerInfo, relatedSites }: FaqProps) => {
 
     const [selectedMenuId, setSelectedMenuId] = useState('all');
     const [openedItemId, setOpenedItemId] = useState('');
@@ -234,6 +232,23 @@ const Faq = ({ faqData }: FaqProps) => {
     const hasFaqData = Boolean(faqData && faqData.length > 0);
     const sections = useMemo(() => createFaqSections(faqData), [faqData]);
     const menuGroups = useMemo(() => createFaqMenuGroups(faqData, hasFaqData), [faqData, hasFaqData]);
+    const companyAddress = {
+        name: fallbackCompanyAddress.name,
+        address: footerInfo?.corpAddr?.trim() ?? '',
+    };
+    const companyMeta = [
+        { label: '대표이사', value: footerInfo?.ceoNm?.trim() ?? '' },
+        {
+            label: '사업자등록번호',
+            value: footerInfo?.bizRegNo?.trim() ?? '',
+        },
+        { label: '도입문의', value: footerInfo?.phoneNo?.trim() ?? '' },
+        { label: '사용문의', value: footerInfo?.helpdeskPhoneNo?.trim() ?? '' },
+        { label: '이메일', value: footerInfo?.email?.trim() ?? '' },
+    ].filter((item) => item.value);
+    const footerPhoneNumber = footerInfo?.phoneNo?.trim() ?? '';
+    const copyright = footerInfo?.iprInfo?.trim() ?? '';
+    const relatedSiteItems = relatedSites ?? [];
 
     useEffect(() => {
         if (!isMobileMenuOpen) {
@@ -624,7 +639,7 @@ const Faq = ({ faqData }: FaqProps) => {
                         <S.CompanyInfo>
                             <S.CompanyAddress>
                                 <strong>{companyAddress.name}</strong>
-                                <span>{companyAddress.address}</span>
+                                {companyAddress.address ? <span>{companyAddress.address}</span> : null}
                             </S.CompanyAddress>
                             <S.CompanyMetaList>
                                 {companyMeta.map((item) => (
@@ -635,38 +650,42 @@ const Faq = ({ faqData }: FaqProps) => {
                                 ))}
                             </S.CompanyMetaList>
                         </S.CompanyInfo>
-                        <S.FooterPhone>
-                            <Image src="/assets/images/footer-phone.svg" alt="" width={36} height={36}
-                                   aria-hidden="true" />
-                            <strong>{footerPhoneNumber}</strong>
-                        </S.FooterPhone>
+                        {footerPhoneNumber ? (
+                            <S.FooterPhone>
+                                <Image src="/assets/images/footer-phone.svg" alt="" width={36} height={36}
+                                       aria-hidden="true" />
+                                <strong>{footerPhoneNumber}</strong>
+                            </S.FooterPhone>
+                        ) : null}
                     </S.FooterInfoRow>
 
                     <S.FooterBottom>
-                        <S.Copyright>Copyright © bizbee. All Rights Reserved.</S.Copyright>
-                        <S.RelatedSites
-                            onBlur={(event) => {
-                                if (!event.currentTarget.contains(event.relatedTarget)) {
-                                    setIsRelatedSitesOpen(false);
-                                }
-                            }}
-                        >
-                            <S.RelatedSitesButton type="button" aria-expanded={isRelatedSitesOpen}
-                                                  onClick={() => setIsRelatedSitesOpen((isOpen) => !isOpen)}>
-                                관련 사이트
-                                <Image src="/assets/images/footer-related-plus.svg" alt="" width={16} height={16}
-                                       aria-hidden="true" />
-                            </S.RelatedSitesButton>
-                            <S.RelatedSitesMenu $isOpen={isRelatedSitesOpen}>
-                                {relatedSites.map((site) => (
-                                    <li key={site.href}>
-                                        <a href={site.href} target="_blank" rel="noreferrer">
-                                            {site.label}
-                                        </a>
-                                    </li>
-                                ))}
-                            </S.RelatedSitesMenu>
-                        </S.RelatedSites>
+                        {copyright ? <S.Copyright>{copyright}</S.Copyright> : null}
+                        {relatedSiteItems.length > 0 ? (
+                            <S.RelatedSites
+                                onBlur={(event) => {
+                                    if (!event.currentTarget.contains(event.relatedTarget)) {
+                                        setIsRelatedSitesOpen(false);
+                                    }
+                                }}
+                            >
+                                <S.RelatedSitesButton type="button" aria-expanded={isRelatedSitesOpen}
+                                                      onClick={() => setIsRelatedSitesOpen((isOpen) => !isOpen)}>
+                                    관련 사이트
+                                    <Image src="/assets/images/footer-related-plus.svg" alt="" width={16} height={16}
+                                           aria-hidden="true" />
+                                </S.RelatedSitesButton>
+                                <S.RelatedSitesMenu $isOpen={isRelatedSitesOpen}>
+                                    {relatedSiteItems.map((site) => (
+                                        <li key={site.href}>
+                                            <a href={site.href} target="_blank" rel="noreferrer">
+                                                {site.label}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </S.RelatedSitesMenu>
+                            </S.RelatedSites>
+                        ) : null}
                     </S.FooterBottom>
                 </S.FooterContents>
             </S.Footer>
