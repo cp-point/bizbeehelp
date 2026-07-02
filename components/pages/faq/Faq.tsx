@@ -51,6 +51,8 @@ type FooterViewModel = {
     relatedSites: RelatedSite[];
 };
 
+const KAKAO_INQUIRY_URL = 'http://pf.kakao.com/_VKxajX/chat';
+
 const SearchIcon = ({ size = 28 }: SearchIconProps) => (
     <svg width={size} height={size} viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"
          aria-hidden="true">
@@ -441,6 +443,14 @@ const Faq = ({ faqData, footerInfo, relatedSites }: FaqProps) => {
         setOpenedItemId((currentId) => (currentId === itemId ? '' : itemId));
     };
 
+    const handleKakaoInquiryClick = () => {
+        const inquiryWindow = window.open(KAKAO_INQUIRY_URL, '_blank', 'noopener,noreferrer');
+
+        if (inquiryWindow) {
+            inquiryWindow.opener = null;
+        }
+    };
+
     return (
         <S.Page>
             <S.Header>
@@ -538,7 +548,7 @@ const Faq = ({ faqData, footerInfo, relatedSites }: FaqProps) => {
 
             <S.Body ref={bodyRef}>
                 <S.FloatingButtonLayer ref={floatingButtonRef}>
-                    <S.FloatingButton type="button" aria-label="카카오톡 문의하기">
+                    <S.FloatingButton type="button" aria-label="카카오톡 문의하기" onClick={handleKakaoInquiryClick}>
                         <S.FloatingButtonSymbol>
                             <KakaoIcon className="kakao-mark" />
                             <KakaoIcon className="kakao-mark kakao-mark-clone" />
