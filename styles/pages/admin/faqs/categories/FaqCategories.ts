@@ -222,6 +222,11 @@ export const FaqCategoriesSelect = styled.select`
     ${control}
 `;
 
+export const FaqCategoriesTableSelect = styled(FaqCategoriesSelect)`
+    text-align: center;
+    text-align-last: center;
+`;
+
 export const FaqCategoriesTableScroll = styled.div`
     overflow-x: auto;
     overflow-y: auto;
@@ -243,7 +248,7 @@ export const FaqCategoriesTableScroll = styled.div`
 
 export const FaqCategoriesDataTable = styled.table`
     width: 100%;
-    min-width: 1376px;
+    min-width: 1536px;
     border-collapse: separate;
     border-spacing: 0;
     border-left: 1px solid ${colors.coolGray200};

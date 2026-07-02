@@ -26,6 +26,7 @@ import {
     FaqCategoriesSection,
     FaqCategoriesSectionHeader,
     FaqCategoriesSelect,
+    FaqCategoriesTableSelect,
     FaqCategoriesTableScroll,
     FaqCategoriesTabList,
     FaqCategoriesTitle,
@@ -335,7 +336,6 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
     const allRows = allRowsByTab[activeTab];
     const tabLabel = getTabLabel(activeTab);
     const displayedSelectedRowIds = getSelectedRowIds(rows, selectedRowId, selectedRowIds);
-    const effectiveSelectedRowId = displayedSelectedRowIds[0] ?? '';
 
     useEffect(() => {
         if (!toastMessage) {
@@ -474,14 +474,15 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
 
     const handleAdd = () => {
         const nextRow = createEmptyRow(allRows);
-        const selectedRow = allRows.find((row) => row.id === effectiveSelectedRowId);
-        const defaultMajor = majorData[0];
+        const selectedRow = selectedRowId ? allRows.find((row) => row.id === selectedRowId) : undefined;
+        const defaultMajorCode = selectedRow?.majorCode ?? searchCondition.majorCode ?? searchForm.majorCode;
+        const defaultMajor = majorOptions.find((major) => major.code === defaultMajorCode);
         const rowToAdd =
             activeTab === 'minor'
                 ? {
                     ...nextRow,
-                    majorCode: selectedRow?.majorCode ?? defaultMajor?.majorCode,
-                    majorName: selectedRow?.majorName ?? defaultMajor?.majorName,
+                    majorCode: defaultMajor?.code ?? '',
+                    majorName: defaultMajor?.name ?? '',
                 }
                 : nextRow;
 
@@ -621,6 +622,31 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
 
         updateRow(rowId, field, value);
     };
+
+    const updateMinorMajor = (rowId: string, majorCode: string) => {
+        const selectedMajor = majorOptions.find((major) => major.code === majorCode);
+
+        updateRow(rowId, 'majorCode', majorCode);
+        updateRow(rowId, 'majorName', selectedMajor?.name ?? '');
+    };
+
+    const renderMajorSelectCell = (row: CategoryRow) => (
+        <td {...getCellProps(row.id, 'majorCode')} data-editable="true">
+            <FaqCategoriesTableSelect
+                value={row.majorCode ?? ''}
+                aria-label="대분류명"
+                onClick={(event) => event.stopPropagation()}
+                onChange={(event) => updateMinorMajor(row.id, event.target.value)}
+            >
+                <option value="">선택</option>
+                {majorOptions.map((major) => (
+                    <option key={major.id} value={major.code}>
+                        {major.name}
+                    </option>
+                ))}
+            </FaqCategoriesTableSelect>
+        </td>
+    );
 
     const renderEditableCell = (row: CategoryRow, field: EditableField, value: string | number, align?: 'left') => {
         const isEditing = editingCell?.rowId === row.id && editingCell.field === field;
@@ -779,11 +805,12 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
                         <FaqCategoriesDataTable>
                             <colgroup>
                                 <col style={{ width: 40 }} />
+                                {activeTab === 'minor' ? <col style={{ width: 160 }} /> : null}
                                 <col style={{ width: 120 }} />
-                                <col />
+                                <col style={{ width: 220 }} />
                                 <col style={{ width: 64 }} />
                                 <col style={{ width: 64 }} />
-                                <col style={{ width: '35%' }} />
+                                <col style={{ width: 320 }} />
                                 <col style={{ width: 160 }} />
                                 <col style={{ width: 160 }} />
                                 <col style={{ width: 160 }} />
@@ -791,6 +818,7 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
                             <thead>
                             <tr>
                                 <th aria-label="번호" />
+                                {activeTab === 'minor' ? <th>대분류명</th> : null}
                                 <th>{getCodeLabel(activeTab)}</th>
                                 <th>{getNameLabel(activeTab)}</th>
                                 <th>순번</th>
@@ -809,8 +837,9 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
                                     onClick={(event) => handleRowSelect(row.id, event)}
                                 >
                                     <td {...getCellProps(row.id, 'index')}>{index + 1}</td>
+                                    {activeTab === 'minor' ? renderMajorSelectCell(row) : null}
                                     {renderEditableCell(row, 'code', row.code)}
-                                    {renderEditableCell(row, 'name', row.name, 'left')}
+                                    {renderEditableCell(row, 'name', row.name)}
                                     {renderEditableCell(row, 'sortOrder', row.sortOrder)}
                                     <td {...getCellProps(row.id, 'useYn')}>
                                         <Checkbox
@@ -830,7 +859,7 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
                             ))}
                             {rows.length === 0 ? (
                                 <tr>
-                                    <FaqCategoriesEmptyCell colSpan={9}>조회 결과가 없습니다.</FaqCategoriesEmptyCell>
+                                    <FaqCategoriesEmptyCell colSpan={activeTab === 'minor' ? 10 : 9}>조회 결과가 없습니다.</FaqCategoriesEmptyCell>
                                 </tr>
                             ) : null}
                             </tbody>
