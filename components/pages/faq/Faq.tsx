@@ -13,6 +13,7 @@ import {
 import type { FaqData, MajorCategoryData } from '../../../types/Faq';
 import type { FooterInfoData, RelatedSite } from '../../../types/Footer';
 import * as S from '../../../styles/pages/faq/Faq';
+import { Post } from '../../../service/crud';
 import { getPlainTextFromHtml, hasHtmlTag, plainTextToHtml, sanitizeEditorHtml } from '../../../utils/html';
 
 type SearchIconProps = {
@@ -33,6 +34,7 @@ type FaqProps = {
     faqData?: MajorCategoryData[];
     footerInfo?: FooterInfoData | null;
     relatedSites?: RelatedSite[];
+    popularKeywords?: string[];
 };
 
 type CompanyMetaItem = {
@@ -212,6 +214,31 @@ const createFaqMenuGroups = (
 
 const getTrimmedValue = (value?: string | null) => value?.trim() ?? '';
 
+const getSearchMatchedSections = (sections: FaqSection[], query: string) => {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    if (!normalizedQuery) {
+        return sections;
+    }
+
+    return sections
+        .map((section) => ({
+            ...section,
+            items: section.items.filter((item) => {
+                const searchableText = [item.question, item.searchText ?? item.answer, ...(item.bullets ?? [])].join(' ').toLowerCase();
+
+                return searchableText.includes(normalizedQuery);
+            }),
+        }))
+        .filter((section) => section.items.length > 0);
+};
+
+const hasSearchResult = (sections: FaqSection[], query: string) => {
+    const normalizedQuery = query.trim();
+
+    return normalizedQuery.length > 0 && getSearchMatchedSections(sections, normalizedQuery).length > 0;
+};
+
 const createFooterViewModel = (footerInfo?: FooterInfoData | null, relatedSites: RelatedSite[] = []): FooterViewModel => {
     const companyMeta = [
         { label: '대표이사', value: getTrimmedValue(footerInfo?.ceoNm) },
@@ -256,7 +283,7 @@ const MenuContent = ({ menuGroups, selectedMenuId, onMenuClick }: MenuContentPro
     </>
 );
 
-const Faq = ({ faqData, footerInfo, relatedSites }: FaqProps) => {
+const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) => {
 
     const [selectedMenuId, setSelectedMenuId] = useState('all');
     const [openedItemId, setOpenedItemId] = useState('');
@@ -273,6 +300,7 @@ const Faq = ({ faqData, footerInfo, relatedSites }: FaqProps) => {
     const hasFaqData = Boolean(faqData && faqData.length > 0);
     const sections = useMemo(() => createFaqSections(faqData), [faqData]);
     const menuGroups = useMemo(() => createFaqMenuGroups(faqData, hasFaqData), [faqData, hasFaqData]);
+    const visibleSearchKeywords = popularKeywords && popularKeywords.length > 0 ? popularKeywords : searchKeywords;
     const {
         companyAddress,
         companyMeta,
@@ -369,36 +397,35 @@ const Faq = ({ faqData, footerInfo, relatedSites }: FaqProps) => {
         };
     }, []);
 
-    const displayedSections = useMemo(() => {
-        const normalizedQuery = submittedSearchQuery.trim().toLowerCase();
+    const displayedSections = useMemo(() => getSearchMatchedSections(sections, submittedSearchQuery), [sections, submittedSearchQuery]);
 
-        if (!normalizedQuery) {
-            return sections;
+    const savePopularKeyword = (keyword: string) => {
+        const trimmedKeyword = keyword.trim();
+
+        if (!hasSearchResult(sections, trimmedKeyword)) {
+            return;
         }
 
-        return sections
-            .map((section) => ({
-                ...section,
-                items: section.items.filter((item) => {
-                    const searchableText = [item.question, item.searchText ?? item.answer, ...(item.bullets ?? [])].join(' ').toLowerCase();
-
-                    return searchableText.includes(normalizedQuery);
-                }),
-            }))
-            .filter((section) => section.items.length > 0);
-    }, [sections, submittedSearchQuery]);
+        Post('/popular/save', { keyword: trimmedKeyword }, undefined, false);
+    };
 
     const handleSearchSubmit = () => {
-        setSubmittedSearchQuery(searchQuery.trim());
+        const trimmedKeyword = searchQuery.trim();
+
+        setSubmittedSearchQuery(trimmedKeyword);
         setSelectedMenuId('all');
         setOpenedItemId('');
+        savePopularKeyword(trimmedKeyword);
     };
 
     const handleKeywordClick = (keyword: string) => {
-        setSearchQuery(keyword);
-        setSubmittedSearchQuery(keyword);
+        const trimmedKeyword = keyword.trim();
+
+        setSearchQuery(trimmedKeyword);
+        setSubmittedSearchQuery(trimmedKeyword);
         setSelectedMenuId('all');
         setOpenedItemId('');
+        savePopularKeyword(trimmedKeyword);
     };
 
     const scrollToSection = (sectionId: string) => {
@@ -534,7 +561,7 @@ const Faq = ({ faqData, footerInfo, relatedSites }: FaqProps) => {
                             />
                         </S.SearchForm>
                         <S.KeywordList aria-label="추천 검색어">
-                            {searchKeywords.map((keyword) => (
+                            {visibleSearchKeywords.map((keyword) => (
                                 <button key={keyword} type="button" onClick={() => handleKeywordClick(keyword)}>
                                     <SearchIcon size={16} />
                                     {keyword}

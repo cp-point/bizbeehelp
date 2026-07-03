@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import type { Metadata } from 'next';
 import Faq from '../../../components/pages/faq/Faq';
-import type { FaqData, MajorCategoryData } from '../../../types/Faq';
+import type { FaqData, MajorCategoryData, PopularKeywordData } from '../../../types/Faq';
 import { getFooterInfo, getRelatedSites } from '../../../service/siteMgmt';
 import { getPlainTextFromHtml, sanitizeEditorHtml } from '../../../utils/html';
 
@@ -11,6 +11,10 @@ export const dynamic = 'force-dynamic';
 
 type BackendFaqResponse = {
     result?: MajorCategoryData[];
+};
+
+type BackendPopularResponse = {
+    result?: Array<PopularKeywordData | string>;
 };
 
 const getBackendUrl = (url: string) => {
@@ -46,6 +50,43 @@ const getFaqData = cache(async (): Promise<MajorCategoryData[]> => {
         const data: BackendFaqResponse | MajorCategoryData[] = await response.json();
 
         return Array.isArray(data) ? data : data.result ?? [];
+    } catch {
+        return [];
+    }
+});
+
+const getPopularKeyword = (item: PopularKeywordData | string) => {
+    return typeof item === 'string' ? item : item.keyword;
+};
+
+const getPopularKeywords = cache(async (): Promise<string[]> => {
+    const backendUrl = getBackendUrl('/popular');
+
+    if (!backendUrl) {
+        return [];
+    }
+
+    try {
+        const response = await fetch(backendUrl, {
+            method: 'GET',
+            cache: 'no-store',
+            headers: {
+                Accept: 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            return [];
+        }
+
+        const data: BackendPopularResponse | Array<PopularKeywordData | string> = await response.json();
+        const popularItems = Array.isArray(data) ? data : data.result ?? [];
+
+        return popularItems
+            .map(getPopularKeyword)
+            .map((keyword) => keyword.trim())
+            .filter(Boolean)
+            .slice(0, 5);
     } catch {
         return [];
     }
@@ -128,10 +169,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const Page = async () => {
-    const [faqData, footerInfo, relatedSites] = await Promise.all([
+    const [faqData, footerInfo, relatedSites, popularKeywords] = await Promise.all([
         getFaqData(),
         getFooterInfo(),
         getRelatedSites(),
+        getPopularKeywords(),
     ]);
     const visibleFaqs = getVisibleFaqs(faqData);
 
@@ -146,7 +188,7 @@ const Page = async () => {
                     }}
                 />
             )}
-            <Faq faqData={faqData} footerInfo={footerInfo} relatedSites={relatedSites} />
+            <Faq faqData={faqData} footerInfo={footerInfo} relatedSites={relatedSites} popularKeywords={popularKeywords} />
         </>
     );
 };

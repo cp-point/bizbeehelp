@@ -6,7 +6,7 @@
 ## 프론트 경로
 - C:\project\BizHelp
 ## 백엔드 경로
-- C:\project\BizHelpAPI
+- C:\project\BizHelpAPI\BizHelpAPI
 ## 테스트용 인프라 경로
 - C:\project\BizHelpInfra
 - 

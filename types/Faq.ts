@@ -11,6 +11,12 @@ export type FaqData = {
     deletedAt: string | null;
 }
 
+export type PopularKeywordData = {
+    popularId?: number;
+    keyword: string;
+    searchCount?: number;
+}
+
 export type FaqSearchCondition = {
     startDate: string;
     endDate: string;
