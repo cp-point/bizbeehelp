@@ -6,17 +6,16 @@ import { useRouter } from 'next/navigation';
 import Button from '../../../atom/Button';
 import Input from '../../../atom/Input';
 import Pagination from '../../../molecules/Pagination';
-import Table, { TableColumn } from '../../../molecules/Table';
+import Table from '../../../molecules/Table';
+import type { TableColumn } from '../../../../types/Table';
 import { Post } from '../../../../service/crud';
 import { ResponseType } from '../../../../enum/Common';
 import { formatDateTime, getFirstDateOfCurrentMonth, getTodayDate } from '../../../../libs/date';
 import { getLastSelectedId, getUniqueIds, toggleSelectedId } from '../../../../libs/selection';
 import type {
     FaqListData,
-    FaqSearchCondition,
+    FaqsProps,
     FaqUseYnUpdatePayload,
-    MajorList,
-    MinorList,
 } from '../../../../types/Faq';
 import {
     FaqsAddLink,
@@ -36,19 +35,6 @@ import {
     FaqsTableLink,
     FaqsTitle,
 } from '../../../../styles/pages/admin/faqs/Faqs';
-
-type FaqsProps = {
-    faqData?: FaqListData[];
-    majorData?: MajorList;
-    minorData?: MinorList;
-    total: number;
-    currentPage: number;
-    pageSize: number;
-    onSearch: (condition: FaqSearchCondition) => void;
-    onMajorCodeChange: (majorCode: string) => void;
-    onPageChange: (page: number) => void;
-    onRefresh: () => void;
-};
 
 const Faqs = ({
                   faqData = [],

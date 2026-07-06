@@ -10,7 +10,22 @@ import { ResponseType } from '../../../../../enum/Common';
 import { formatDateTime } from '../../../../../libs/date';
 import { getLastSelectedId, getUniqueIds, toggleSelectedId } from '../../../../../libs/selection';
 import { Post } from '../../../../../service/crud';
-import type { MajorList, MinorList } from '../../../../../types/Faq';
+import type {
+    CategoryActiveCell,
+    CategoryEditableField,
+    CategoryEditingCell,
+    CategoryRequestPayload,
+    CategoryRow,
+    CategoryRowsByTab,
+    CategorySavePayload,
+    CategorySearchCondition,
+    CategoryTab,
+    DeletedIdsByTab,
+    EditedRowsByTab,
+    FaqCategoriesProps,
+    MajorList,
+    MinorList,
+} from '../../../../../types/Faq';
 import {
     FaqCategoriesButtonGroup,
     FaqCategoriesCellInputBox,
@@ -33,66 +48,6 @@ import {
     FaqCategoriesToast,
 } from '../../../../../styles/pages/admin/faqs/categories/FaqCategories';
 
-type CategoryTab = 'major' | 'minor';
-
-type CategoryRow = {
-    id: string;
-    majorId?: number;
-    minorId?: number;
-    code: string;
-    name: string;
-    sortOrder: number;
-    useYn: boolean;
-    remark: string;
-    createdAt: string;
-    updatedAt: string;
-    deletedAt: string;
-    majorCode?: string;
-    majorName?: string;
-};
-
-type EditableField = 'code' | 'name' | 'sortOrder' | 'remark';
-type EditingCell = {
-    rowId: string;
-    field: EditableField;
-} | null;
-type ActiveCell = {
-    rowId: string;
-    column: string;
-} | null;
-type CategoryRowsByTab = Record<CategoryTab, CategoryRow[]>;
-type EditedRowsByTab = Record<CategoryTab, Record<string, Partial<CategoryRow>>>;
-type DeletedIdsByTab = Record<CategoryTab, string[]>;
-type CategorySavePayload = {
-    majorId?: number;
-    minorId?: number;
-    majorCode?: string;
-    majorName?: string;
-    minorCode?: string;
-    minorName?: string;
-    sortOrder: number;
-    useYn: 'Y' | 'N';
-    remark: string;
-};
-type CategoryDeletePayload = {
-    majorId?: number;
-    minorId?: number;
-    majorCode?: string;
-    minorCode?: string;
-};
-type CategoryRequestPayload = CategorySavePayload | CategoryDeletePayload;
-type CategorySearchCondition = {
-    majorCode: string;
-    minorCode: string;
-    useYn: string;
-    remark: string;
-};
-
-type FaqCategoriesProps = {
-    majorData?: MajorList;
-    minorData?: MinorList;
-    onRefresh?: () => Promise<void>;
-};
 
 const colors = {
     primaryWhite: '#ffffff',
@@ -331,8 +286,8 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
     const [deletedIdsByTab, setDeletedIdsByTab] = useState<DeletedIdsByTab>(createEmptyDeletedIdsByTab);
     const [selectedRowId, setSelectedRowId] = useState('');
     const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
-    const [activeCell, setActiveCell] = useState<ActiveCell>(null);
-    const [editingCell, setEditingCell] = useState<EditingCell>(null);
+    const [activeCell, setActiveCell] = useState<CategoryActiveCell>(null);
+    const [editingCell, setEditingCell] = useState<CategoryEditingCell>(null);
     const [toastMessage, setToastMessage] = useState('');
     const [hasChanges, setHasChanges] = useState(false);
     const [searchForm, setSearchForm] = useState<CategorySearchCondition>(createEmptySearchCondition);
@@ -673,7 +628,7 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         },
     });
 
-    const updateEditableCell = (rowId: string, field: EditableField, value: string) => {
+    const updateEditableCell = (rowId: string, field: CategoryEditableField, value: string) => {
         if (field === 'sortOrder') {
             updateRow(rowId, 'sortOrder', Number(value.replace(/\D/g, '')));
             return;
@@ -708,7 +663,7 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         </td>
     );
 
-    const renderEditableCell = (row: CategoryRow, field: EditableField, value: string | number, align?: 'left') => {
+    const renderEditableCell = (row: CategoryRow, field: CategoryEditableField, value: string | number, align?: 'left') => {
         const isEditing = editingCell?.rowId === row.id && editingCell.field === field;
 
         return (

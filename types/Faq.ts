@@ -143,3 +143,111 @@ export type MinorListItem = {
 export type MajorList = MajorListItem[];
 
 export type MinorList = MinorListItem[];
+export type FaqsProps = {
+    faqData?: FaqListData[];
+    majorData?: MajorList;
+    minorData?: MinorList;
+    total: number;
+    currentPage: number;
+    pageSize: number;
+    onSearch: (condition: FaqSearchCondition) => void;
+    onMajorCodeChange: (majorCode: string) => void;
+    onPageChange: (page: number) => void;
+    onRefresh: () => void;
+}
+
+export type FaqRegisterFormState = {
+    faqId: string;
+    createdAt: string;
+    updatedAt: string;
+    majorCode: string;
+    majorName: string;
+    minorCode: string;
+    minorName: string;
+    title: string;
+    content: string;
+    metaTag: string;
+    sortOrder: string;
+    useYn: 'Y' | 'N';
+    remark: string;
+}
+
+export type FaqRegisterEditableField = 'metaTag' | 'title' | 'content' | 'sortOrder' | 'useYn' | 'remark';
+
+export type PendingImage = {
+    temporarySrc: string;
+    originFileName: string;
+    fileData: string;
+    fileSize: number;
+    mimeType: string;
+}
+
+export type CategoryTab = 'major' | 'minor';
+
+export type CategoryRow = {
+    id: string;
+    majorId?: number;
+    minorId?: number;
+    code: string;
+    name: string;
+    sortOrder: number;
+    useYn: boolean;
+    remark: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string;
+    majorCode?: string;
+    majorName?: string;
+}
+
+export type CategoryEditableField = 'code' | 'name' | 'sortOrder' | 'remark';
+
+export type CategoryEditingCell = {
+    rowId: string;
+    field: CategoryEditableField;
+} | null;
+
+export type CategoryActiveCell = {
+    rowId: string;
+    column: string;
+} | null;
+
+export type CategoryRowsByTab = Record<CategoryTab, CategoryRow[]>;
+
+export type EditedRowsByTab = Record<CategoryTab, Record<string, Partial<CategoryRow>>>;
+
+export type DeletedIdsByTab = Record<CategoryTab, string[]>;
+
+export type CategorySavePayload = {
+    majorId?: number;
+    minorId?: number;
+    majorCode?: string;
+    majorName?: string;
+    minorCode?: string;
+    minorName?: string;
+    sortOrder: number;
+    useYn: 'Y' | 'N';
+    remark: string;
+}
+
+export type CategoryDeletePayload = {
+    majorId?: number;
+    minorId?: number;
+    majorCode?: string;
+    minorCode?: string;
+}
+
+export type CategoryRequestPayload = CategorySavePayload | CategoryDeletePayload;
+
+export type CategorySearchCondition = {
+    majorCode: string;
+    minorCode: string;
+    useYn: string;
+    remark: string;
+}
+
+export type FaqCategoriesProps = {
+    majorData?: MajorList;
+    minorData?: MinorList;
+    onRefresh?: () => Promise<void>;
+}

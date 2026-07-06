@@ -8,34 +8,9 @@ import { Post } from '../../../../../service/crud';
 import TiptapEditor from '../../../../molecules/TiptapEditor';
 import { sanitizeEditorHtml } from '../../../../../utils/html';
 import type { Request as ApiRequest } from '../../../../../types/Common';
-import type { FaqDetailData, MajorList, MinorList } from '../../../../../types/Faq';
+import type { FaqDetailData, FaqRegisterEditableField, FaqRegisterFormState, MajorList, MinorList, PendingImage } from '../../../../../types/Faq';
 import * as S from '../../../../../styles/pages/admin/faqs/register/FaqRegister';
 
-type FaqRegisterFormState = {
-    faqId: string;
-    createdAt: string;
-    updatedAt: string;
-    majorCode: string;
-    majorName: string;
-    minorCode: string;
-    minorName: string;
-    title: string;
-    content: string;
-    metaTag: string;
-    sortOrder: string;
-    useYn: 'Y' | 'N';
-    remark: string;
-};
-
-type FaqRegisterEditableField = 'metaTag' | 'title' | 'content' | 'sortOrder' | 'useYn' | 'remark';
-
-type PendingImage = {
-    temporarySrc: string;
-    originFileName: string;
-    fileData: string;
-    fileSize: number;
-    mimeType: string;
-};
 
 const fetcher = (payload: ApiRequest) => axiosInstance.post('/api/backend', payload).then((res) => res.data.result);
 
