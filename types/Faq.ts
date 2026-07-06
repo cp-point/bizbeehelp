@@ -94,6 +94,7 @@ export type PageData<T> = {
 export type FaqPageData = PageData<FaqListData>;
 
 export type MajorCategoryData = {
+    majorId?: number;
     majorCode: string;
     majorName: string;
     sortOrder: number;
@@ -103,6 +104,7 @@ export type MajorCategoryData = {
 }
 
 export type MinorCategoryData = {
+    minorId?: number;
     minorCode: string;
     minorName: string;
     sortOrder: number;
@@ -112,6 +114,7 @@ export type MinorCategoryData = {
 }
 
 export type MajorListItem = {
+    majorId?: number;
     majorCode: string;
     majorName: string;
     sortOrder?: number | null;
@@ -123,8 +126,10 @@ export type MajorListItem = {
 }
 
 export type MinorListItem = {
+    majorId?: number;
     majorCode?: string;
     majorName?: string;
+    minorId?: number;
     minorCode: string;
     minorName: string;
     sortOrder?: number | null;

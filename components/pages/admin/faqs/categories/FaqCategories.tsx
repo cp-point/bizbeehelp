@@ -37,6 +37,8 @@ type CategoryTab = 'major' | 'minor';
 
 type CategoryRow = {
     id: string;
+    majorId?: number;
+    minorId?: number;
     code: string;
     name: string;
     sortOrder: number;
@@ -62,6 +64,8 @@ type CategoryRowsByTab = Record<CategoryTab, CategoryRow[]>;
 type EditedRowsByTab = Record<CategoryTab, Record<string, Partial<CategoryRow>>>;
 type DeletedIdsByTab = Record<CategoryTab, string[]>;
 type CategorySavePayload = {
+    majorId?: number;
+    minorId?: number;
     majorCode?: string;
     majorName?: string;
     minorCode?: string;
@@ -71,6 +75,8 @@ type CategorySavePayload = {
     remark: string;
 };
 type CategoryDeletePayload = {
+    majorId?: number;
+    minorId?: number;
     majorCode?: string;
     minorCode?: string;
 };
@@ -120,7 +126,8 @@ const createEmptySearchCondition = (): CategorySearchCondition => ({
 
 const mapMajorRows = (majorData: MajorList = []): CategoryRow[] => {
     return majorData.map((major, index) => ({
-        id: major.majorCode,
+        id: major.majorId != null ? `major-${major.majorId}` : major.majorCode,
+        majorId: major.majorId,
         code: major.majorCode,
         name: major.majorName,
         sortOrder: major.sortOrder ?? (index + 1) * 10,
@@ -134,7 +141,9 @@ const mapMajorRows = (majorData: MajorList = []): CategoryRow[] => {
 
 const mapMinorRows = (minorData: MinorList = []): CategoryRow[] => {
     return minorData.map((minor, index) => ({
-        id: minor.minorCode,
+        id: minor.minorId != null ? `minor-${minor.minorId}` : minor.minorCode,
+        majorId: minor.majorId,
+        minorId: minor.minorId,
         code: minor.minorCode,
         name: minor.minorName,
         sortOrder: minor.sortOrder ?? (index + 1) * 10,
@@ -179,6 +188,7 @@ const createEmptyRow = (rows: CategoryRow[]): CategoryRow => {
 const toUseYn = (useYn: boolean): 'Y' | 'N' => (useYn ? 'Y' : 'N');
 
 const toMajorPayload = (row: CategoryRow): CategorySavePayload => ({
+    majorId: row.majorId,
     majorCode: row.code,
     majorName: row.name,
     sortOrder: row.sortOrder,
@@ -187,7 +197,9 @@ const toMajorPayload = (row: CategoryRow): CategorySavePayload => ({
 });
 
 const toMinorPayload = (row: CategoryRow): CategorySavePayload => ({
+    minorId: row.minorId,
     minorCode: row.code,
+    majorId: row.majorId,
     majorCode: row.majorCode,
     minorName: row.name,
     sortOrder: row.sortOrder,
@@ -492,6 +504,7 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
             activeTab === 'minor'
                 ? {
                     ...nextRow,
+                    majorId: defaultMajor?.majorId,
                     majorCode: defaultMajor?.code ?? '',
                     majorName: defaultMajor?.name ?? '',
                 }
@@ -537,6 +550,29 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
         setHasChanges(true);
     };
 
+    const validateUniqueCodes = (tab: CategoryTab, rowsToValidate: CategoryRow[]) => {
+        const codeMap = new Map<string, string>();
+
+        for (const row of rowsToValidate) {
+            const code = row.code.trim();
+
+            if (!code) {
+                continue;
+            }
+
+            const duplicatedRowId = codeMap.get(code);
+
+            if (duplicatedRowId && duplicatedRowId !== row.id) {
+                alert('이미 존재하는 코드입니다.');
+                return false;
+            }
+
+            codeMap.set(code, row.id);
+        }
+
+        return true;
+    };
+
     const validateRows = (tab: CategoryTab, rowsToValidate: CategoryRow[]) => {
         const invalidRow = rowsToValidate.find((row) => {
             const commonInvalid = !row.code.trim() || !row.name.trim() || !row.sortOrder;
@@ -554,17 +590,29 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
     };
 
     const handleSave = async () => {
-        const majorDeleteRows = deletedIdsByTab.major.map((majorCode) => ({
-            majorCode,
-        }));
-        const minorDeleteRows = deletedIdsByTab.minor.map((minorCode) => ({
-            minorCode,
-        }));
+        const majorDeleteRows = deletedIdsByTab.major
+            .map((rowId) => baseRowsByTab.major.find((row) => row.id === rowId))
+            .filter((row): row is CategoryRow => Boolean(row))
+            .map((row) => ({
+                majorId: row.majorId,
+                majorCode: row.code,
+            }));
+        const minorDeleteRows = deletedIdsByTab.minor
+            .map((rowId) => baseRowsByTab.minor.find((row) => row.id === rowId))
+            .filter((row): row is CategoryRow => Boolean(row))
+            .map((row) => ({
+                minorId: row.minorId,
+                minorCode: row.code,
+            }));
         const majorUpsertRows = createUpsertRows('major', baseRowsByTab, addedRowsByTab, editedRowsByTab, deletedIdsByTab);
         const minorUpsertRows = createUpsertRows('minor', baseRowsByTab, addedRowsByTab, editedRowsByTab, deletedIdsByTab);
 
         if (majorDeleteRows.length === 0 && minorDeleteRows.length === 0 && majorUpsertRows.length === 0 && minorUpsertRows.length === 0) {
             setToastMessage('변경내역이 없습니다.');
+            return;
+        }
+
+        if (!validateUniqueCodes('major', allRowsByTab.major) || !validateUniqueCodes('minor', allRowsByTab.minor)) {
             return;
         }
 
@@ -637,6 +685,7 @@ const FaqCategories = ({ majorData = [], minorData = [], onRefresh }: FaqCategor
     const updateMinorMajor = (rowId: string, majorCode: string) => {
         const selectedMajor = majorOptions.find((major) => major.code === majorCode);
 
+        updateRow(rowId, 'majorId', selectedMajor?.majorId);
         updateRow(rowId, 'majorCode', majorCode);
         updateRow(rowId, 'majorName', selectedMajor?.name ?? '');
     };
