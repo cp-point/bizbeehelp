@@ -2,10 +2,12 @@
 @use "@/styles/keyframe-animations";
 
 .simple-editor-wrapper {
-  --simple-editor-bg: var(--tt-bg-color);
-  --simple-editor-text: var(--tt-theme-text, var(--tt-gray-light-900));
-  --simple-editor-border: var(--tt-border-color);
-  --simple-editor-toolbar-bg: var(--tt-gray-light-100);
+  --simple-editor-bg: #ffffff;
+  --simple-editor-text: #0f1b2a;
+  --simple-editor-muted-text: #667085;
+  --simple-editor-border: #cdd3dd;
+  --simple-editor-toolbar-bg: #f8f9fb;
+  --simple-editor-link-color: #027a48;
   --simple-editor-hover-bg: rgba(22, 179, 100, 0.12);
   --simple-editor-active-bg: rgba(22, 179, 100, 0.18);
   --simple-editor-active-color: #039855;
@@ -25,8 +27,12 @@
 }
 
 .dark .simple-editor-wrapper {
-  --simple-editor-text: var(--tt-gray-dark-900);
-  --simple-editor-toolbar-bg: var(--tt-gray-dark-100);
+  --simple-editor-bg: #111827;
+  --simple-editor-text: #f9fafb;
+  --simple-editor-muted-text: #9ca3af;
+  --simple-editor-border: #374151;
+  --simple-editor-toolbar-bg: #1f2937;
+  --simple-editor-link-color: #86efac;
   --simple-editor-hover-bg: rgba(122, 82, 255, 0.22);
   --simple-editor-active-bg: rgba(122, 82, 255, 0.3);
   --simple-editor-active-color: var(--tt-brand-color-300);
@@ -107,8 +113,13 @@
   border-color: var(--simple-editor-border);
 }
 
+.simple-editor-wrapper .tiptap-link-input {
+  color: var(--simple-editor-text);
+  background: var(--simple-editor-bg);
+}
+
 .simple-editor-wrapper .tiptap-input::placeholder {
-  color: var(--tt-input-placeholder, var(--tt-gray-light-a-500));
+  color: var(--simple-editor-muted-text);
 }
 
 .simple-editor-wrapper .tiptap-input:focus-visible {
@@ -117,11 +128,9 @@
 }
 
 .simple-editor-wrapper .tiptap a {
-  color: #027a48;
-}
-
-.dark .simple-editor-wrapper .tiptap a {
-  color: #86efac;
+  color: var(--simple-editor-link-color);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .simple-editor-content {
@@ -151,13 +160,10 @@
   content: attr(data-placeholder);
   float: left;
   height: 0;
-  color: var(--tt-gray-light-a-500);
+  color: var(--simple-editor-muted-text);
   pointer-events: none;
 }
 
-.dark .simple-editor-content .tiptap.ProseMirror.simple-editor p.is-editor-empty:first-child::before {
-  color: var(--tt-gray-dark-a-500);
-}
 
 .simple-editor-content .tiptap.ProseMirror.simple-editor img {
   display: block;

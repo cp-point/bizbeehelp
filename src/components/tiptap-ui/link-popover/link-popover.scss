@@ -1,16 +1,37 @@
 .tiptap-link-input {
-  font-size: 0.875rem;
-  border: none;
-
-  /* Clamp the input */
   min-width: 12rem;
   padding-right: 0;
-
+  font-size: 0.875rem;
+  color: #0f1b2a !important;
+  -webkit-text-fill-color: #0f1b2a;
+  background-color: #ffffff !important;
+  border: 1px solid #cdd3dd;
+  border-radius: 4px;
   text-overflow: ellipsis;
   white-space: nowrap;
 
+  &::placeholder {
+    color: #667085;
+    -webkit-text-fill-color: #667085;
+  }
+
   &:focus {
-    text-overflow: clip;
     overflow: visible;
+    border-color: #039855;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(22, 179, 100, 0.18);
+    text-overflow: clip;
+  }
+}
+
+.dark .tiptap-link-input {
+  color: #f9fafb !important;
+  -webkit-text-fill-color: #f9fafb;
+  background-color: #111827 !important;
+  border-color: #374151;
+
+  &::placeholder {
+    color: #9ca3af;
+    -webkit-text-fill-color: #9ca3af;
   }
 }
