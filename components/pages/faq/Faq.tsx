@@ -284,7 +284,6 @@ const MenuContent = ({ menuGroups, selectedMenuId, onMenuClick }: MenuContentPro
 );
 
 const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) => {
-
     const [selectedMenuId, setSelectedMenuId] = useState('all');
     const [openedItemId, setOpenedItemId] = useState('');
     const [isMenuScrolling, setIsMenuScrolling] = useState(false);
@@ -498,10 +497,12 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
                     {/*    //     로그인*/}
                     {/*    // </S.HeaderButton>*/}
                     {/*)}*/}
-                    <S.HeaderButton type="button" $variant="line">
+                    <S.HeaderButton type="button" $variant="line"
+                                    onClick={() => window.open('https://www.bizbee.co.kr')}>
                         비즈비 홈페이지
                     </S.HeaderButton>
-                    <S.HeaderButton type="button" $variant="solid">
+                    <S.HeaderButton type="button" $variant="solid"
+                                    onClick={() => window.open('https://www.bizbee.co.kr/pages/contact-us.html')}>
                         도입문의
                     </S.HeaderButton>
                 </S.HeaderActions>
@@ -521,7 +522,10 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
                                  onMenuClick={handleMenuClick} />
                 </S.MobileMenuPanel>
                 <S.MobileMenuActionBar>
-                    <S.MobileMenuAction type="button" onClick={() => setIsMobileMenuOpen(false)}>
+                    <S.MobileMenuAction type="button" onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        window.open('https://www.bizbee.co.kr/pages/contact-us.html');
+                    }}>
                         도입 문의하기
                     </S.MobileMenuAction>
                 </S.MobileMenuActionBar>
@@ -664,7 +668,8 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
                                         <PhoneIcon />
                                         1533-5443
                                     </S.CallButton>
-                                    <S.InquiryButton type="button">
+                                    <S.InquiryButton type="button"
+                                                     onClick={() => window.open('https://www.bizbee.co.kr/pages/contact-us.html')}>
                                         도입 문의하기
                                     </S.InquiryButton>
                                 </S.InfoActions>
@@ -677,7 +682,10 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
                                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                     <Image src="/assets/images/footer-arrow-up.svg" alt="" width={36} height={36} aria-hidden="true" />
                 </S.FooterTopButton>
-            </S.Body>
+            </S.Body>;
+            ;
+            ;
+            ;
 
 
             <S.Footer>
@@ -754,10 +762,14 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
                         ) : null}
                     </S.FooterBottom>
                 </S.FooterContents>
-            </S.Footer>
+            </S.Footer>;
+            ;
+            ;
+            ;
 
         </S.Page>
-    );
+    )
+        ;
 };
 
 export default Faq;
