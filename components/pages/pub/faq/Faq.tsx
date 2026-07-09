@@ -91,20 +91,22 @@ const MenuContent = ({ selectedMenuId, onMenuClick }: MenuContentProps) => (
     <S.AllMenuButton type="button" $isActive={selectedMenuId === 'all'} onClick={() => onMenuClick('all')}>
       전체
     </S.AllMenuButton>
-    {faqMenuGroups.map((group) => (
-      <S.MenuGroup key={group.id}>
-        <S.MenuTitle>{group.title}</S.MenuTitle>
-        <S.MenuList>
-          {group.items.map((item) => (
-            <li key={item.id}>
-              <S.MenuButton type="button" $isActive={selectedMenuId === item.id} onClick={() => onMenuClick(item.id)}>
-                {item.label}
-              </S.MenuButton>
-            </li>
-          ))}
-        </S.MenuList>
-      </S.MenuGroup>
-    ))}
+    <S.MenuScroll>
+      {faqMenuGroups.map((group) => (
+        <S.MenuGroup key={group.id}>
+          <S.MenuTitle>{group.title}</S.MenuTitle>
+          <S.MenuList>
+            {group.items.map((item) => (
+              <li key={item.id}>
+                <S.MenuButton type="button" $isActive={selectedMenuId === item.id} onClick={() => onMenuClick(item.id)}>
+                  {item.label}
+                </S.MenuButton>
+              </li>
+            ))}
+          </S.MenuList>
+        </S.MenuGroup>
+      ))}
+    </S.MenuScroll>
   </>
 );
 

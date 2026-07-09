@@ -650,20 +650,23 @@ export const SideMenu = styled.aside`
   border-radius: 12px;
   background: ${colors.primaryWhite};
   overflow: hidden;
-  overflow-y: auto;
-
-  &::-webkit-scrollbar {
-    width: 9px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    border: 2px solid transparent;
-    border-radius: 100px;
-    background-clip: content-box;
-  }
 
   @media (max-width: 767px) {
     display: none;
+  }
+`;
+
+export const MenuScroll = styled.div`
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+
+  ${MobileMenuPanel} & {
+    gap: 16px;
+    overflow: visible;
   }
 `;
 

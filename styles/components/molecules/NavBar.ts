@@ -5,25 +5,31 @@ type NavMenuLinkProps = {
     $isActive?: boolean;
 };
 
-type NavMenuListProps = {
-    $isOpen?: boolean;
-};
-
 export const NavBarWrapper = styled.aside`
+    position: sticky;
+    top: 64px;
     display: flex;
     flex-direction: column;
     flex: 0 0 220px;
-    min-height: 100vh;
-    border-right: 1px solid #d9dde3;
-    background-color: #f5f6f8;
-    padding: 24px 16px;
+    min-width: 220px;
+    height: calc(100vh - 64px);
+    padding: 40px 10px 24px;
+    background: #1e293b;
+    z-index: 10;
 
-    @media (max-width: 768px) {
-        flex-basis: auto;
-        min-height: auto;
-        border-right: 0;
-        border-bottom: 1px solid #d9dde3;
-        padding: 16px;
+    @media (max-width: 1024px) {
+        top: 64px;
+        flex: 0 0 auto;
+        min-width: 0;
+        width: 100%;
+        height: auto;
+        padding: 8px 16px;
+        overflow-x: auto;
+    }
+
+    @media (max-width: 640px) {
+        top: 64px;
+        padding: 8px 12px;
     }
 `;
 
@@ -31,86 +37,49 @@ export const NavMenuArea = styled.nav`
     flex: 1;
 `;
 
-export const NavGroup = styled.section`
-    margin-bottom: 28px;
-
-    @media (max-width: 768px) {
-        margin-bottom: 16px;
-    }
-`;
-
-export const LogoutButtonArea = styled.div`
+export const NavMenuList = styled.ul`
     display: flex;
-    justify-content: flex-end;
-    margin-top: auto;
-`;
-
-export const LogoutButton = styled.button`
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    background-color: #ffffff;
-    padding: 8px 10px;
-    color: #374151;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1;
-    cursor: pointer;
-
-    &:hover {
-        border-color: #9ca3af;
-        background-color: #f3f4f6;
-        color: #111827;
-    }
-`;
-
-export const NavGroupButton = styled.button`
-    display: flex;
-    width: 100%;
-    border: 0;
-    background-color: transparent;
-    padding: 0;
-    cursor: pointer;
-    text-align: left;
-`;
-
-export const NavGroupTitle = styled.h2`
-    margin-bottom: 8px;
-    color: #1f2937;
-    font-size: 15px;
-    font-weight: 700;
-    line-height: 1.4;
-`;
-
-export const NavMenuList = styled.ul<NavMenuListProps>`
+    flex-direction: column;
+    gap: 4px;
     list-style: none;
-    max-height: ${(props) => (props.$isOpen ? '160px' : '0')};
-    opacity: ${(props) => (props.$isOpen ? 1 : 0)};
-    overflow: hidden;
-    transition:
-        max-height 0.8s ease,
-        opacity 0.6s ease;
+
+    @media (max-width: 1024px) {
+        flex-direction: row;
+        width: max-content;
+        min-width: 100%;
+    }
 `;
 
 export const NavMenuItem = styled.li`
     margin-bottom: 4px;
+
+    @media (max-width: 1024px) {
+        margin-bottom: 0;
+    }
 `;
 
 export const NavMenuLink = styled(Link)<NavMenuLinkProps>`
-    display: block;
+    display: flex;
+    align-items: center;
     width: 100%;
-    border-radius: 6px;
-    padding: 8px 10px;
-    color: ${(props) => (props.$isActive ? '#1d4ed8' : '#4b5563')};
-    background-color: ${(props) => (props.$isActive ? '#dbeafe' : 'transparent')};
-    font-size: 14px;
-    font-weight: ${(props) => (props.$isActive ? 700 : 400)};
+    border-radius: 4px;
+    padding: 10px;
+    color: #ffffff;
+    background: ${(props) => (props.$isActive ? 'rgba(129, 217, 255, 0.1)' : 'transparent')};
+    font-size: 17px;
+    font-weight: ${(props) => (props.$isActive ? 600 : 500)};
     line-height: 1.4;
+    text-decoration: none;
 
     &:hover {
-        background-color: #e7eaf0;
-        color: #111827;
+        color: #ffffff;
+        background: rgba(129, 217, 255, 0.1);
+    }
+
+    @media (max-width: 1024px) {
+        justify-content: center;
+        min-width: max-content;
+        padding: 9px 12px;
+        font-size: 14px;
     }
 `;

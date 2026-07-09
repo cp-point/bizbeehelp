@@ -632,17 +632,6 @@ export const TableScroll = styled.div<TableScrollProps>`
   width: 100%;
   max-height: 930px;
   background: ${colors.coolGray50};
-
-  &::-webkit-scrollbar {
-    height: 12px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    border: 4px solid transparent;
-    border-radius: 999px;
-    background: ${colors.coolGray200};
-    background-clip: content-box;
-  }
 `;
 
 export const DataTable = styled.table<DataTableProps>`
