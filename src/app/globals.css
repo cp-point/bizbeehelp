@@ -29,16 +29,11 @@ body {
   font-family: var(--font-pretendard), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-*::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  scrollbar-color: #cdd3dd transparent;
 }
 
 *::-webkit-scrollbar-thumb {
-  border-radius: 3px;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: #cdd3dd;
 }
 
 * {

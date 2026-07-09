@@ -38,22 +38,6 @@
   --simple-editor-active-color: var(--tt-brand-color-300);
 }
 
-.simple-editor-wrapper,
-.simple-editor-wrapper * {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(15, 27, 42, 0.24) transparent;
-}
-
-.simple-editor-wrapper ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-
-.simple-editor-wrapper ::-webkit-scrollbar-thumb {
-  border-radius: 9999px;
-  background-color: rgba(15, 27, 42, 0.24);
-}
-
 .simple-editor-wrapper ::selection {
   color: var(--simple-editor-text);
   background: var(--tt-selection-color, rgba(22, 179, 100, 0.28));

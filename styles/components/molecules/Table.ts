@@ -58,17 +58,6 @@ export const TableContainer = styled.div<TableContainerProps>`
             border: 0;
             border-radius: 0;
             background: #f8f9fb;
-
-            &::-webkit-scrollbar {
-                height: 12px;
-            }
-
-            &::-webkit-scrollbar-thumb {
-                border: 4px solid transparent;
-                border-radius: 999px;
-                background: #cdd3dd;
-                background-clip: content-box;
-            }
         `}
 `;
 

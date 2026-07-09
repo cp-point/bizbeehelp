@@ -101,25 +101,6 @@ export const PageScroll = styled.div`
     overflow-x: hidden;
     overflow-y: auto;
     scroll-behavior: smooth;
-
-    &::-webkit-scrollbar {
-        width: 9px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        border: 2px solid transparent;
-        border-radius: 100px;
-        background-color: ${colors.coolGray400};
-        background-clip: content-box;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-        background-color: ${colors.coolGray500};
-    }
 `;
 
 export const HeaderLogo = styled(Link)`
@@ -480,11 +461,6 @@ export const KeywordList = styled.div`
     padding: 0 16px;
     margin-top: 0;
     overflow-x: auto;
-    scrollbar-width: none;
-
-        &::-webkit-scrollbar {
-            display: none;
-        }
     }
 
     button {
@@ -668,7 +644,7 @@ export const SideMenu = styled.aside`
     align-self: flex-start;
     gap: 16px;
     position: sticky;
-    top: calc(${sizes.headerHeight} + ${sizes.stickyGap});
+    top: ${sizes.stickyGap};
     max-height: calc(100vh - 140px);
     padding: 16px 0;
     border: 1px solid ${colors.coolGray200};
@@ -688,25 +664,6 @@ export const MenuScroll = styled.div`
     gap: 16px;
     min-height: 0;
     overflow-y: auto;
-
-    &::-webkit-scrollbar {
-        width: 9px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        border: 2px solid transparent;
-        border-radius: 100px;
-        background-color: ${colors.coolGray400};
-        background-clip: content-box;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-        background-color: ${colors.coolGray500};
-    }
 
     ${MobileMenuPanel} & {
         gap: 16px;

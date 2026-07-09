@@ -25,17 +25,6 @@ export const NavBarWrapper = styled.aside`
         height: auto;
         padding: 8px 16px;
         overflow-x: auto;
-
-        &::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            border: 3px solid transparent;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.35);
-            background-clip: content-box;
-        }
     }
 
     @media (max-width: 640px) {
