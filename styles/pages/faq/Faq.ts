@@ -53,7 +53,11 @@ const visuallyHidden = css`
 `;
 
 export const Page = styled.main`
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
     min-height: 100vh;
+    overflow: hidden;
     font-family: var(--font-pretendard), Arial, Helvetica, sans-serif;
     color: ${colors.coolGray800};
     background: ${colors.primaryWhite};
@@ -72,6 +76,7 @@ export const Header = styled.header`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex: 0 0 auto;
     position: sticky;
     top: 0;
     min-height: ${sizes.headerHeight};
@@ -86,6 +91,34 @@ export const Header = styled.header`
         left: 0;
         min-height: 56px;
         padding: 0 10px 0 16px;
+    }
+`;
+
+
+export const PageScroll = styled.div`
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+
+    &::-webkit-scrollbar {
+        width: 9px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border: 2px solid transparent;
+        border-radius: 100px;
+        background-color: ${colors.coolGray400};
+        background-clip: content-box;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: ${colors.coolGray500};
     }
 `;
 
@@ -785,41 +818,6 @@ export const Contents = styled.div`
     }
 `;
 
-export const FaqListScroll = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 56px;
-    width: 100%;
-    max-height: calc(100vh - 140px);
-    padding-right: 8px;
-    overflow-y: auto;
-
-    &::-webkit-scrollbar {
-        width: 9px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        border: 2px solid transparent;
-        border-radius: 100px;
-        background-color: ${colors.coolGray400};
-        background-clip: content-box;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-        background-color: ${colors.coolGray500};
-    }
-
-    @media (max-width: 767px) {
-        gap: 64px;
-        max-height: none;
-        padding-right: 0;
-        overflow: visible;
-    }
-`;
 
 export const AccordionSection = styled.section`
     display: flex;
@@ -1666,6 +1664,10 @@ export const FooterTopButton = styled.button`
     display: none;
   }
 `;
+
+
+
+
 
 
 

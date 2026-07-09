@@ -547,73 +547,73 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
             </S.MobileMenu>
 
 
-            <S.Hero>
-                <S.HeroContent>
-                    <S.HeroHeading>
-                        <S.Title>비즈비에 무엇이든 물어보세요</S.Title>
-                        <S.Description>
-                            <span>도입 전 궁금한 점부터 운영 중 발생하는 문제까지</span>
-                            <span>가장 많이 질문하신 내용을 모았습니다.</span>
-                        </S.Description>
-                    </S.HeroHeading>
-                    <S.SearchGroup>
-                        <S.SearchForm
-                            role="search"
-                            onSubmit={(event) => {
-                                event.preventDefault();
-                                handleSearchSubmit();
-                            }}
-                        >
-                            <label htmlFor="faq-search">궁금한 내용 검색</label>
-                            <S.SearchSubmit type="submit" aria-label="검색">
-                                <SearchIcon />
-                            </S.SearchSubmit>
-                            <input
-                                id="faq-search"
-                                type="search"
-                                name="faq-search-keyword"
-                                autoComplete="off"
-                                spellCheck={false}
-                                placeholder="궁금한 내용을 검색해 보세요."
-                                value={searchQuery}
-                                onChange={handleSearchChange}
-                            />
-                        </S.SearchForm>
-                        <S.KeywordList aria-label="추천 검색어">
-                            {visibleSearchKeywords.map((keyword) => (
-                                <button key={keyword} type="button" onClick={() => handleKeywordClick(keyword)}>
-                                    <SearchIcon size={16} />
-                                    {keyword}
-                                </button>
-                            ))}
-                        </S.KeywordList>
-                    </S.SearchGroup>
-                </S.HeroContent>
-            </S.Hero>
+            <S.PageScroll>
+                <S.Hero>
+                    <S.HeroContent>
+                        <S.HeroHeading>
+                            <S.Title>비즈비에 무엇이든 물어보세요</S.Title>
+                            <S.Description>
+                                <span>도입 전 궁금한 점부터 운영 중 발생하는 문제까지</span>
+                                <span>가장 많이 질문하신 내용을 모았습니다.</span>
+                            </S.Description>
+                        </S.HeroHeading>
+                        <S.SearchGroup>
+                            <S.SearchForm
+                                role="search"
+                                onSubmit={(event) => {
+                                    event.preventDefault();
+                                    handleSearchSubmit();
+                                }}
+                            >
+                                <label htmlFor="faq-search">궁금한 내용 검색</label>
+                                <S.SearchSubmit type="submit" aria-label="검색">
+                                    <SearchIcon />
+                                </S.SearchSubmit>
+                                <input
+                                    id="faq-search"
+                                    type="search"
+                                    name="faq-search-keyword"
+                                    autoComplete="off"
+                                    spellCheck={false}
+                                    placeholder="궁금한 내용을 검색해 보세요."
+                                    value={searchQuery}
+                                    onChange={handleSearchChange}
+                                />
+                            </S.SearchForm>
+                            <S.KeywordList aria-label="추천 검색어">
+                                {visibleSearchKeywords.map((keyword) => (
+                                    <button key={keyword} type="button" onClick={() => handleKeywordClick(keyword)}>
+                                        <SearchIcon size={16} />
+                                        {keyword}
+                                    </button>
+                                ))}
+                            </S.KeywordList>
+                        </S.SearchGroup>
+                    </S.HeroContent>
+                </S.Hero>
 
 
-            <S.Body ref={bodyRef}>
-                <S.FloatingButtonLayer ref={floatingButtonRef}>
-                    <S.FloatingButton type="button" aria-label="카카오톡 문의하기" onClick={handleKakaoInquiryClick}>
-                        <S.FloatingButtonSymbol>
-                            <KakaoIcon className="kakao-mark" />
-                            <KakaoIcon className="kakao-mark kakao-mark-clone" />
-                        </S.FloatingButtonSymbol>
-                        <span>
+                <S.Body ref={bodyRef}>
+                    <S.FloatingButtonLayer ref={floatingButtonRef}>
+                        <S.FloatingButton type="button" aria-label="카카오톡 문의하기" onClick={handleKakaoInquiryClick}>
+                            <S.FloatingButtonSymbol>
+                                <KakaoIcon className="kakao-mark" />
+                                <KakaoIcon className="kakao-mark kakao-mark-clone" />
+                            </S.FloatingButtonSymbol>
+                            <span>
               카카오톡
               <br />
               문의하기
             </span>
-                    </S.FloatingButton>
-                </S.FloatingButtonLayer>
-                <S.BodyInner>
-                    <S.SideMenu aria-label="FAQ 분류">
-                        <MenuContent menuGroups={menuGroups} selectedMenuId={selectedMenuId}
-                                     onMenuClick={handleMenuClick} />
-                    </S.SideMenu>
+                        </S.FloatingButton>
+                    </S.FloatingButtonLayer>
+                    <S.BodyInner>
+                        <S.SideMenu aria-label="FAQ 분류">
+                            <MenuContent menuGroups={menuGroups} selectedMenuId={selectedMenuId}
+                                         onMenuClick={handleMenuClick} />
+                        </S.SideMenu>
 
-                    <S.Contents>
-                        <S.FaqListScroll>
+                        <S.Contents>
                             {displayedSections.map((section) => (
                                 <S.AccordionSection
                                     key={section.id}
@@ -672,112 +672,116 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
                                     </p>
                                 </S.EmptyResult>
                             )}
-                        </S.FaqListScroll>
+                            <S.InfoBox id="contact">
+                                <S.InfoText>
+                                    <h2>원하는 답을 찾지 못하셨나요?</h2>
+                                    <p>비즈비 전담 컨설턴트가 직접 답변해 드립니다. 지금 바로 문의해 보세요.</p>
+                                </S.InfoText>
+                                <S.InfoContact>
+                                    <S.InfoActions>
+                                        <S.CallButton type="button">
+                                            <PhoneIcon />
+                                            1533-5443
+                                        </S.CallButton>
+                                        <S.InquiryButton type="button"
+                                                         onClick={() => window.open('https://www.bizbee.co.kr/pages/contact-us.html')}>
+                                            도입 문의하기
+                                        </S.InquiryButton>
+                                    </S.InfoActions>
+                                    <S.InfoCaption>문의 가능 시간 (주말, 공휴일 제외 09:00 ~ 18:00)</S.InfoCaption>
+                                </S.InfoContact>
+                            </S.InfoBox>
+                        </S.Contents>
+                    </S.BodyInner>
+                    <S.FooterTopButton type="button" aria-label="상단으로 이동"
+                                       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                        <Image src="/assets/images/footer-arrow-up.svg" alt="" width={36} height={36}
+                               aria-hidden="true" />
+                    </S.FooterTopButton>
+                </S.Body>
+                <S.Footer>
+                    <S.FooterTop>
+                        <S.FooterLogo href="/faq" aria-label="bizbee">
+                            <Image src="/assets/images/footer-logo.svg" alt="bizbee" width={127} height={38} />
+                        </S.FooterLogo>
+                        <S.FooterLinks aria-label="정책 링크">
+                            {footerLinks.map((link) => (
+                                <a
+                                    key={link.label}
+                                    href={link.href}
+                                    target={link.isExternal ? '_blank' : undefined}
+                                    rel={link.isExternal ? 'noreferrer' : undefined}
+                                    aria-current={link.isCurrent ? 'page' : undefined}
+                                >
+                                    {link.label}
+                                </a>
+                            ))}
+                        </S.FooterLinks>
+                    </S.FooterTop>
 
-                        <S.InfoBox id="contact">
-                            <S.InfoText>
-                                <h2>원하는 답을 찾지 못하셨나요?</h2>
-                                <p>비즈비 전담 컨설턴트가 직접 답변해 드립니다. 지금 바로 문의해 보세요.</p>
-                            </S.InfoText>
-                            <S.InfoContact>
-                                <S.InfoActions>
-                                    <S.CallButton type="button">
-                                        <PhoneIcon />
-                                        1533-5443
-                                    </S.CallButton>
-                                    <S.InquiryButton type="button"
-                                                     onClick={() => window.open('https://www.bizbee.co.kr/pages/contact-us.html')}>
-                                        도입 문의하기
-                                    </S.InquiryButton>
-                                </S.InfoActions>
-                                <S.InfoCaption>문의 가능 시간 (주말, 공휴일 제외 09:00 ~ 18:00)</S.InfoCaption>
-                            </S.InfoContact>
-                        </S.InfoBox>
-                    </S.Contents>
-                </S.BodyInner>
-                <S.FooterTopButton type="button" aria-label="상단으로 이동"
-                                   onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                    <Image src="/assets/images/footer-arrow-up.svg" alt="" width={36} height={36} aria-hidden="true" />
-                </S.FooterTopButton>
-            </S.Body>
-            <S.Footer>
-                <S.FooterTop>
-                    <S.FooterLogo href="/faq" aria-label="bizbee">
-                        <Image src="/assets/images/footer-logo.svg" alt="bizbee" width={127} height={38} />
-                    </S.FooterLogo>
-                    <S.FooterLinks aria-label="정책 링크">
-                        {footerLinks.map((link) => (
-                            <a
-                                key={link.label}
-                                href={link.href}
-                                target={link.isExternal ? '_blank' : undefined}
-                                rel={link.isExternal ? 'noreferrer' : undefined}
-                                aria-current={link.isCurrent ? 'page' : undefined}
-                            >
-                                {link.label}
-                            </a>
-                        ))}
-                    </S.FooterLinks>
-                </S.FooterTop>
-
-                <S.FooterContents>
-                    <S.FooterInfoRow>
-                        <S.CompanyInfo>
-                            <S.CompanyAddress>
-                                <strong>{companyAddress.name}</strong>
-                                {companyAddress.address ? <span>{companyAddress.address}</span> : null}
-                            </S.CompanyAddress>
-                            <S.CompanyMetaList>
-                                {companyMeta.map((item) => (
-                                    <S.CompanyMetaItem key={item.label}>
-                                        <strong>{item.label}</strong>
-                                        <span>{item.value}</span>
-                                    </S.CompanyMetaItem>
-                                ))}
-                            </S.CompanyMetaList>
-                        </S.CompanyInfo>
-                        {footerPhoneNumber ? (
-                            <S.FooterPhone>
-                                <Image src="/assets/images/footer-phone.svg" alt="" width={36} height={36}
-                                       aria-hidden="true" />
-                                <strong>{footerPhoneNumber}</strong>
-                            </S.FooterPhone>
-                        ) : null}
-                    </S.FooterInfoRow>
-
-                    <S.FooterBottom>
-                        {copyright ? <S.Copyright>{copyright}</S.Copyright> : null}
-                        {relatedSiteItems.length > 0 ? (
-                            <S.RelatedSites
-                                onBlur={(event) => {
-                                    if (!event.currentTarget.contains(event.relatedTarget)) {
-                                        setIsRelatedSitesOpen(false);
-                                    }
-                                }}
-                            >
-                                <S.RelatedSitesButton type="button" aria-expanded={isRelatedSitesOpen}
-                                                      onClick={() => setIsRelatedSitesOpen((isOpen) => !isOpen)}>
-                                    관련 사이트
-                                    <Image src="/assets/images/footer-related-plus.svg" alt="" width={16} height={16}
-                                           aria-hidden="true" />
-                                </S.RelatedSitesButton>
-                                <S.RelatedSitesMenu $isOpen={isRelatedSitesOpen}>
-                                    {relatedSiteItems.map((site) => (
-                                        <li key={site.href}>
-                                            <a href={site.href} target="_blank" rel="noreferrer">
-                                                {site.label}
-                                            </a>
-                                        </li>
+                    <S.FooterContents>
+                        <S.FooterInfoRow>
+                            <S.CompanyInfo>
+                                <S.CompanyAddress>
+                                    <strong>{companyAddress.name}</strong>
+                                    {companyAddress.address ? <span>{companyAddress.address}</span> : null}
+                                </S.CompanyAddress>
+                                <S.CompanyMetaList>
+                                    {companyMeta.map((item) => (
+                                        <S.CompanyMetaItem key={item.label}>
+                                            <strong>{item.label}</strong>
+                                            <span>{item.value}</span>
+                                        </S.CompanyMetaItem>
                                     ))}
-                                </S.RelatedSitesMenu>
-                            </S.RelatedSites>
-                        ) : null}
-                    </S.FooterBottom>
-                </S.FooterContents>
-            </S.Footer>
+                                </S.CompanyMetaList>
+                            </S.CompanyInfo>
+                            {footerPhoneNumber ? (
+                                <S.FooterPhone>
+                                    <Image src="/assets/images/footer-phone.svg" alt="" width={36} height={36}
+                                           aria-hidden="true" />
+                                    <strong>{footerPhoneNumber}</strong>
+                                </S.FooterPhone>
+                            ) : null}
+                        </S.FooterInfoRow>
+
+                        <S.FooterBottom>
+                            {copyright ? <S.Copyright>{copyright}</S.Copyright> : null}
+                            {relatedSiteItems.length > 0 ? (
+                                <S.RelatedSites
+                                    onBlur={(event) => {
+                                        if (!event.currentTarget.contains(event.relatedTarget)) {
+                                            setIsRelatedSitesOpen(false);
+                                        }
+                                    }}
+                                >
+                                    <S.RelatedSitesButton type="button" aria-expanded={isRelatedSitesOpen}
+                                                          onClick={() => setIsRelatedSitesOpen((isOpen) => !isOpen)}>
+                                        관련 사이트
+                                        <Image src="/assets/images/footer-related-plus.svg" alt="" width={16}
+                                               height={16}
+                                               aria-hidden="true" />
+                                    </S.RelatedSitesButton>
+                                    <S.RelatedSitesMenu $isOpen={isRelatedSitesOpen}>
+                                        {relatedSiteItems.map((site) => (
+                                            <li key={site.href}>
+                                                <a href={site.href} target="_blank" rel="noreferrer">
+                                                    {site.label}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </S.RelatedSitesMenu>
+                                </S.RelatedSites>
+                            ) : null}
+                        </S.FooterBottom>
+                    </S.FooterContents>
+                </S.Footer>
+            </S.PageScroll>
         </S.Page>
     );
 };
 
 export default Faq;
+
+
+
 
