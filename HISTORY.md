@@ -1,5 +1,9 @@
 ﻿# 변경 이력
 
+## 2026-07-09 09:30
+
+- 메인 FAQ 화면의 FAQ 목록 영역에 전용 스크롤 컨테이너와 커스텀 스크롤바를 적용
+
 ## 2026-07-09 09:15
 
 - 운영 도메인 https://help.bizbee.co.kr 기준으로 FAQ 페이지 sitemap을 추가하고 robots.txt에 sitemap 경로를 연결
@@ -298,6 +302,7 @@
 - `Table` 체크박스 컬럼 변경 이벤트용 `onCheckedChange` 속성 추가
 - FAQ 분류관리 페이지에서 체크박스 변경 시 `dataSource.useYn` 값이 갱신되도록 연결
 - Checkbox 미체크 상태가 검게 보이지 않도록 커스텀 체크박스 스타일 적용
+
 
 
 

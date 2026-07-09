@@ -611,64 +611,66 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
                     </S.SideMenu>
 
                     <S.Contents>
-                        {displayedSections.map((section) => (
-                            <S.AccordionSection
-                                key={section.id}
-                                id={section.id}
-                                ref={(node) => {
-                                    sectionRefs.current[section.id] = node;
-                                }}
-                            >
-                                <S.SectionTitle>{section.title}</S.SectionTitle>
-                                <S.AccordionList>
-                                    {section.items.map((item) => {
-                                        const isOpen = openedItemId === item.id;
+                        <S.FaqListScroll>
+                            {displayedSections.map((section) => (
+                                <S.AccordionSection
+                                    key={section.id}
+                                    id={section.id}
+                                    ref={(node) => {
+                                        sectionRefs.current[section.id] = node;
+                                    }}
+                                >
+                                    <S.SectionTitle>{section.title}</S.SectionTitle>
+                                    <S.AccordionList>
+                                        {section.items.map((item) => {
+                                            const isOpen = openedItemId === item.id;
 
-                                        return (
-                                            <S.AccordionItem key={item.id} $isOpen={isOpen}>
-                                                <S.AccordionButton type="button"
-                                                                   onClick={() => handleAccordionClick(item.id, section.id)}
-                                                                   aria-expanded={isOpen}>
-                                                    <span>{getHighlightedText(item.question, submittedSearchQuery)}</span>
-                                                    <S.Chevron as={ChevronIcon} />
-                                                </S.AccordionButton>
-                                                <S.AccordionPanel $isOpen={isOpen} $isInstant={isMenuScrolling}
-                                                                  aria-hidden={!isOpen}>
-                                                    <S.AccordionPanelInner $isOpen={isOpen}
-                                                                           $isInstant={isMenuScrolling}>
-                                                        {item.contentHtml ? (
-                                                            <S.FaqContentHtml
-                                                                dangerouslySetInnerHTML={{ __html: item.contentHtml }}
-                                                            />
-                                                        ) : (
-                                                            <>
-                                                                <p>{getHighlightedText(item.answer, submittedSearchQuery)}</p>
-                                                                {item.bullets && (
-                                                                    <ul>
-                                                                        {item.bullets.map((bullet) => (
-                                                                            <li key={bullet}>{getHighlightedText(bullet, submittedSearchQuery)}</li>
-                                                                        ))}
-                                                                    </ul>
-                                                                )}
-                                                            </>
-                                                        )}
-                                                    </S.AccordionPanelInner>
-                                                </S.AccordionPanel>
-                                            </S.AccordionItem>
-                                        );
-                                    })}
-                                </S.AccordionList>
-                            </S.AccordionSection>
-                        ))}
-                        {displayedSections.length === 0 && (
-                            <S.EmptyResult>
-                                <S.EmptyIcon aria-hidden="true">!</S.EmptyIcon>
-                                <p>
-                                    <span>검색 결과가 없습니다.</span>
-                                    <span>다른 키워드로 검색해 보세요.</span>
-                                </p>
-                            </S.EmptyResult>
-                        )}
+                                            return (
+                                                <S.AccordionItem key={item.id} $isOpen={isOpen}>
+                                                    <S.AccordionButton type="button"
+                                                                       onClick={() => handleAccordionClick(item.id, section.id)}
+                                                                       aria-expanded={isOpen}>
+                                                        <span>{getHighlightedText(item.question, submittedSearchQuery)}</span>
+                                                        <S.Chevron as={ChevronIcon} />
+                                                    </S.AccordionButton>
+                                                    <S.AccordionPanel $isOpen={isOpen} $isInstant={isMenuScrolling}
+                                                                      aria-hidden={!isOpen}>
+                                                        <S.AccordionPanelInner $isOpen={isOpen}
+                                                                               $isInstant={isMenuScrolling}>
+                                                            {item.contentHtml ? (
+                                                                <S.FaqContentHtml
+                                                                    dangerouslySetInnerHTML={{ __html: item.contentHtml }}
+                                                                />
+                                                            ) : (
+                                                                <>
+                                                                    <p>{getHighlightedText(item.answer, submittedSearchQuery)}</p>
+                                                                    {item.bullets && (
+                                                                        <ul>
+                                                                            {item.bullets.map((bullet) => (
+                                                                                <li key={bullet}>{getHighlightedText(bullet, submittedSearchQuery)}</li>
+                                                                            ))}
+                                                                        </ul>
+                                                                    )}
+                                                                </>
+                                                            )}
+                                                        </S.AccordionPanelInner>
+                                                    </S.AccordionPanel>
+                                                </S.AccordionItem>
+                                            );
+                                        })}
+                                    </S.AccordionList>
+                                </S.AccordionSection>
+                            ))}
+                            {displayedSections.length === 0 && (
+                                <S.EmptyResult>
+                                    <S.EmptyIcon aria-hidden="true">!</S.EmptyIcon>
+                                    <p>
+                                        <span>검색 결과가 없습니다.</span>
+                                        <span>다른 키워드로 검색해 보세요.</span>
+                                    </p>
+                                </S.EmptyResult>
+                            )}
+                        </S.FaqListScroll>
 
                         <S.InfoBox id="contact">
                             <S.InfoText>

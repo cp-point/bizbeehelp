@@ -764,6 +764,42 @@ export const Contents = styled.div`
     }
 `;
 
+export const FaqListScroll = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+    width: 100%;
+    max-height: calc(100vh - 140px);
+    padding-right: 8px;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+        width: 9px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border: 2px solid transparent;
+        border-radius: 100px;
+        background-color: ${colors.coolGray400};
+        background-clip: content-box;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: ${colors.coolGray500};
+    }
+
+    @media (max-width: 767px) {
+        gap: 64px;
+        max-height: none;
+        padding-right: 0;
+        overflow: visible;
+    }
+`;
+
 export const AccordionSection = styled.section`
     display: flex;
     flex-direction: column;
@@ -1609,3 +1645,4 @@ export const FooterTopButton = styled.button`
     display: none;
   }
 `;
+
