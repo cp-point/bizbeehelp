@@ -636,31 +636,53 @@ export const SideMenu = styled.aside`
     gap: 16px;
     position: sticky;
     top: calc(${sizes.headerHeight} + ${sizes.stickyGap});
-    height: max-content;
     max-height: calc(100vh - 140px);
     padding: 16px 0;
     border: 1px solid ${colors.coolGray200};
     border-radius: 12px;
     background: ${colors.primaryWhite};
     overflow: hidden;
-    overflow-y: auto;
-
-    &::-webkit-scrollbar {
-        width: 9px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        border: 2px solid transparent;
-        border-radius: 100px;
-        background-clip: content-box;
-    }
 
     @media (max-width: 767px) {
         display: none;
     }
 `;
 
+export const MenuScroll = styled.div`
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+        width: 9px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border: 2px solid transparent;
+        border-radius: 100px;
+        background-color: ${colors.coolGray400};
+        background-clip: content-box;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: ${colors.coolGray500};
+    }
+
+    ${MobileMenuPanel} & {
+        gap: 16px;
+        overflow: visible;
+    }
+`;
+
 export const AllMenuButton = styled.button<ActiveProps>`
+    flex: 0 0 auto;
     width: 100%;
     padding: 10px 16px 22px;
     font-size: 17px;
@@ -687,7 +709,6 @@ export const AllMenuButton = styled.button<ActiveProps>`
         box-shadow: inset 0 -12px 0 ${colors.primaryWhite};
     }
 `;
-
 export const MenuGroup = styled.div`
     display: flex;
     flex-direction: column;
@@ -1645,4 +1666,10 @@ export const FooterTopButton = styled.button`
     display: none;
   }
 `;
+
+
+
+
+
+
 

@@ -265,21 +265,23 @@ const MenuContent = ({ menuGroups, selectedMenuId, onMenuClick }: MenuContentPro
         <S.AllMenuButton type="button" $isActive={selectedMenuId === 'all'} onClick={() => onMenuClick('all')}>
             전체
         </S.AllMenuButton>
-        {menuGroups.map((group) => (
-            <S.MenuGroup key={group.id}>
-                <S.MenuTitle>{group.title}</S.MenuTitle>
-                <S.MenuList>
-                    {group.items.map((item) => (
-                        <li key={item.id}>
-                            <S.MenuButton type="button" $isActive={selectedMenuId === item.id}
-                                          onClick={() => onMenuClick(item.id)}>
-                                {item.label}
-                            </S.MenuButton>
-                        </li>
-                    ))}
-                </S.MenuList>
-            </S.MenuGroup>
-        ))}
+        <S.MenuScroll>
+            {menuGroups.map((group) => (
+                <S.MenuGroup key={group.id}>
+                    <S.MenuTitle>{group.title}</S.MenuTitle>
+                    <S.MenuList>
+                        {group.items.map((item) => (
+                            <li key={item.id}>
+                                <S.MenuButton type="button" $isActive={selectedMenuId === item.id}
+                                              onClick={() => onMenuClick(item.id)}>
+                                    {item.label}
+                                </S.MenuButton>
+                            </li>
+                        ))}
+                    </S.MenuList>
+                </S.MenuGroup>
+            ))}
+        </S.MenuScroll>
     </>
 );
 
@@ -778,3 +780,4 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
 };
 
 export default Faq;
+
