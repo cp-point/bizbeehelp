@@ -29,10 +29,15 @@ body {
   font-family: var(--font-pretendard), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scrollbar-color: #cdd3dd transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
 *::-webkit-scrollbar-thumb {
+  border-radius: 30px;
   background-color: #cdd3dd;
 }
 
