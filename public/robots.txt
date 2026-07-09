@@ -1,0 +1,7 @@
+﻿User-agent: *
+Allow: /
+Allow: /faq
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://help.bizbee.co.kr/sitemap.xml

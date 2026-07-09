@@ -26,3 +26,4 @@
 - FAQ관리 - FAQ목록 -> URL: `/admin/faqs`, 파일: `src/app/admin/faqs/page.tsx`
 - FAQ관리 - FAQ등록 -> URL: `/admin/faqs/register`, 파일: `src/app/admin/faqs/register/page.tsx`
 - 페이지정보관리 -> URL: `/admin/page-info`, 파일: `src/app/admin/page-info/page.tsx`
+- HISTORY.md는 최신순으로 쌓을 것

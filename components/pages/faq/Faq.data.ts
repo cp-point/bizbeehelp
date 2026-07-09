@@ -32,7 +32,7 @@ export type FooterLink = {
 export const footerLinks: FooterLink[] = [
   { label: '회사소개', href: 'https://bizbee.co.kr', isExternal: true },
   { label: '이용약관', href: '#terms' },
-  { label: '개인정보처리방침', href: '#privacy', isCurrent: true },
+  { label: '개인정보처리방침', href: 'https://www.bizbee.co.kr/pages/policy.html', isExternal: true },
 ];
 
 export const companyAddress = {

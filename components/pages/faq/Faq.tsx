@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import Image from 'next/image';
-import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import type { FaqMenuGroup, FaqSection } from './Faq.data';
 import {
     companyAddress as fallbackCompanyAddress,
@@ -408,6 +408,18 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
         Post('/popular/save', { keyword: trimmedKeyword }, undefined, false);
     };
 
+    const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const nextSearchQuery = event.target.value;
+
+        setSearchQuery(nextSearchQuery);
+
+        if (nextSearchQuery === '') {
+            setSubmittedSearchQuery('');
+            setSelectedMenuId('all');
+            setOpenedItemId('');
+        }
+    };
+
     const handleSearchSubmit = () => {
         const trimmedKeyword = searchQuery.trim();
 
@@ -562,7 +574,7 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
                                 spellCheck={false}
                                 placeholder="궁금한 내용을 검색해 보세요."
                                 value={searchQuery}
-                                onChange={(event) => setSearchQuery(event.target.value)}
+                                onChange={handleSearchChange}
                             />
                         </S.SearchForm>
                         <S.KeywordList aria-label="추천 검색어">
@@ -683,12 +695,7 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
                                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                     <Image src="/assets/images/footer-arrow-up.svg" alt="" width={36} height={36} aria-hidden="true" />
                 </S.FooterTopButton>
-            </S.Body>;
-            ;
-            ;
-            ;
-
-
+            </S.Body>
             <S.Footer>
                 <S.FooterTop>
                     <S.FooterLogo href="/faq" aria-label="bizbee">
@@ -763,14 +770,9 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
                         ) : null}
                     </S.FooterBottom>
                 </S.FooterContents>
-            </S.Footer>;
-            ;
-            ;
-            ;
-
+            </S.Footer>
         </S.Page>
-    )
-        ;
+    );
 };
 
 export default Faq;
