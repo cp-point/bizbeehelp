@@ -461,6 +461,11 @@ export const KeywordList = styled.div`
     padding: 0 16px;
     margin-top: 0;
     overflow-x: auto;
+    scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
     }
 
     button {
