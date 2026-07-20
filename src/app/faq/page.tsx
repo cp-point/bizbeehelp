@@ -162,8 +162,8 @@ export async function generateMetadata(): Promise<Metadata> {
     const keywords = getKeywords(faqData);
 
     return {
-        title: 'FAQ | BizHelp',
-        description: '비즈비 도입, ERP 사용, 그룹웨어 관련 자주 묻는 질문을 확인할 수 있습니다.',
+        title: 'Bizbee Help | 비즈비헬프',
+        description: '비즈비헬프(Bizbee Help) FAQ 입니다. 비즈비 ERP, 그룹웨어, ESS 관련 문의와 사용 가이드를 확인하세요.',
         keywords,
     };
 }
