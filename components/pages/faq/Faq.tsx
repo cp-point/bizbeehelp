@@ -293,6 +293,7 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
     const [isRelatedSitesOpen, setIsRelatedSitesOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [submittedSearchQuery, setSubmittedSearchQuery] = useState('');
+    const pageScrollRef = useRef<HTMLDivElement | null>(null);
     const bodyRef = useRef<HTMLElement | null>(null);
     const floatingButtonRef = useRef<HTMLDivElement | null>(null);
     const floatingOffsetRef = useRef(0);
@@ -399,6 +400,58 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
     }, []);
 
     const displayedSections = useMemo(() => getSearchMatchedSections(sections, submittedSearchQuery), [sections, submittedSearchQuery]);
+
+    useEffect(() => {
+        const pageScroll = pageScrollRef.current;
+
+        if (!pageScroll || displayedSections.length === 0) {
+            return;
+        }
+
+        let animationFrame = 0;
+
+        const updateSelectedMenu = () => {
+            animationFrame = 0;
+
+            const pageScrollTop = pageScroll.getBoundingClientRect().top;
+            const sectionActivationLine = pageScrollTop + 112;
+            let activeSectionId = 'all';
+
+            for (const section of displayedSections) {
+                const sectionElement = sectionRefs.current[section.id];
+
+                if (sectionElement && sectionElement.getBoundingClientRect().top <= sectionActivationLine) {
+                    activeSectionId = section.id;
+                    continue;
+                }
+
+                break;
+            }
+
+            setSelectedMenuId((currentMenuId) => (
+                currentMenuId === activeSectionId ? currentMenuId : activeSectionId
+            ));
+        };
+
+        const handleScroll = () => {
+            if (!animationFrame) {
+                animationFrame = window.requestAnimationFrame(updateSelectedMenu);
+            }
+        };
+
+        updateSelectedMenu();
+        pageScroll.addEventListener('scroll', handleScroll, { passive: true });
+        window.addEventListener('resize', handleScroll);
+
+        return () => {
+            if (animationFrame) {
+                window.cancelAnimationFrame(animationFrame);
+            }
+
+            pageScroll.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('resize', handleScroll);
+        };
+    }, [displayedSections]);
 
     const savePopularKeyword = (keyword: string) => {
         const trimmedKeyword = keyword.trim();
@@ -547,7 +600,7 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
             </S.MobileMenu>
 
 
-            <S.PageScroll>
+            <S.PageScroll ref={pageScrollRef}>
                 <S.Hero>
                     <S.HeroContent>
                         <S.HeroHeading>
