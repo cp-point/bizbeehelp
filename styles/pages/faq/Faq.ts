@@ -100,7 +100,7 @@ export const PageScroll = styled.div`
     min-height: 0;
     overflow-x: hidden;
     overflow-y: auto;
-    scroll-behavior: smooth;
+    overflow-anchor: none;
 `;
 
 export const HeaderLogo = styled(Link)`
@@ -884,10 +884,14 @@ export const AccordionPanel = styled.div<OpenProps>`
     transition: ${(props) =>
             props.$isInstant
                     ? 'none'
-                    : css`,
-                        grid-template-rows 0.3s ease,
-          opacity 0.2s ease
+                    : css`
+                        grid-template-rows 0.4s ease,
+                        opacity 0.4s ease
                     `};
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
 `;
 
 export const AccordionPanelInner = styled.div<OpenProps>`
@@ -899,6 +903,10 @@ export const AccordionPanelInner = styled.div<OpenProps>`
     color: ${colors.coolGray800};
     overflow: hidden;
     transition: ${(props) => (props.$isInstant ? 'none' : 'padding 0.3s ease')};
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
 
     @media (max-width: 767px) {
         padding: ${(props) => (props.$isOpen ? '0 12px 24px' : '0 12px')};

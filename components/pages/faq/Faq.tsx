@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import Image from 'next/image';
-import { ChangeEvent, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, ReactNode, TransitionEvent, useEffect, useMemo, useRef, useState } from 'react';
 import type { FaqMenuGroup, FaqSection } from './Faq.data';
 import {
     companyAddress as fallbackCompanyAddress,
@@ -298,6 +298,8 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
     const floatingButtonRef = useRef<HTMLDivElement | null>(null);
     const floatingOffsetRef = useRef(0);
     const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+    const accordionButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+    const activeAccordionFocusIdRef = useRef('');
     const mobileMenuRef = useRef<HTMLDivElement | null>(null);
     const hasFaqData = Boolean(faqData && faqData.length > 0);
     const sections = useMemo(() => createFaqSections(faqData), [faqData]);
@@ -532,8 +534,57 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
     };
 
     const handleAccordionClick = (itemId: string, sectionId: string) => {
+        activeAccordionFocusIdRef.current = '';
+
+        const isOpening = openedItemId !== itemId;
+        const accordionButton = accordionButtonRefs.current[itemId];
+        const openedAccordionButton = accordionButtonRefs.current[openedItemId];
+
         setSelectedMenuId(sectionId);
         setOpenedItemId((currentId) => (currentId === itemId ? '' : itemId));
+
+        if (!isOpening || !accordionButton) return;
+
+        const openedAccordionPanel = openedAccordionButton?.nextElementSibling;
+        const collapsingPanelHeight = openedAccordionButton
+            && openedAccordionPanel instanceof HTMLElement
+            && openedAccordionButton.getBoundingClientRect().top < accordionButton.getBoundingClientRect().top
+            ? openedAccordionPanel.getBoundingClientRect().height
+            : 0;
+
+        accordionButton.focus({ preventScroll: true });
+        activeAccordionFocusIdRef.current = itemId;
+        scrollAccordionItemToFocus(itemId, collapsingPanelHeight);
+    };
+
+    const scrollAccordionItemToFocus = (
+        itemId: string,
+        collapsingPanelHeight = 0,
+        behavior: ScrollBehavior = 'smooth'
+    ) => {
+        const clickedButton = accordionButtonRefs.current[itemId];
+        const pageScroll = pageScrollRef.current;
+
+        if (!clickedButton || !pageScroll) return;
+
+        const focusTop = pageScroll.getBoundingClientRect().top + 16;
+        const targetScrollTop = pageScroll.scrollTop
+            + clickedButton.getBoundingClientRect().top
+            - focusTop
+            - collapsingPanelHeight;
+
+        pageScroll.scrollTo({
+            top: targetScrollTop,
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : behavior,
+        });
+    };
+
+    const handleAccordionTransitionEnd = (event: TransitionEvent<HTMLDivElement>) => {
+        if (event.target !== event.currentTarget || event.propertyName !== 'grid-template-rows') return;
+
+        const activeItemId = activeAccordionFocusIdRef.current;
+
+        if (activeItemId) scrollAccordionItemToFocus(activeItemId, 0, 'auto');
     };
 
     const handleKakaoInquiryClick = () => {
@@ -683,13 +734,15 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
                                             return (
                                                 <S.AccordionItem key={item.id} $isOpen={isOpen}>
                                                     <S.AccordionButton type="button"
+                                                                       ref={(node) => { accordionButtonRefs.current[item.id] = node; }}
                                                                        onClick={() => handleAccordionClick(item.id, section.id)}
                                                                        aria-expanded={isOpen}>
                                                         <span>{getHighlightedText(item.question, submittedSearchQuery)}</span>
                                                         <S.Chevron as={ChevronIcon} />
                                                     </S.AccordionButton>
                                                     <S.AccordionPanel $isOpen={isOpen} $isInstant={isMenuScrolling}
-                                                                      aria-hidden={!isOpen}>
+                                                                      aria-hidden={!isOpen}
+                                                                      onTransitionEnd={handleAccordionTransitionEnd}>
                                                         <S.AccordionPanelInner $isOpen={isOpen}
                                                                                $isInstant={isMenuScrolling}>
                                                             {item.contentHtml ? (
