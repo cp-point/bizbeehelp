@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import Image from 'next/image';
-import { ChangeEvent, ReactNode, TransitionEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import type { FaqMenuGroup, FaqSection } from './Faq.data';
 import {
     companyAddress as fallbackCompanyAddress,
@@ -54,6 +54,7 @@ type FooterViewModel = {
 };
 
 const KAKAO_INQUIRY_URL = 'http://pf.kakao.com/_VKxajX/chat';
+const MOBILE_ACCORDION_FOCUS_DELAY_MS = 300;
 
 const SearchIcon = ({ size = 28 }: SearchIconProps) => (
     <svg width={size} height={size} viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"
@@ -300,6 +301,7 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
     const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
     const accordionButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
     const activeAccordionFocusIdRef = useRef('');
+    const accordionFocusTimeoutRef = useRef<number | null>(null);
     const mobileMenuRef = useRef<HTMLDivElement | null>(null);
     const hasFaqData = Boolean(faqData && faqData.length > 0);
     const sections = useMemo(() => createFaqSections(faqData), [faqData]);
@@ -402,6 +404,12 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
     }, []);
 
     const displayedSections = useMemo(() => getSearchMatchedSections(sections, submittedSearchQuery), [sections, submittedSearchQuery]);
+
+    useEffect(() => () => {
+        if (accordionFocusTimeoutRef.current !== null) {
+            window.clearTimeout(accordionFocusTimeoutRef.current);
+        }
+    }, []);
 
     useEffect(() => {
         const pageScroll = pageScrollRef.current;
@@ -534,27 +542,64 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
     };
 
     const handleAccordionClick = (itemId: string, sectionId: string) => {
+        if (accordionFocusTimeoutRef.current !== null) {
+            window.clearTimeout(accordionFocusTimeoutRef.current);
+            accordionFocusTimeoutRef.current = null;
+        }
+
+        const pageScroll = pageScrollRef.current;
+        if (pageScroll) {
+            pageScroll.scrollTo({ top: pageScroll.scrollTop, behavior: 'auto' });
+        }
+
         activeAccordionFocusIdRef.current = '';
 
         const isOpening = openedItemId !== itemId;
         const accordionButton = accordionButtonRefs.current[itemId];
         const openedAccordionButton = accordionButtonRefs.current[openedItemId];
+        const openedAccordionPanel = openedAccordionButton?.nextElementSibling;
 
         setSelectedMenuId(sectionId);
         setOpenedItemId((currentId) => (currentId === itemId ? '' : itemId));
 
         if (!isOpening || !accordionButton) return;
 
-        const openedAccordionPanel = openedAccordionButton?.nextElementSibling;
-        const collapsingPanelHeight = openedAccordionButton
+        const isOpenedPanelAbove = Boolean(
+            openedAccordionButton
             && openedAccordionPanel instanceof HTMLElement
             && openedAccordionButton.getBoundingClientRect().top < accordionButton.getBoundingClientRect().top
-            ? openedAccordionPanel.getBoundingClientRect().height
-            : 0;
+        );
 
-        accordionButton.focus({ preventScroll: true });
         activeAccordionFocusIdRef.current = itemId;
-        scrollAccordionItemToFocus(itemId, collapsingPanelHeight);
+
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const isTouchPointer = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+        const startFocusScroll = () => {
+            if (activeAccordionFocusIdRef.current !== itemId) return;
+
+            accordionFocusTimeoutRef.current = null;
+            activeAccordionFocusIdRef.current = '';
+
+            const collapsingPanelHeight = isOpenedPanelAbove && openedAccordionPanel instanceof HTMLElement
+                ? openedAccordionPanel.getBoundingClientRect().height
+                : 0;
+
+            accordionButton.focus({ preventScroll: true });
+            scrollAccordionItemToFocus(
+                itemId,
+                collapsingPanelHeight,
+                prefersReducedMotion || isMenuScrolling ? 'auto' : 'smooth'
+            );
+        };
+
+        if (prefersReducedMotion || isMenuScrolling) {
+            window.requestAnimationFrame(startFocusScroll);
+        } else if (isTouchPointer && isOpenedPanelAbove) {
+            accordionFocusTimeoutRef.current = window.setTimeout(startFocusScroll, MOBILE_ACCORDION_FOCUS_DELAY_MS);
+        } else {
+            startFocusScroll();
+        }
     };
 
     const scrollAccordionItemToFocus = (
@@ -575,16 +620,8 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
 
         pageScroll.scrollTo({
             top: targetScrollTop,
-            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : behavior,
+            behavior,
         });
-    };
-
-    const handleAccordionTransitionEnd = (event: TransitionEvent<HTMLDivElement>) => {
-        if (event.target !== event.currentTarget || event.propertyName !== 'grid-template-rows') return;
-
-        const activeItemId = activeAccordionFocusIdRef.current;
-
-        if (activeItemId) scrollAccordionItemToFocus(activeItemId, 0, 'auto');
     };
 
     const handleKakaoInquiryClick = () => {
@@ -741,8 +778,7 @@ const Faq = ({ faqData, footerInfo, relatedSites, popularKeywords }: FaqProps) =
                                                         <S.Chevron as={ChevronIcon} />
                                                     </S.AccordionButton>
                                                     <S.AccordionPanel $isOpen={isOpen} $isInstant={isMenuScrolling}
-                                                                      aria-hidden={!isOpen}
-                                                                      onTransitionEnd={handleAccordionTransitionEnd}>
+                                                                      aria-hidden={!isOpen}>
                                                         <S.AccordionPanelInner $isOpen={isOpen}
                                                                                $isInstant={isMenuScrolling}>
                                                             {item.contentHtml ? (
