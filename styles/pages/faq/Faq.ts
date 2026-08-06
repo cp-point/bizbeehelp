@@ -811,8 +811,10 @@ export const AccordionItem = styled.article<OpenProps>`
     background: ${(props) => (props.$isOpen ? colors.coolGrayBackground : colors.primaryWhite)};
     transition: background-color 0.2s ease;
 
-    &:hover {
-        background: ${colors.coolGrayBackground};
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            background: ${colors.coolGrayBackground};
+        }
     }
 `;
 
@@ -828,6 +830,7 @@ export const AccordionButton = styled.button`
     text-align: left;
     color: inherit;
     background: transparent;
+    outline: none;
     cursor: pointer;
 
     @media (max-width: 767px) {
@@ -852,8 +855,10 @@ export const AccordionButton = styled.button`
         color: ${colors.greenPrimary};
     }
 
-    &:hover span {
-        color: ${colors.greenPrimary};
+    @media (hover: hover) and (pointer: fine) {
+        &:hover span {
+            color: ${colors.greenPrimary};
+        }
     }
 `;
 
